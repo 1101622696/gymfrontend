@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const useStoreClientes = defineStore("Cliente", () => {
 
-    const getUsers= async() =>{
+    const getCustomer= async() =>{
         try {
             const r = await axios.get("http://localhost:3000/api/clientes/listar")
             console.log(r);
@@ -16,7 +16,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
     }
 
     return{
-        getUsers
+        getCustomer
     }
 
 })

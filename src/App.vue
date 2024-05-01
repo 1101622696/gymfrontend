@@ -17,6 +17,17 @@
       <q-tabs align="left">
         <q-route-tab to="/" label="login" />
         <q-route-tab to="/clientes" label="clientes" />
+        <q-route-tab to="/ingresos" label="ingresos" />
+        <q-route-tab to="/inventario" label="inventario" />
+        <q-route-tab to="/mantenimiento" label="mantenimiento" />
+        <q-route-tab to="/maquinas" label="maquinas" />
+        <q-route-tab to="/pagos" label="pagos" />
+        <q-route-tab to="/planes" label="planes" />
+        <q-route-tab to="/sedes" label="sedes" />
+        <q-route-tab to="/usuarios" label="usuarios" />
+        <q-route-tab to="/ventas" label="ventas" />
+
+
       </q-tabs>
     </q-header>
 
