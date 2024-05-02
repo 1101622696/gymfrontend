@@ -6,14 +6,14 @@ const useCliente = useStoreClientes();
 
 let rows=ref([])
 let columns =ref([
-    {name:"nombre", sortable:true, label:"Nombre Usuario", field:"nombre", align:"center",},
+    {name:"nombre", sortable:true, label:"Nombre Cliente", field:"nombre", align:"center",},
     {name:"telefono", label:"Telefono", field:"telefono", align:"center"},
     {name:"estado", label:"Estado", field:"estado", align:"center"},
     {name:"opciones", label:"Opciones", field:"opciones", align:"center"}
 ])
 
 async function listarClientes(){
-    const res = await useCliente.getUsers()
+    const res = await useCliente.getCustomer()
     console.log(res.data);
     rows.value=res.data.cliente
 }

@@ -41,7 +41,7 @@ async function listarIngreso(){
             </q-table>
           </div>
           
-          <button @click="listarClientes()">traer dtos</button>
+          <button @click="listarIngreso()">traer dtos</button>
 
 
 
