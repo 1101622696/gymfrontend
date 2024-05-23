@@ -14,7 +14,7 @@ import Ventas from "../components/Ventas.vue"
 import { createRouter, createWebHashHistory } from "vue-router"
 
 const routes=[
-{path:"/login",component:login},
+{path:"/",component:login},
 {path:"/Clientes",component:Clientes},
 {path:"/Ingresos",component:Ingresos},
 {path:"/Inventario",component:Inventario},

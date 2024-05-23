@@ -52,7 +52,7 @@ async function login1(){
     UseUsuario.user = res.data.usuario;
     console.log(res);
 
-  router. push('/login');
+  router. push('/');
   }catch(error){
     console.log(error);
   }

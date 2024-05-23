@@ -1,22 +1,77 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-// import { ref } from "vue";
+import { ref } from "vue";
+import { useStoreUsuarios } from "./usuarios";
 
 export const useStoreVentas = defineStore("Ventas", () => {
 
-    const getSales= async() =>{
-        try {
-            const r = await axios.get("http://localhost:3000/api/ventas/listar")
-            console.log(r);
-            return r
-        } catch (error) {
-            console.log(error);
-            return error
+    let loading = ref(false)
+    let ventas =ref({})
+    const useVenta=useStoreUsuarios()
+    
+    
+        const listarVenta= async() =>{
+            try {
+                loading.value  = true;
+                console.log(token.value);
+                const response = await axios.get("api/ventas/listar",{
+                    headers:{
+                        token: token.value
+                    }
+            });
+               ventas.value = response.data;
+               return response;
+            } catch (error) {
+                console.error("NO se pudo obtener la lista de ventas",error);
+                throw error;
+            }
+            finally {
+                loading.value=false
+        }}
+    
+    
+        const postVenta= async(data) =>{
+            try {
+                loading.value =true
+                const r = await axios.get("api/ventas/escribir", data,{
+                    headers:{
+                        token:token.value
+                    }
+                })
+                console.log(r);
+                return r
+            } catch (error) {
+                loading.value =true
+                console.log(error);
+                return error;
+            }finally{
+                loading.value = false
+            }
         }
-    }
-
-    return{
-        getSales
-    }
-
-})
+    
+        const putVenta= async(id, data) =>{
+            try {
+                loading.value =true
+                const r = await axios.get(`api/ventas/modificar/${id}`, data,{
+                    headers:{
+                        token:token.value
+                    }
+                })
+                console.log(r);
+                return r
+            } catch (error) {
+                loading.value =true
+                console.log(error);
+                return error;
+            }finally{
+                loading.value = false
+            }
+        }
+    
+        return{ listarVenta, postVenta, putVenta, token, loading, ventas, useVenta}
+    
+    },
+    
+    {persist: true}
+    
+    )
