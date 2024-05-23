@@ -28,21 +28,36 @@
 </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from "vue";
+import {useStoreUsuarios} from '../store/usuarios'
+import {useRouter} from "vue-router"
 
-export default {
-setup() {
-const leftDrawerOpen = ref(false);
+const router=useRouter();
+let UseUsuario = useStoreUsuarios()
+let email=ref("")
+let passwordLogin=ref("")
+// const datoslogin=([])
+// let nombre = ref ('');
+// let correo = ref ('');
+// let password = ref ('');
 
-return {
-leftDrawerOpen,
-toggleLeftDrawer() {
-leftDrawerOpen.value = !leftDrawerOpen.value;
-},
-};
-},
-};
+async function login1(){
+  try{
+    const res = await UseUsuario.login({
+      correo:email.value,
+      password:passwordLogin.value
+    })
+    UseUsuario.token = res.data.token;
+    UseUsuario.user = res.data.usuario;
+    console.log(res);
+
+  router. push('/login');
+  }catch(error){
+    console.log(error);
+  }
+}
+
 </script>
 
 <style scoped>

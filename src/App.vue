@@ -1,40 +1,88 @@
-
 <template>
-  <q-layout view="lHh lpR fFf">
+  <q-layout view="hHh lpR fFf">
 
-    <q-header class="bg-grey-10 text-white" height-hint="98">
+    <q-header reveal elevated class="bg-primary text-white">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+<img src="https://img.freepik.com/vector-premium/logotipo-fitness-levantamiento-pesas_609277-112.jpg">
           </q-avatar>
           GIMNASIO
         </q-toolbar-title>
       </q-toolbar>
-
-      <q-tabs align="left">
-        <q-route-tab to="/" label="login" />
-        <q-route-tab to="/clientes" label="clientes" />
-        <q-route-tab to="/ingresos" label="ingresos" />
-        <q-route-tab to="/inventario" label="inventario" />
-        <q-route-tab to="/mantenimiento" label="mantenimiento" />
-        <q-route-tab to="/maquinas" label="maquinas" />
-        <q-route-tab to="/pagos" label="pagos" />
-        <q-route-tab to="/planes" label="planes" />
-        <q-route-tab to="/sedes" label="sedes" />
-        <q-route-tab to="/usuarios" label="usuarios" />
-        <q-route-tab to="/ventas" label="ventas" />
-
-
-      </q-tabs>
     </q-header>
-
-    <q-drawer show-if-above v-model="leftDrawerOpen" side="left">
-      <!-- drawer content -->
+<q-drawer v-model="leftDrawerOpen" side="left" overlay bordered>
+      <q-list>
+        <q-item to="/" clickable>
+          <q-item-section avatar>
+            <q-icon name="login" />
+          </q-item-section>
+          <q-item-section>Login</q-item-section>
+        </q-item>
+        <q-item to="/clientes" clickable>
+          <q-item-section avatar>
+            <q-icon name="people" />
+          </q-item-section>
+          <q-item-section>Clientes</q-item-section>
+        </q-item>
+        <q-item to="/ingresos" clickable>
+          <q-item-section avatar>
+            <q-icon name="attach_money" />
+          </q-item-section>
+          <q-item-section>Ingresos</q-item-section>
+        </q-item>
+        <q-item to="/inventario" clickable>
+          <q-item-section avatar>
+            <q-icon name="inventory" />
+          </q-item-section>
+          <q-item-section>Inventario</q-item-section>
+        </q-item>
+        <q-item to="/mantenimiento" clickable>
+          <q-item-section avatar>
+            <q-icon name="build" />
+          </q-item-section>
+          <q-item-section>Mantenimiento</q-item-section>
+        </q-item>
+        <q-item to="/maquinas" clickable>
+          <q-item-section avatar>
+            <q-icon name="fitness_center" />
+          </q-item-section>
+          <q-item-section>Máquinas</q-item-section>
+        </q-item>
+        <q-item to="/pagos" clickable>
+          <q-item-section avatar>
+            <q-icon name="credit_card" />
+          </q-item-section>
+          <q-item-section>Pagos</q-item-section>
+        </q-item>
+        <q-item to="/planes" clickable>
+          <q-item-section avatar>
+            <q-icon name="event_note" />
+          </q-item-section>
+          <q-item-section>Planes</q-item-section>
+        </q-item>
+        <q-item to="/sedes" clickable>
+          <q-item-section avatar>
+            <q-icon name="location_on" />
+          </q-item-section>
+          <q-item-section>Sedes</q-item-section>
+        </q-item>
+        <q-item to="/usuarios" clickable>
+          <q-item-section avatar>
+            <q-icon name="person" />
+          </q-item-section>
+          <q-item-section>Usuarios</q-item-section>
+        </q-item>
+        <q-item to="/ventas" clickable>
+          <q-item-section avatar>
+            <q-icon name="shopping_cart" />
+          </q-item-section>
+          <q-item-section>Ventas</q-item-section>
+        </q-item>
+      </q-list>
     </q-drawer>
-
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -60,9 +108,18 @@ export default {
 </script>
 
 <style scoped>
-
-.bg-primary text-white{
-background-color: bisque;
+.bg-primary {
+  background-color: bisque;
 }
 
+.text-white {
+  color: white;
+}
 </style>
+
+
+
+
+
+
+

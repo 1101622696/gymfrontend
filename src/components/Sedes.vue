@@ -3,7 +3,8 @@ import { ref, onMounted } from "vue";
 import { useStoreSedes } from "../store/sedes.js";
 
 const useSedes = useStoreSedes();
-
+let alert = ref(false)
+let accion = ref(1)
 let rows=ref([])
 let columns =ref([
     {name:"nombre", label:"Nombre de Sede", field:"nombre", align:"center"},
@@ -19,51 +20,68 @@ let columns =ref([
 async function listarSedes(){
     const res = await useSedes.getOffice()
     console.log(res.data);
-    rows.value=res.data.planes
+    rows.value=res.data.sede
 }
       
+       function abrir() {
+    accion.value = 1;
+    alert.value = true;
+
+}
+function cerrar() {
+    alert.value = false;
+}  
+
 </script>
 
 <template>
     <div>
-        <div class="q-pa-md">
+      
+<div style="margin-left: 5%; text-align: end; margin-right: 5%">
+            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
+        </div>
 
-            <q-table
-              flat bordered
-              title="Treats"
-              :rows="rows"
-              :columns="columns"
-              row-key="id"
-            >
-            <template v-slot:body-cell-opciones="props">
-              <q-td :props="props">
-                <q-btn @click="editar(props.row)">
-                    ✏️
-                </q-btn>
-              </q-td>
+    <button @click="listarSedes()">traer datos</button>
+
+    <div>
+      <q-dialog v-model="alert" persistent>
+        <q-card class="" style="width: 700px">
+          <q-card-section
+            style="background-color: #a1312d; margin-bottom: 20px"
+          >
+            <div class="text-h6 text-white">
+              {{ accion == 1 ? "Agregar Sede" : "Editar Sede" }}
+            </div>
+          </q-card-section>
+<q-input outlined v-model="direccion" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Direccion del Usuario" type="text" />
+          <q-card-actions align="right">
+            <q-btn
+              v-if="accion === 1"
+              color="red"
+              class="text-white"
+              :loading="useSedes.loading"
+              >Agregar
+              <template v-slot:loading>
+                <q-spinner color="primary" size="1em" />
               </template>
-              <template v-slot:body-cell-estado="props">
-                </template>
-            </q-table>
-          </div>
-          
-          <button @click="listarSedes()">traer dtos</button>
-
-
-
-<div class="crear cliente">
-    <h3>ingresar clientes</h3>
-  
-          <input id="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
-          <input id="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-          <input id="input" type="text" placeholder="Direccion" v-model.trim="direccion" />
-          <input id="input" type="date" placeholder="Fecha de nacimiento" v-model.trim="fechaNacimiento" />
-          <input id="input" type="text" placeholder="Telefono" v-model.trim="telefono" />
-          <input id="input" type="text" placeholder="Telefono" v-model.trim="plan" />
-          <input id="input" type="text" placeholder="foto" v-model.trim="foto" />
-
-</div>
-
+            </q-btn>
+            <q-btn
+              v-if="accion !== 1"
+              color="red"
+              class="text-white"
+              :loading="useSedes.loading"
+            >
+              Editar
+              <template v-slot:loading>
+                <q-spinner color="primary" size="1em" />
+              </template>
+            </q-btn>
+            <q-btn label="Cerrar" color="black" outline @click="cerrar()" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </div>
 
 
     </div>
