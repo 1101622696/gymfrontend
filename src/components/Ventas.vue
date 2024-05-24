@@ -13,6 +13,11 @@ agregar.value = true;
 function cerrar(){
     agregar.value = false;
 }
+
+onMounted(()=>{
+  listarVentas(), listarInventario();
+})
+
 let rows=ref([])
 let columns =ref([
     {name:"fecha", label:"fecha", field:"fecha", align:"center"},

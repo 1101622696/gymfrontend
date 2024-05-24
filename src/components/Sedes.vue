@@ -32,6 +32,10 @@ function cerrar() {
     alert.value = false;
 }  
 
+onMounted(()=>{
+  listarSedes();
+})
+
 </script>
 
 <template>
@@ -41,7 +45,7 @@ function cerrar() {
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
         </div>
 
-    <button @click="listarSedes()">traer datos</button>
+  <button @click="listarSedes()">traer datos</button>
 
     <div>
       <q-dialog v-model="alert" persistent>
@@ -53,28 +57,40 @@ function cerrar() {
               {{ accion == 1 ? "Agregar Sede" : "Editar Sede" }}
             </div>
           </q-card-section>
-<q-input outlined v-model="direccion" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Direccion del Usuario" type="text" />
+<q-input outlined v-model="nombre" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Nombre" type="text" />
+  <q-input outlined v-model="direccion" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Direccion" type="text" />
+  <q-input outlined v-model="telefono" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Teléfono" type="text" />   
+  <q-input outlined v-model="ciudad" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Ciudad" type="text" />  
+      <q-input outlined v-model="codigo" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Codigo" type="text" />                     
+  <q-input outlined v-model="horario" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Horario" type="text" /> 
+
+
           <q-card-actions align="right">
             <q-btn
               v-if="accion === 1"
-              color="red"
+              color="blue"
               class="text-white"
               :loading="useSedes.loading"
               >Agregar
               <template v-slot:loading>
-                <q-spinner color="primary" size="1em" />
+                <q-spinner color="secundary" size="1em" />
               </template>
             </q-btn>
             <q-btn
               v-if="accion !== 1"
-              color="red"
+              color="blue"
               class="text-white"
               :loading="useSedes.loading"
             >
               Editar
               <template v-slot:loading>
-                <q-spinner color="primary" size="1em" />
+                <q-spinner color="secundary" size="1em" />
               </template>
             </q-btn>
             <q-btn label="Cerrar" color="black" outline @click="cerrar()" />

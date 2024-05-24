@@ -28,6 +28,11 @@ async function listarMaquina(){
     console.log(res.data);
     rows.value=res.data.maquina
 }
+
+onMounted(()=>{
+  listarMaquina(), listarSedes();
+})
+      
       
 </script>
 

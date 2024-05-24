@@ -107,7 +107,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         }
     
     
-        return{ listarMaquina, postMaquina, putMaquina, putActivarMaquina, putDesactivarMaquina, token, loading, maquinas, useMaquina}
+        return{ listarMaquina, postMaquina, putMaquina, putActivarMaquina, putDesactivarMaquina, loading, maquinas, useMaquina}
     
     },
     

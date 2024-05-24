@@ -14,13 +14,8 @@
            <input type="password" required v-model="password">
            <label for="">Contraseña</label>
        </div>
-       <div class="forget">
-           <label for=""><input type="checkbox">Recordar</label>
-           <a href="#">Olvidé la contraseña</a>
-       </div>
        <button @click="iniciar">Iniciar</button>
        <div class="register">
-       <p>no tengo una cuenta <a href="#">registrate</a></p>
    </div>
    </form>
  </section>
@@ -58,6 +53,7 @@ async function login1(){
   }
 }
 
+
 </script>
 
 <style scoped>
@@ -73,9 +69,9 @@ display:flex;
 align-items: center;
 justify-content: center;
 min-height: 100vh;
-/* background:url('https://media.zigcdn.com/media/model/2023/Aug/2024-390-duke-right-side-view_600x400.jpg')no-repeat center; */
-background-color: grey;;
-background-size: contain;
+background:url('https://preview.free3d.com/img/2016/04/1725656089682248848/2k6yk897.jpg') no-repeat center;
+/* background-color: grey;;*/
+background-size: cover;
 }
 section{
 position: relative;

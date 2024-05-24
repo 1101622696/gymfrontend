@@ -13,6 +13,11 @@ agregar.value = true;
 function cerrar(){
     agregar.value = false;
 }
+
+onMounted(()=>{
+  listarPlanes();
+})
+
 let rows=ref([])
 let columns =ref([
 {name:"codigo", sortable:true, label:"Código", field:"codigo", align:"center",},
@@ -57,8 +62,10 @@ async function listarPlanes(){
         </template>
       </q-table>
   
-      <button class="button" @click="listarPlanes()">Traer Datos</button>
-  
+      <!-- <button class="button" @click="listarPlanes()">Traer Datos</button> -->
+
+
+  <div>
       <button class="button" @click="agregarPlan()">Agregar Plan</button>
   
       <div class="crearcliente" v-if="agregar">
@@ -79,6 +86,7 @@ async function listarPlanes(){
     <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
 
 
+      </div>
       </div>
     </div>
   </template>

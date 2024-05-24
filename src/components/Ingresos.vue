@@ -25,6 +25,16 @@ async function listarIngreso(){
 function cerrar() {
     alert.value = false;
 }     
+
+      const model = ref(null);
+      const options = [
+        '1', '2', '3', '4'
+      ];
+
+
+      onMounted(()=>{
+  listarClientes(), listarSedes(), listarIngreso();
+})
 </script>
 
 <template>
@@ -43,11 +53,16 @@ function cerrar() {
             style="background-color: #a1312d; margin-bottom: 20px"
           >
             <div class="text-h6 text-white">
-              {{ accion == 1 ? "Agregar Cliente" : "Editar Cliente" }}
+              {{ accion == 1 ? "Agregar Ingreso" : "Editar Ingreso" }}
             </div>
           </q-card-section>
-<q-input outlined v-model="direccion" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Direccion del Usuario" type="text" />
+<q-input outlined v-model="fecha" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="fecha del ingreso" type="text" />
+      <q-select standout v-model="idsede" :options="options" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+      />
+     
+       <q-select standout v-model="idcliente" :options="options" label="Cliente" style="background-color: #grey; margin-bottom: 20px"
+      />
           <q-card-actions align="right">
             <q-btn
               v-if="accion === 1"

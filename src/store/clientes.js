@@ -107,7 +107,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
         }
     
     
-        return{ listarCliente, postCliente, putCliente, putActivarCliente, putDesactivarCliente, token, loading, clientes, useCliente}
+        return{ listarCliente, postCliente, putCliente, putActivarCliente, putDesactivarCliente, loading, clientes, useCliente}
     
     },
     

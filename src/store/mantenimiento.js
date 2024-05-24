@@ -69,7 +69,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
             }
         }
     
-        return{ listarMantenimiento, postMantenimiento, putMantenimiento, token, loading, mantenimiento, useMantenimiento}
+        return{ listarMantenimiento, postMantenimiento, putMantenimiento, loading, mantenimiento, useMantenimiento}
     
     },
     

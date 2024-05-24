@@ -68,7 +68,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
             }
         }
     
-        return{ listarVenta, postVenta, putVenta, token, loading, ventas, useVenta}
+        return{ listarVenta, postVenta, putVenta, loading, ventas, useVenta}
     
     },
     

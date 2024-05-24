@@ -109,7 +109,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
 
     
         
-        return{ listarSede, postSede, putSedes, putActivarSede, putDesactivarSede, token, loading, sedes, useUsuario}
+        return{ listarSede, postSede, putSedes, putActivarSede, putDesactivarSede, loading, sedes, useUsuario}
     
     },
     

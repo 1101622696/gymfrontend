@@ -107,7 +107,7 @@ export const useStorePlanes = defineStore("Planes", () => {
         }
     
     
-        return{ listarPlan, postPlan, putPlan, putActivarPlan, putDesactivarPlan, token, loading, planes, usePlan}
+        return{ listarPlan, postPlan, putPlan, putActivarPlan, putDesactivarPlan, loading, planes, usePlan}
     
     },
     

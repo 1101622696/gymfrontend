@@ -1,88 +1,172 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import { useQuasar } from 'quasar';
 import { useStoreClientes } from "../store/clientes.js";
 
+const $q = useQuasar();
+let agregar = ref(false);
 const useCliente = useStoreClientes();
 
+// Variables para datos del cliente
+let nombre = ref("");
+let documento = ref("");
+let direccion = ref("");
+let fechaNacimiento = ref("");
+let telefono = ref("");
+let plan = ref("");
+let foto = ref("");
 
-let agregar=ref(false)
-
-function agregarCliente(){
-agregar.value = true;
+// Función para abrir el formulario de agregar cliente
+function llamaragregarCliente() {   
+  agregar.value = true;
 }
 
-function cerrar(){
-    agregar.value = false;
+// Función para agregar cliente con validaciones
+function agregarCliente() {
+  if (!nombre.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, completa el campo Nombre.'
+    });
+    return;
+  }
+
+  if (!documento.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, completa el campo N° Documento.'
+    });
+    return;
+  }
+
+  if (!direccion.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, completa el campo Dirección.'
+    });
+    return;
+  }
+
+  if (!fechaNacimiento.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, selecciona una Fecha de Nacimiento.'
+    });
+    return;
+  }
+
+  if (!telefono.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, completa el campo Teléfono.'
+    });
+    return;
+  }
+
+  if (telefono.value.length < 10) {
+    $q.notify({
+      type: 'negative',
+      message: 'El teléfono debe tener al menos 10 números.'
+    });
+    return;
+  }
+
+  if (!plan.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, completa el campo Plan.'
+    });
+    return;
+  }
+
+  if (!foto.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'Por favor, completa el campo Foto.'
+    });
+    return;
+  }
+
+  // Aquí puedes agregar la lógica para enviar los datos del cliente al servidor o almacenarlos en tu store
+  $q.notify({
+    type: 'positive',
+    message: 'Cliente agregado exitosamente.'
+  });
+  cerrar(); // Cerrar el formulario al guardar
 }
 
-let rows=ref([])
-let columns =ref([
-    {name:"nombre", sortable:true, label:"Nombre Cliente", field:"nombre", align:"center",},
-    {name:"telefono", label:"Telefono", field:"telefono", align:"center"},
-    {name:"estado", label:"Estado", field:"estado", align:"center"},
-    {name:"opciones", label:"Opciones", field:"opciones", align:"center"}
-])
-
-async function listarClientes(){
-    const res = await useCliente.getCustomer()
-    console.log(res.data);
-    rows.value=res.data.cliente
+// Función para cerrar el formulario de agregar cliente
+function cerrar() {
+  agregar.value = false;
 }
-      
+
+// Variables y columnas para la tabla
+let rows = ref([]);
+let columns = ref([
+  { name: "nombre", sortable: true, label: "Nombre Cliente", field: "nombre", align: "center" },
+  { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
+  { name: "estado", label: "Estado", field: "estado", align: "center" },
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" }
+]);
+
+// Función para listar clientes
+async function listarClientes() {
+  const res = await useCliente.getCustomer();
+  console.log(res.data);
+  rows.value = res.data.cliente;
+}
+
+      onMounted(()=>{
+  listarClientes(), listarPlanes()
+})
+
 </script>
 
 <template>
-    <div class="container">
-  
-      <q-table class="table" flat bordered title="tabla" :rows="rows" :columns="columns" row-key="id">
-        <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
-            <q-btn class="option-button" @click="editar(props.row)">
-              ✏️
-            </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
-              ❌
-            </q-btn>
-            <q-btn v-else class="option-button">
-              ✅
-            </q-btn>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
-            <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-            <p v-else style="color:red">Inactivo</p>
-          </q-td>
-        </template>
-      </q-table>
-  
-      <button class="button" @click="listarClientes()">Traer Datos</button>
-  
-      <button class="button" @click="agregarCliente()">Agregar Cliente</button>
-  
-      <div class="crearcliente" v-if="agregar">
-        <div class="encabezadoCrear">
+  <div class="container">
+    <q-table class="table" flat bordered title="tabla" :rows="rows" :columns="columns" row-key="id">
+      <template v-slot:body-cell-opciones="props">
+        <q-td :props="props">
+          <q-btn class="option-button" @click="editar(props.row)">
+            ✏️
+          </q-btn>
+          <q-btn v-if="props.row.estado == 1" class="option-button">
+            ❌
+          </q-btn>
+          <q-btn v-else class="option-button">
+            ✅
+          </q-btn>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-estado="props">
+        <q-td :props="props">
+          <p v-if="props.row.estado == 1" style="color:green">Activo</p>
+          <p v-else style="color:red">Inactivo</p>
+        </q-td>
+      </template>
+    </q-table>
+
+    <button class="button" @click="listarClientes()">Traer Datos</button>
+    <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
+
+    <div class="crearcliente" v-if="agregar">
+      <div class="encabezadoCrear">
         <h3>Ingresar Clientes</h3>
         <button class="buttonX" @click="cerrar()">X</button>
-    </div>
-    <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
+      </div>
+      <div class="inputs">
+        <input class="input" type="text" placeholder="Nombre" v-model.trim="nombre" />
         <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
         <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
         <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
         <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
-    </div>
-    
-    <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-
-
       </div>
+      <button class="button" @click="agregarCliente()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
     </div>
-  </template>
-  
-
+  </div>
+</template>
 
 <style scoped>
 
@@ -90,6 +174,9 @@ async function listarClientes(){
 .container {
   width: 90vmax;
   margin: 0 auto;
+  min-height: 100vh;
+  width: 99.1vw;
+background-color: rgb(185, 185, 185);
 }
 
 /* Estilos para el título */

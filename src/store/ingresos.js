@@ -3,7 +3,6 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
 import { useStoreUsuarios } from "./usuarios";
-import { useStoreIngresos } from "./ingresos";
 
 
 export const useStoreIngresos = defineStore("Ingreso", () => {
@@ -71,7 +70,7 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
             }
         }
     
-        return{ listarIngresos, postIngresos, putIngresos, token, loading, ingresos, useIngrenso}
+        return{ listarIngresos, postIngresos, putIngresos, loading, ingresos, useIngrenso}
     
     },
     

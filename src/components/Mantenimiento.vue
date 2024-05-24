@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useStoreMantenimiento } from "../store/mantenimiento.js";
 
+
 const useMantenimiento = useStoreMantenimiento();
 
 let agregar=ref(false)
@@ -27,6 +28,10 @@ async function listarMantenimiento(){
     console.log(res.data);
     rows.value=res.data.mantenimiento
 }
+
+onMounted(()=>{
+  listarMaquina(), listarMantenimiento();
+})
       
 </script>
 

@@ -4,15 +4,35 @@ import { useStoreUsuarios } from "../store/usuarios.js";
 
 const useUsuarios = useStoreUsuarios();
 
+onMounted(()=>{
+  listarUsuarios(), listarSedes();
+})
+
+
+let alert = ref(false)
+let accion = ref(1)
 let rows=ref([])
 let columns =ref([
-    {name:"nombre", label:"Nombre de Usuario", field:"nombre", align:"center"},
+  {name:"nombre", label:"Nombre de Usuario", field:"nombre", align:"center"},
     {name:"email", label:"Correo electrónico", field:"email", align:"center"},
     {name:"telefono", label:"Telefono", field:"telefono", align:"center"},
     {name:"rol", label:"Rol", field:"rol", align:"center"},
     {name:"estado", label:"Estado de Usuario", field:"estado", align:"center"},
 
 ])
+  function abrir() {
+accion.value = 1;
+alert.value = true;
+
+}
+function cerrar() {
+alert.value = false;
+}  
+
+      const model = ref(null);
+      const options = [
+        'Administrador', 'Recepcionista', 'Entrenador'
+      ];
 
 async function listarUsuarios(){
     const res = await useUsuarios.getUser()
@@ -20,6 +40,7 @@ async function listarUsuarios(){
     rows.value=res.data.usuario
 }
       
+
 </script>
 
 
@@ -42,8 +63,17 @@ async function listarUsuarios(){
               {{ accion == 1 ? "Agregar Usuario" : "Editar Usuario" }}
             </div>
           </q-card-section>
-<q-input outlined v-model="direccion" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Direccion del Usuario" type="text" />
+<q-input outlined v-model="nombre" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Nombre del Usuario" type="text" />
+<q-input outlined v-model="email" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Correo" type="text" />
+<q-input outlined v-model="telefono" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Teléfono" type="text" />
+
+ <q-select standout v-model="idcliente" :options="options" label="Rol" style="background-color: #grey; margin-bottom: 20px"
+      />
+
+
           <q-card-actions align="right">
             <q-btn
               v-if="accion === 1"

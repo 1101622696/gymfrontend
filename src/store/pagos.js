@@ -106,7 +106,7 @@ export const useStorePagos = defineStore("Pagos", () => {
         }
     
     
-        return{ listarPago, postPago, putPago, putActivarPago, putDesactivarPago, token, loading, pagos, usePago}
+        return{ listarPago, postPago, putPago, putActivarPago, putDesactivarPago, loading, pagos, usePago}
     
     },
     

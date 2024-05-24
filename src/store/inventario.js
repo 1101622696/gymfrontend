@@ -69,7 +69,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
             }
         }
     
-        return{ listarInventario, postInventario, putInventario, token, loading, inventario, useInventario}
+        return{ listarInventario, postInventario, putInventario, loading, inventario, useInventario}
     
     },
     

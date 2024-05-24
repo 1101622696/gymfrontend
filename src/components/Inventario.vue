@@ -27,6 +27,10 @@ async function listarInventario(){
     console.log(res.data);
     rows.value=res.data.inventario
 }
+
+onMounted(()=>{
+  listarInventario()
+})
       
 </script>
 

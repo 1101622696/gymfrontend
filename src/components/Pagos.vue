@@ -27,6 +27,10 @@ async function listarPagos(){
     console.log(res.data);
     rows.value=res.data.pago
 }
+
+onMounted(()=>{
+  listarPagos(), listarClientes();
+})
       
 </script>
 
