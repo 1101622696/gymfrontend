@@ -32,7 +32,14 @@ async function listarMaquina(){
 onMounted(()=>{
   listarMaquina(), listarSedes();
 })
-      
+
+import { useStoreSedes } from "../store/sedes.js";
+const useSedes = useStoreSedes();
+async function listarSedes(){
+    const res = await useSedes.getOffice()
+    console.log(res.data);
+    rows.value=res.data.sede
+} 
       
 </script>
 

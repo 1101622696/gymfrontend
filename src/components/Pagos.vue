@@ -1,8 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStorePagos } from "../store/pagos.js";
+import { useStoreClientes } from "../store/clientes.js";
+
 
 const usePagos = useStorePagos();
+const useCliente = useStoreClientes();
+
 
 let agregar=ref(false)
 
@@ -27,6 +31,12 @@ async function listarPagos(){
     console.log(res.data);
     rows.value=res.data.pago
 }
+async function listarClientes() {
+  const res = await useCliente.getCustomer();
+  console.log(res.data);
+  rows.value = res.data.cliente;
+}
+
 
 onMounted(()=>{
   listarPagos(), listarClientes();

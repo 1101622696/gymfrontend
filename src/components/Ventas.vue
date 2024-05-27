@@ -1,8 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStoreVentas } from "../store/ventas.js";
+import { useStoreInventario } from "../store/inventario.js";
+
 
 const useSales = useStoreVentas();
+const useInventario = useStoreInventario();
+
 
 let agregar=ref(false)
 
@@ -33,6 +37,13 @@ async function listarVentas(){
     console.log(res.data);
     rows.value=res.data.ventas
 }
+
+async function listarInventario(){
+    const res = await useInventario.getInventory()
+    console.log(res.data);
+    rows.value=res.data.inventario
+}
+
       
 </script>
 

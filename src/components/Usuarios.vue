@@ -1,8 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStoreUsuarios } from "../store/usuarios.js";
+import { useStoreSedes } from "../store/sedes.js";
+
 
 const useUsuarios = useStoreUsuarios();
+const useSedes = useStoreSedes();
+
 
 onMounted(()=>{
   listarUsuarios(), listarSedes();
@@ -39,6 +43,12 @@ async function listarUsuarios(){
     console.log(res.data);
     rows.value=res.data.usuario
 }
+async function listarSedes(){
+    const res = await useSedes.getOffice()
+    console.log(res.data);
+    rows.value=res.data.sede
+}
+
       
 
 </script>

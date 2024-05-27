@@ -68,9 +68,9 @@ font-family: 'poppins' sans-serif;
 display:flex;
 align-items: center;
 justify-content: center;
-min-height: 100vh;
+min-height: 91.7vh;
 background:url('https://preview.free3d.com/img/2016/04/1725656089682248848/2k6yk897.jpg') no-repeat center;
-/* background-color: grey;;*/
+/* background-color: grey;*/
 background-size: cover;
 }
 section{

@@ -1,13 +1,16 @@
 <script setup>
-import { ref } from "vue";
-import { useQuasar } from 'quasar';
+import { ref, onMounted } from "vue";
 import { useStoreClientes } from "../store/clientes.js";
+import { useStorePlanes } from "../store/planes.js";
+import { useQuasar } from 'quasar'
+
 
 const $q = useQuasar();
+
+const usePlan = useStorePlanes();
 let agregar = ref(false);
 const useCliente = useStoreClientes();
 
-// Variables para datos del cliente
 let nombre = ref("");
 let documento = ref("");
 let direccion = ref("");
@@ -16,91 +19,116 @@ let telefono = ref("");
 let plan = ref("");
 let foto = ref("");
 
-// Función para abrir el formulario de agregar cliente
 function llamaragregarCliente() {   
   agregar.value = true;
 }
 
-// Función para agregar cliente con validaciones
-function agregarCliente() {
-  if (!nombre.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, completa el campo Nombre.'
-    });
-    return;
-  }
 
-  if (!documento.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, completa el campo N° Documento.'
-    });
-    return;
-  }
+async function agregarCliente() {
+    let verificado = true;
 
-  if (!direccion.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, completa el campo Dirección.'
-    });
-    return;
-  }
-
-  if (!fechaNacimiento.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, selecciona una Fecha de Nacimiento.'
-    });
-    return;
-  }
-
-  if (!telefono.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, completa el campo Teléfono.'
-    });
-    return;
-  }
-
-  if (telefono.value.length < 10) {
-    $q.notify({
-      type: 'negative',
-      message: 'El teléfono debe tener al menos 10 números.'
-    });
-    return;
-  }
-
-  if (!plan.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, completa el campo Plan.'
-    });
-    return;
-  }
-
-  if (!foto.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Por favor, completa el campo Foto.'
-    });
-    return;
-  }
-
-  // Aquí puedes agregar la lógica para enviar los datos del cliente al servidor o almacenarlos en tu store
-  $q.notify({
-    type: 'positive',
-    message: 'Cliente agregado exitosamente.'
-  });
-  cerrar(); // Cerrar el formulario al guardar
+    if (nombre.value == "") {
+        $q.notify({
+            type: "negative",
+            message: "El nombre está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    }
+    if (documento.value == "") {
+        $q.notify({
+            type: "negative",
+            message: "El tipo de documento está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    }
+    if (documentoCliente == "") {
+        $q.notify({
+            type: "negative",
+            message: "El documento está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    } else {
+        if (!isNaN(documentoCliente) || documentoCliente < 0) {
+            $q.notify({
+                type: "negative",
+                message: "El documento debe ser un numero valido",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+    }
+    if (edadCliente == "") {
+        $q.notify({
+            type: "negative",
+            message: "La edad está vacía",
+            position: "bottom-right",
+        });
+        verificado = false;
+    } else {
+        if (!isNaN(edadCliente) || edadCliente < 0) {
+            $q.notify({
+                type: "negative",
+                message: "La edad debe ser un numero valido",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+    }
+    if (residenciaCliente == "") {
+        $q.notify({
+            type: "negative",
+            message: "La residencia está vacía",
+            position: "bottom-right",
+        });
+        verificado = false;
+    }
+    if (telefonoCliente == "") {
+        $q.notify({
+            type: "negative",
+            message: "El telefono está vacía",
+            position: "bottom-right",
+        });
+        verificado = false;
+    } else {
+        if (!isNaN(telefonoCliente) || telefonoCliente < 0) {
+            $q.notify({
+                type: "negative",
+                message: "El telefono debe ser un numero valido",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+        if (telefonoCliente < 10) {
+            $q.notify({
+                type: "negative",
+                message: "El telefono debe tener minimo 10 caracteres",
+                position: "bottom-right",
+            });
+            verificado = false;
+        }
+    }
+    if (objetivoCliente == "") {
+        $q.notify({
+            type: "negative",
+            message: "El objetivo está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    }
+    if (planCliente == "") {
+        $q.notify({
+            type: "negative",
+            message: "El plan está vacío",
+            position: "bottom-right",
+        });
+        verificado = false;
+    }
+    return verificado;
 }
 
-// Función para cerrar el formulario de agregar cliente
-function cerrar() {
-  agregar.value = false;
-}
-
-// Variables y columnas para la tabla
 let rows = ref([]);
 let columns = ref([
   { name: "nombre", sortable: true, label: "Nombre Cliente", field: "nombre", align: "center" },
@@ -109,14 +137,21 @@ let columns = ref([
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" }
 ]);
 
-// Función para listar clientes
 async function listarClientes() {
   const res = await useCliente.getCustomer();
   console.log(res.data);
   rows.value = res.data.cliente;
 }
+async function listarPlanes(){
+    const res = await usePlan.getPlan()
+    console.log(res.data);
+    rows.value=res.data.plan
+}
+  
 
-      onMounted(()=>{
+
+
+  onMounted(()=>{
   listarClientes(), listarPlanes()
 })
 

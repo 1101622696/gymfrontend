@@ -35,6 +35,25 @@ function cerrar() {
       onMounted(()=>{
   listarClientes(), listarSedes(), listarIngreso();
 })
+
+import { useStoreSedes } from "../store/sedes.js";
+const useSedes = useStoreSedes();
+async function listarSedes(){
+    const res = await useSedes.getOffice()
+    console.log(res.data);
+    rows.value=res.data.sede
+} 
+
+import { useStoreClientes } from "../store/clientes.js";
+const useCliente = useStoreClientes();
+async function listarClientes() {
+  const res = await useCliente.getCustomer();
+  console.log(res.data);
+  rows.value = res.data.cliente;
+}
+
+
+
 </script>
 
 <template>

@@ -1,6 +1,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStoreMantenimiento } from "../store/mantenimiento.js";
+import { useStoreMaquina } from "../store/maquinas.js";
+const useMaquina = useStoreMaquina();
+async function listarMaquina(){
+    const res = await useMaquina.getMachine()
+    console.log(res.data);
+    rows.value=res.data.maquina
+}
 
 
 const useMantenimiento = useStoreMantenimiento();
