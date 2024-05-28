@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreIngresos } from "../store/ingresos.js";
 
 const useIngreso = useStoreIngresos();
@@ -16,10 +16,12 @@ let columns =ref([
       {name:"idsede", label:"Sede", field:"idsede", align:"center"},
     {name:"Cliente", sortable:true, label:"Nombre Cliente", field:"Cliente", align:"center",},
     {name:"fecha", label:"Fecha del ingreso", field:"fecha", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
+
 ])
 
-async function listarIngreso(){
-    const res = await useIngreso.listarIngresos()
+async function listarIngresos(){
+    const res = await useIngreso.listarIngreso()
     console.log(res.data);
     rows.value=res.data.ingreso
 
@@ -76,7 +78,7 @@ function cerrar() {
 
 
       onMounted(()=>{
-  listarClientes(), listarSedes(), listarIngreso();
+  listarClientes(), listarSedes(), listarIngresos();
 })
 
 import { useStoreSedes } from "../store/sedes.js";
@@ -96,7 +98,43 @@ async function listarClientes() {
 }
 
 
+const organizarSedes = computed(() => {
+    nombreCodigo.value = sedesTodo.value.map((element) => ({
+        label: `${element.nombre}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
 
+
+async function sedes() {
+    try {
+    const res = await useSedes.listarSede()
+       sedesTodo.value = res.data.sedes;
+    } catch (error) {
+        console.error("Error al listar sedes:", error);
+    }
+}
+
+const organizarClientes = computed(() => {
+    nombreCodigo.value = sedesTodo.value.map((element) => ({
+        label: `${element.documento}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function clientes() {
+    try {
+    const res = await useSedes.listarCliente()
+       clientesTodo.value = res.data.clientes;
+    } catch (error) {
+        console.error("Error al listar clientes:", error);
+    }
+}
 </script>
 
 <template>
@@ -141,10 +179,10 @@ async function listarClientes() {
           </q-card-section>
 <q-input outlined v-model="fecha" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="fecha del ingreso" type="text" />
-      <q-select standout v-model="idsede" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+      <q-select standout v-model="idsede" :options="'organizarSedes'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
       />
      
-       <q-select standout v-model="idcliente" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Cliente" style="background-color: #grey; margin-bottom: 20px"
+       <q-select standout v-model="idcliente" :options="'organizarClientes'" option-value="valor" option-label="label" label="Cliente" style="background-color: #grey; margin-bottom: 20px"
       />
           <q-card-actions align="right">
             <q-btn

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreUsuarios } from "../store/usuarios.js";
 import { useStoreSedes } from "../store/sedes.js";
 
@@ -12,24 +12,31 @@ onMounted(()=>{
   listarUsuarios(), listarSedes();
 })
 
+/*onMounted(()=>{
+  listarUsuarios()
+})*/
+
 
 let alert = ref(false)
 let accion = ref(1)
 
-let idsede = ref("");
+let id = ref("");
 let nombre = ref("");
 let email = ref("");
 let telefono = ref("");
 let rol = ref("");
+const sedesTodo = ref([]);
+
 
 let rows=ref([])
 let columns =ref([
-      {name:"idsede", label:"Sede", field:"idsede", align:"center"},
+      {name:"id", label:"Sede", field:"id", align:"center"},
   {name:"nombre", label:"Nombre de Usuario", field:"nombre", align:"center"},
     {name:"email", label:"Correo electrónico", field:"email", align:"center"},
     {name:"telefono", label:"Telefono", field:"telefono", align:"center"},
     {name:"rol", label:"Rol", field:"rol", align:"center"},
     {name:"estado", label:"Estado de Usuario", field:"estado", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
 
@@ -49,15 +56,38 @@ alert.value = false;
       ];
 
 async function listarUsuarios(){
-    const res = await useUsuarios.getUser()
+    const res = await useUsuarios.listarUsuario()
     console.log(res.data);
     rows.value=res.data.usuario
 }
-async function listarSedes(){
-    const res = await useSedes.getOffice()
+
+/*async function listarSedes(){
+    const res = await useSedes.listarSede()
     console.log(res.data);
     rows.value=res.data.sede
+}*/
+
+const organizarSedes = computed(() => {
+    nombreCodigo.value = sedesTodo.value.map((element) => ({
+        label: `${element.nombre}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function listarSedes() {
+    try {
+   const res = await useSedes.listarSede()
+    console.log(res.data);
+    sedesTodo.value=res.data.sede
+
+    } catch (error) {
+        console.error("Error al listar sedes:", error);
+    }
 }
+
 
       
 
@@ -66,6 +96,27 @@ async function listarSedes(){
 
 <template>
     <div>
+          <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+        <template v-slot:body-cell-opciones="props">
+          <q-td :props="props">
+            <q-btn class="option-button" @click="editar(props.row)">
+              ✏️
+            </q-btn>
+            <q-btn v-if="props.row.estado == 1" class="option-button">
+              ❌
+            </q-btn>
+            <q-btn v-else class="option-button">
+              ✅
+            </q-btn>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-estado="props">
+          <q-td :props="props">
+            <p v-if="props.row.estado == 1" style="color:green">Activo</p>
+            <p v-else style="color:red">Inactivo</p>
+          </q-td>
+        </template>
+      </q-table>
       
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
@@ -83,7 +134,7 @@ async function listarSedes(){
               {{ accion == 1 ? "Agregar Usuario" : "Editar Usuario" }}
             </div>
           </q-card-section>
-                 <q-select standout v-model="idsede" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+                 <q-select standout v-model="idsede" :options="'organizarSedes'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
       />
 <q-input outlined v-model="nombre" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Nombre del Usuario" type="text" />

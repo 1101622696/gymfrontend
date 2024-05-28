@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreMaquina } from "../store/maquinas.js";
 
 const useMaquina = useStoreMaquina();
@@ -29,6 +29,7 @@ let columns =ref([
     {name:"fecha", label:"Fecha del ingreso", field:"fechaIngreso", align:"center"},
     {name:"fecha", label:"Fecha del último mantenimiento", field:"fechaUltmantenimiento", align:"center"},
     {name:"estado", label:"Estado del pago", field:"estado", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
 

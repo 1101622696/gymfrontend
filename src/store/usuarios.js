@@ -13,11 +13,11 @@ let loading = ref(false)
 
 
 
-    const listarUsuarios= async() =>{
+    const listarUsuario= async() =>{
         try {
             loading.value  = true;
             console.log(token.value);
-            const response = await axios.get("api/usuarios",{
+            const response = await axios.get("api/usuarios/listar",{
                 headers:{
                     token: token.value
                 }
@@ -139,7 +139,7 @@ let loading = ref(false)
 
     
     
-    return{ listarUsuarios, postUsuario, putUsuarios, putActivarUsuario, putDesactivarUsuario, login, token, loading, usuarios, user}
+    return{ listarUsuario, postUsuario, putUsuarios, putActivarUsuario, putDesactivarUsuario, login, token, loading, usuarios, user}
 
 },
 

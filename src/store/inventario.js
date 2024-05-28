@@ -7,7 +7,7 @@ import { useStoreUsuarios } from "./usuarios";
 export const useStoreInventario = defineStore("Inventario", () => {
 
     let loading = ref(false)
-    let inventario =ref({})
+    let inventario =ref([])
     const useUsuario=useStoreUsuarios()
     
     

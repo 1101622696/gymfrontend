@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStorePagos } from "../store/pagos.js";
 import { useStoreClientes } from "../store/clientes.js";
 
@@ -18,19 +18,19 @@ function cerrar(){
     agregar.value = false;
 }
 
-let idCliente = ref("");
+let id = ref("");
 let plan = ref("");
-let descripcion = ref("");
 let fecha = ref("");
 let valor = ref("");
 
 let rows=ref([])
 let columns =ref([
-        {name:"idCliente", label:"Cliente", field:"idCliente", align:"center"},
+    {name:"id", label:"Cliente", field:"id", align:"center"},
     {name:"plan", sortable:true, label:"Plan", field:"plan", align:"center",},
     {name:"fecha", label:"Fecha del pago", field:"fecha", align:"center"},
     {name:"valor", label:"Valor", field:"valor", align:"center"},
     {name:"estado", label:"Estado del pago", field:"estado", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
 

@@ -20,6 +20,19 @@ let telefono = ref("");
 let idplan = ref("");
 let foto = ref("");
 
+let rows = ref([]);
+let columns = ref([
+      {name:"idPlan", label:"Plan", field:"idPlan", align:"center"},
+  { name: "nombre", sortable: true, label: "Nombre Cliente", field: "nombre", align: "center" },
+  { name: "direccion", label: "Direccion", field: "direccion", align: "center" },
+  { name: "documento", label: "Documento", field: "documento", align: "center" },
+  { name: "fechaNacimiento", label: "fecha de Nacimiento", field: "fechaNacimiento", align: "center" },
+  { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
+  { name: "foto", label: "Foto", field: "foto", align: "center" },
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
+  { name: "estado", label: "Estado", field: "estado", align: "center" },
+]);
+
       const model = ref(null);
       const options = [
         '1', '2', '3', '4'
@@ -150,14 +163,7 @@ async function listarClientes() {
   rows.value = res.data.cliente;
 }
 
-let rows = ref([]);
-let columns = ref([
-      {name:"idPlan", label:"Plan", field:"idPlan", align:"center"},
-  { name: "nombre", sortable: true, label: "Nombre Cliente", field: "nombre", align: "center" },
-  { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
-  { name: "estado", label: "Estado", field: "estado", align: "center" },
-  { name: "opciones", label: "Opciones", field: "opciones", align: "center" }
-]);
+
 
 
 async function listarPlanes(){
@@ -182,12 +188,16 @@ const organizarPlanes = computed(() => {
 
 async function planes() {
     try {
-    const res = await usePlan.getPlan()
+    const res = await usePlan.listarPlan()
        planesTodo.value = res.data.planes;
     } catch (error) {
         console.error("Error al listar planes:", error);
     }
 }
+
+function cerrar() {
+  agregar.value = false;
+} 
 </script>
 
 <template>
@@ -254,7 +264,7 @@ background-color: rgb(185, 185, 185);
   font-weight: bold;
   margin-bottom: 20px;
 }
-
+/**/
 /* Estilos para los botones */
 .button {
   background-color: #070707; /* Color verde */

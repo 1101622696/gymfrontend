@@ -8,11 +8,11 @@ import { useStoreUsuarios } from "./usuarios";
 export const useStoreIngresos = defineStore("Ingreso", () => {
 
     let loading = ref(false)
-    let ingresos =ref({})
+    let ingresos =ref([])
     const useUsuario=useStoreUsuarios()
     
     
-        const listarIngresos= async() =>{
+        const listarIngreso= async() =>{
             try {
                 loading.value  = true;
                 console.log(useUsuario.token);
@@ -70,7 +70,7 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
             }
         }
     
-        return{ listarIngresos, postIngresos, putIngresos, loading, ingresos, useUsuario}
+        return{ listarIngreso, postIngresos, putIngresos, loading, ingresos, useUsuario}
     
     },
     

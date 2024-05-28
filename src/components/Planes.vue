@@ -31,6 +31,7 @@ let columns =ref([
     {name:"dias", label:"Dias del plan", field:"dias", align:"center"},
     {name:"total", label:"Total", field:"total", align:"center"},
     {name:"estado", label:"Estado del plan", field:"estado", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
 

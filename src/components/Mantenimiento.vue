@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreMantenimiento } from "../store/mantenimiento.js";
 import { useStoreMaquina } from "../store/maquinas.js";
 const useMaquina = useStoreMaquina();
@@ -36,6 +36,7 @@ let columns =ref([
     {name:"descripcion", label:"Descripción del mantenimiento", field:"descripcion", align:"center"},
     {name:"responsable", label:"Responsable encargado", field:"responsable", align:"center"},
     {name:"valor", label:"Valor del mantenimiento", field:"valor", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
       const model = ref(null);

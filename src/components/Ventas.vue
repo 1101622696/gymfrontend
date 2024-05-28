@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreVentas } from "../store/ventas.js";
 import { useStoreInventario } from "../store/inventario.js";
 
@@ -37,6 +37,7 @@ let columns =ref([
     {name:"valorUnitario", label:"Valor por unidad", field:"valorUnitario", align:"center"},
     {name:"cantidad", label:"Cantidad a vender", field:"cantidad", align:"center"},
     {name:"total", label:"Total de la venta", field:"total", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
 
@@ -91,7 +92,7 @@ async function listarInventario(){
   
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
-        <h3>Ingresar Clientes</h3>
+        <h3>Ingresar Venta</h3>
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreInventario } from "../store/inventario.js";
 
 const useInventario = useStoreInventario();
@@ -10,9 +10,9 @@ function agregarInventario(){
 agregar.value = true;
 }
 
-function cerrar(){
-    agregar.value = false;
-}
+function cerrar() {
+  agregar.value = false;
+} 
 
 let codigo = ref("");
 let descripcion = ref("");
@@ -25,6 +25,7 @@ let columns =ref([
     {name:"descripcion", label:"descripcion del producto", field:"descripcion", align:"center"},
     {name:"valor", label:"Valor del producto", field:"valor", align:"center"},
     {name:"cantidad", label:"cantidad disponible", field:"cantidad", align:"center"},
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
 
