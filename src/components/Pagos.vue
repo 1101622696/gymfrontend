@@ -17,8 +17,16 @@ agregar.value = true;
 function cerrar(){
     agregar.value = false;
 }
+
+let idCliente = ref("");
+let plan = ref("");
+let descripcion = ref("");
+let fecha = ref("");
+let valor = ref("");
+
 let rows=ref([])
 let columns =ref([
+        {name:"idCliente", label:"Cliente", field:"idCliente", align:"center"},
     {name:"plan", sortable:true, label:"Plan", field:"plan", align:"center",},
     {name:"fecha", label:"Fecha del pago", field:"fecha", align:"center"},
     {name:"valor", label:"Valor", field:"valor", align:"center"},
@@ -26,13 +34,17 @@ let columns =ref([
 
 ])
 
+      const model = ref(null);
+      const options = [
+        '1', '2', '3', '4'
+      ];
 async function listarPagos(){
-    const res = await usePagos.getPayment()
+    const res = await usePagos.listarPago()
     console.log(res.data);
     rows.value=res.data.pago
 }
 async function listarClientes() {
-  const res = await useCliente.getCustomer();
+  const res = await useCliente.listarCliente();
   console.log(res.data);
   rows.value = res.data.cliente;
 }
@@ -69,7 +81,7 @@ onMounted(()=>{
         </template>
       </q-table>
   
-      <button class="button" @click="listarPagos()">Traer Datos</button>
+      <!-- <button class="button" @click="listarPagos()">Traer Datos</button> -->
   
       <button class="button" @click="agregarpago()">Agregar Pago</button>
   
@@ -79,13 +91,11 @@ onMounted(()=>{
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
-        <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-        <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
-        <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
+               <q-select standout v-model="idCliente" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Cliente"         style="background-color: #grey; margin-bottom: 20px"
+      />
         <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
-        <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+        <input class="input" type="date" placeholder="Fecha de pago" v-model.trim="fechaPago" />
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
     </div>
     
     <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

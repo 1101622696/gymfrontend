@@ -9,19 +9,19 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
 
     let loading = ref(false)
     let ingresos =ref({})
-    const useIngrenso=useStoreUsuarios()
+    const useUsuario=useStoreUsuarios()
     
     
         const listarIngresos= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                console.log(useUsuario.token);
                 const response = await axios.get("api/ingresos/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               ingresos.value = response.data;
+            //    ingresos.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de ingresos",error);
@@ -37,7 +37,7 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
                 loading.value =true
                 const r = await axios.get("api/ingresos/escribir", data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -56,7 +56,7 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
                 loading.value =true
                 const r = await axios.get(`api/ingresos/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -70,7 +70,7 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
             }
         }
     
-        return{ listarIngresos, postIngresos, putIngresos, loading, ingresos, useIngrenso}
+        return{ listarIngresos, postIngresos, putIngresos, loading, ingresos, useUsuario}
     
     },
     

@@ -7,19 +7,19 @@ export const useStorePagos = defineStore("Pagos", () => {
 
     let loading = ref(false)
     let pagos =ref({})
-    const usePago=useStoreUsuarios()
+    const useUsuario=useStoreUsuarios()
     
     
         const listarPago= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                console.log(useUsuario.token);
                 const response = await axios.get("api/pagos/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               pagos.value = response.data;
+            //    pagos.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de pagos",error);
@@ -35,7 +35,7 @@ export const useStorePagos = defineStore("Pagos", () => {
                 loading.value =true
                 const r = await axios.get("api/pagos/escribir", data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -54,7 +54,7 @@ export const useStorePagos = defineStore("Pagos", () => {
                 loading.value =true
                 const r = await axios.get(`api/pagos/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -72,7 +72,7 @@ export const useStorePagos = defineStore("Pagos", () => {
                 loading.value =true
                 const r = await axios.get(`api/pagos/activar/activos/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -91,7 +91,7 @@ export const useStorePagos = defineStore("Pagos", () => {
                 loading.value =true
                 const r = await axios.get(`api/pagos/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -106,7 +106,7 @@ export const useStorePagos = defineStore("Pagos", () => {
         }
     
     
-        return{ listarPago, postPago, putPago, putActivarPago, putDesactivarPago, loading, pagos, usePago}
+        return{ listarPago, postPago, putPago, putActivarPago, putDesactivarPago, loading, pagos, useUsuario}
     
     },
     

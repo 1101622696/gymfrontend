@@ -22,24 +22,37 @@ onMounted(()=>{
   listarVentas(), listarInventario();
 })
 
+let idInventario = ref("");
+let fecha = ref("");
+let codigo = ref("");
+let valorUnitario = ref("");
+let cantidad = ref("");
+let total = ref("");
+
 let rows=ref([])
 let columns =ref([
+    {name:"idInventario", label:"Inventario", field:"idInventario", align:"center"},
     {name:"fecha", label:"fecha", field:"fecha", align:"center"},
     {name:"codigo", label:"Código", field:"codigo", align:"center"},
     {name:"valorUnitario", label:"Valor por unidad", field:"valorUnitario", align:"center"},
     {name:"cantidad", label:"Cantidad a vender", field:"cantidad", align:"center"},
-    {name:"total", label:"Total de la venta", field:"totla", align:"center"},
+    {name:"total", label:"Total de la venta", field:"total", align:"center"},
 
 ])
 
+      const model = ref(null);
+      const options = [
+        '1', '2', '3', '4'
+      ];
+
 async function listarVentas(){
-    const res = await useSales.getSales()
+    const res = await useSales.listarVenta()
     console.log(res.data);
     rows.value=res.data.ventas
 }
 
 async function listarInventario(){
-    const res = await useInventario.getInventory()
+    const res = await useInventario.listarInventario()
     console.log(res.data);
     rows.value=res.data.inventario
 }
@@ -72,7 +85,7 @@ async function listarInventario(){
         </template>
       </q-table>
   
-      <button class="button" @click="listarVentas()">Traer Datos</button>
+      <!-- <button class="button" @click="listarVentas()">Traer Datos</button> -->
   
       <button class="button" @click="agregarventa()">Agregar Venta</button>
   
@@ -82,13 +95,12 @@ async function listarInventario(){
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
-        <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-        <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
-        <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-        <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
-        <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+ <q-select standout v-model="idInventario" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
+      />
+        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
+        <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" />
+        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valor" />
+        <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
     <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

@@ -13,18 +13,31 @@ agregar.value = true;
 function cerrar(){
     agregar.value = false;
 }
+
+let idsede = ref("");
+let codigo = ref("");
+let descripcion = ref("");
+let fechaIngreso = ref("");
+let fechaUltmantenimiento = ref("");
+
+
 let rows=ref([])
 let columns =ref([
+      {name:"idsede", label:"Sede", field:"idsede", align:"center"},
     {name:"codigo", sortable:true, label:"Código de la máquina", field:"codigo", align:"center",},
     {name:"descripcion", label:"Descripción", field:"descripcion", align:"center"},
-    {name:"fecha", label:"Fecha del ingreso", field:"fecha", align:"center"},
-    {name:"fecha", label:"Fecha del último mantenimiento", field:"fecha", align:"center"},
-    {name:"estado", label:"Estado de la máquina", field:"estado", align:"center"},
+    {name:"fecha", label:"Fecha del ingreso", field:"fechaIngreso", align:"center"},
+    {name:"fecha", label:"Fecha del último mantenimiento", field:"fechaUltmantenimiento", align:"center"},
+    {name:"estado", label:"Estado del pago", field:"estado", align:"center"},
 
 ])
 
+      const model = ref(null);
+      const options = [
+        '1', '2', '3', '4'
+      ];
 async function listarMaquina(){
-    const res = await useMaquina.getMachine()
+    const res = await useMaquina.listarMaquina()
     console.log(res.data);
     rows.value=res.data.maquina
 }
@@ -36,7 +49,7 @@ onMounted(()=>{
 import { useStoreSedes } from "../store/sedes.js";
 const useSedes = useStoreSedes();
 async function listarSedes(){
-    const res = await useSedes.getOffice()
+    const res = await useSedes.listarSede()
     console.log(res.data);
     rows.value=res.data.sede
 } 
@@ -68,7 +81,7 @@ async function listarSedes(){
         </template>
       </q-table>
   
-      <button class="button" @click="listarMaquina()">Traer Datos</button>
+      <!-- <button class="button" @click="listarMaquina()">Traer Datos</button> -->
   
       <button class="button" @click="agregarmaquina()">Agregar Maquina</button>
   
@@ -78,13 +91,12 @@ async function listarSedes(){
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
-        <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-        <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
-        <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-        <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
-        <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+       <q-select standout v-model="idsede" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+      />
+        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
+        <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
+        <input class="input" type="date" placeholder="fecha de ingreso" v-model.trim="fechaIngreso" />
+        <input class="input" type="date" placeholder="Última fecha de mantenimiento " v-model.trim="fechaUltmantenimiento" />
     </div>
     
     <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

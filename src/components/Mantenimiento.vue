@@ -4,7 +4,7 @@ import { useStoreMantenimiento } from "../store/mantenimiento.js";
 import { useStoreMaquina } from "../store/maquinas.js";
 const useMaquina = useStoreMaquina();
 async function listarMaquina(){
-    const res = await useMaquina.getMachine()
+    const res = await useMaquina.listarMaquina()
     console.log(res.data);
     rows.value=res.data.maquina
 }
@@ -21,17 +21,30 @@ agregar.value = true;
 function cerrar(){
     agregar.value = false;
 }
+
+let idMaquina = ref("");
+let fecha = ref("");
+let descripcion = ref("");
+let responsable = ref("");
+let valor = ref("");
+
+
 let rows=ref([])
 let columns =ref([
+      {name:"idMaquina", label:"Máquina", field:"idMaquina", align:"center"},
     {name:"fecha", sortable:true, label:"Fecha del mantenimiento", field:"fecha", align:"center",},
     {name:"descripcion", label:"Descripción del mantenimiento", field:"descripcion", align:"center"},
     {name:"responsable", label:"Responsable encargado", field:"responsable", align:"center"},
     {name:"valor", label:"Valor del mantenimiento", field:"valor", align:"center"},
 
 ])
+      const model = ref(null);
+      const options = [
+        '1', '2', '3', '4'
+      ];
 
 async function listarMantenimiento(){
-    const res = await useMantenimiento.getMaintenance()
+    const res = await useMantenimiento.listarMantenimiento()
     console.log(res.data);
     rows.value=res.data.mantenimiento
 }
@@ -67,7 +80,7 @@ onMounted(()=>{
         </template>
       </q-table>
   
-      <button class="button" @click="listarMantenimiento()">Traer Datos</button>
+      <!-- <button class="button" @click="listarMantenimiento()">Traer Datos</button> -->
   
       <button class="button" @click="agregarmantenimiento()">Agregar Mantenimiento</button>
   
@@ -77,13 +90,12 @@ onMounted(()=>{
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
-        <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-        <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
-        <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-        <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
-        <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+        <q-select standout v-model="idMaquina" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Máquina" style="background-color: #grey; margin-bottom: 20px"
+      />
+        <input class="input" type="text" placeholder="Fecha" v-model.trim="fecha" />
+        <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
+        <input class="input" type="date" placeholder="Responsable" v-model.trim="responsable" />
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
     </div>
     
     <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

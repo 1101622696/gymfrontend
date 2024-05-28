@@ -5,6 +5,14 @@ import { useStoreSedes } from "../store/sedes.js";
 const useSedes = useStoreSedes();
 let alert = ref(false)
 let accion = ref(1)
+
+let nombre = ref("");
+let direccion = ref("");
+let telefono = ref("");
+let ciudad = ref("");
+let codigo = ref("");
+let horario = ref("");
+
 let rows=ref([])
 let columns =ref([
     {name:"nombre", label:"Nombre de Sede", field:"nombre", align:"center"},
@@ -18,7 +26,7 @@ let columns =ref([
 ])
 
 async function listarSedes(){
-    const res = await useSedes.getOffice()
+    const res = await useSedes.listarSede()
     console.log(res.data);
     rows.value=res.data.sede
 }
@@ -45,7 +53,7 @@ onMounted(()=>{
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
         </div>
 
-  <button @click="listarSedes()">traer datos</button>
+  <!-- <button @click="listarSedes()">traer datos</button> -->
 
     <div>
       <q-dialog v-model="alert" persistent>

@@ -8,19 +8,19 @@ export const useStorePlanes = defineStore("Planes", () => {
 
     let loading = ref(false)
     let planes =ref({})
-    const usePlan=useStoreUsuarios()
+    const useUsuario=useStoreUsuarios()
     
     
         const listarPlan= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                // console.log(token.value);
                 const response = await axios.get("api/planes/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               planes.value = response.data;
+            //    planes.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de planes",error);
@@ -36,7 +36,7 @@ export const useStorePlanes = defineStore("Planes", () => {
                 loading.value =true
                 const r = await axios.get("api/planes/escribir", data,{
                     headers:{
-                        token:token.value
+                        token: useUsuario.token
                     }
                 })
                 console.log(r);
@@ -55,7 +55,7 @@ export const useStorePlanes = defineStore("Planes", () => {
                 loading.value =true
                 const r = await axios.get(`api/planes/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token: useUsuario.token
                     }
                 })
                 console.log(r);
@@ -73,7 +73,7 @@ export const useStorePlanes = defineStore("Planes", () => {
                 loading.value =true
                 const r = await axios.get(`api/planes/activar/activos/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token: useUsuario.token
                     }
                 })
                 console.log(r);
@@ -92,7 +92,7 @@ export const useStorePlanes = defineStore("Planes", () => {
                 loading.value =true
                 const r = await axios.get(`api/planes/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token: useUsuario.token
                     }
                 })
                 console.log(r);
@@ -107,7 +107,7 @@ export const useStorePlanes = defineStore("Planes", () => {
         }
     
     
-        return{ listarPlan, postPlan, putPlan, putActivarPlan, putDesactivarPlan, loading, planes, usePlan}
+        return{ listarPlan, postPlan, putPlan, putActivarPlan, putDesactivarPlan, loading, planes, useUsuario}
     
     },
     

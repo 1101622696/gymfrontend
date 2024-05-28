@@ -8,19 +8,19 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
 
     let loading = ref(false)
     let mantenimiento =ref({})
-    const useMantenimiento=useStoreUsuarios()
+    const useUsuario=useStoreUsuarios()
     
     
         const listarMantenimiento= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                console.log(useUsuario.token);
                 const response = await axios.get("api/mantenimiento/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               mantenimiento.value = response.data;
+            //    mantenimiento.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de mantenimiento",error);
@@ -36,7 +36,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                 loading.value =true
                 const r = await axios.get("api/mantenimiento/escribir", data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -55,7 +55,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                 loading.value =true
                 const r = await axios.get(`api/mantenimiento/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -69,7 +69,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
             }
         }
     
-        return{ listarMantenimiento, postMantenimiento, putMantenimiento, loading, mantenimiento, useMantenimiento}
+        return{ listarMantenimiento, postMantenimiento, putMantenimiento, loading, mantenimiento, useUsuario}
     
     },
     

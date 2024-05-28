@@ -15,8 +15,16 @@ onMounted(()=>{
 
 let alert = ref(false)
 let accion = ref(1)
+
+let idsede = ref("");
+let nombre = ref("");
+let email = ref("");
+let telefono = ref("");
+let rol = ref("");
+
 let rows=ref([])
 let columns =ref([
+      {name:"idsede", label:"Sede", field:"idsede", align:"center"},
   {name:"nombre", label:"Nombre de Usuario", field:"nombre", align:"center"},
     {name:"email", label:"Correo electrónico", field:"email", align:"center"},
     {name:"telefono", label:"Telefono", field:"telefono", align:"center"},
@@ -24,6 +32,8 @@ let columns =ref([
     {name:"estado", label:"Estado de Usuario", field:"estado", align:"center"},
 
 ])
+
+
   function abrir() {
 accion.value = 1;
 alert.value = true;
@@ -61,7 +71,7 @@ async function listarSedes(){
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
         </div>
 
-    <button @click="listarUsuarios()">traer datos</button>
+    <!-- <button @click="listarUsuarios()">traer datos</button> -->
 
     <div>
       <q-dialog v-model="alert" persistent>
@@ -73,6 +83,8 @@ async function listarSedes(){
               {{ accion == 1 ? "Agregar Usuario" : "Editar Usuario" }}
             </div>
           </q-card-section>
+                 <q-select standout v-model="idsede" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+      />
 <q-input outlined v-model="nombre" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Nombre del Usuario" type="text" />
 <q-input outlined v-model="email" use-input hide-selected fill-input input-debounce="0"
@@ -80,7 +92,7 @@ async function listarSedes(){
 <q-input outlined v-model="telefono" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Teléfono" type="text" />
 
- <q-select standout v-model="idcliente" :options="options" label="Rol" style="background-color: #grey; margin-bottom: 20px"
+ <q-select standout v-model="rol" :options="options" label="Rol" style="background-color: #grey; margin-bottom: 20px"
       />
 
 

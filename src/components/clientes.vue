@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useStoreClientes } from "../store/clientes.js";
 import { useStorePlanes } from "../store/planes.js";
 import { useQuasar } from 'quasar'
+
 
 
 const $q = useQuasar();
@@ -16,8 +17,13 @@ let documento = ref("");
 let direccion = ref("");
 let fechaNacimiento = ref("");
 let telefono = ref("");
-let plan = ref("");
+let idplan = ref("");
 let foto = ref("");
+
+      const model = ref(null);
+      const options = [
+        '1', '2', '3', '4'
+      ];
 
 function llamaragregarCliente() {   
   agregar.value = true;
@@ -43,49 +49,55 @@ async function agregarCliente() {
         });
         verificado = false;
     }
-    if (documentoCliente == "") {
+    if (direccion == "") {
         $q.notify({
             type: "negative",
-            message: "El documento está vacío",
+            message: "la direccion está vacío",
             position: "bottom-right",
         });
         verificado = false;
     } else {
-        if (!isNaN(documentoCliente) || documentoCliente < 0) {
+        if (!isNaN(direccion) || direccion < 0) {
             $q.notify({
                 type: "negative",
-                message: "El documento debe ser un numero valido",
+                message: "la direccion debe ser un numero valido",
                 position: "bottom-right",
             });
             verificado = false;
         }
     }
-    if (edadCliente == "") {
+if (fechaNacimiento === "") {
+    $q.notify({
+        type: "negative",
+        message: "La fecha de nacimiento está vacía",
+        position: "bottom-right",
+    });
+    verificado = false;
+} else {
+    let fechaNacimientoDate = new Date(fechaNacimiento);
+    
+    let fechaActual = new Date();
+    
+    let edad = fechaActual.getFullYear() - fechaNacimientoDate.getFullYear();
+    
+    if (fechaActual.getMonth() < fechaNacimientoDate.getMonth() || 
+        (fechaActual.getMonth() === fechaNacimientoDate.getMonth() && fechaActual.getDate() < fechaNacimientoDate.getDate())) {
+        edad--;
+    }
+    
+    if (edad < 13) {
         $q.notify({
             type: "negative",
-            message: "La edad está vacía",
+            message: "Debes tener al menos 13 años",
             position: "bottom-right",
         });
         verificado = false;
     } else {
-        if (!isNaN(edadCliente) || edadCliente < 0) {
-            $q.notify({
-                type: "negative",
-                message: "La edad debe ser un numero valido",
-                position: "bottom-right",
-            });
-            verificado = false;
-        }
+        verificado = true;
     }
-    if (residenciaCliente == "") {
-        $q.notify({
-            type: "negative",
-            message: "La residencia está vacía",
-            position: "bottom-right",
-        });
-        verificado = false;
-    }
-    if (telefonoCliente == "") {
+}
+
+    if (telefono == "") {
         $q.notify({
             type: "negative",
             message: "El telefono está vacía",
@@ -93,7 +105,7 @@ async function agregarCliente() {
         });
         verificado = false;
     } else {
-        if (!isNaN(telefonoCliente) || telefonoCliente < 0) {
+        if (!isNaN(telefono) || telefono < 0) {
             $q.notify({
                 type: "negative",
                 message: "El telefono debe ser un numero valido",
@@ -101,7 +113,7 @@ async function agregarCliente() {
             });
             verificado = false;
         }
-        if (telefonoCliente < 10) {
+        if (telefono < 10) {
             $q.notify({
                 type: "negative",
                 message: "El telefono debe tener minimo 10 caracteres",
@@ -110,15 +122,8 @@ async function agregarCliente() {
             verificado = false;
         }
     }
-    if (objetivoCliente == "") {
-        $q.notify({
-            type: "negative",
-            message: "El objetivo está vacío",
-            position: "bottom-right",
-        });
-        verificado = false;
-    }
-    if (planCliente == "") {
+   
+    if (idplan == "") {
         $q.notify({
             type: "negative",
             message: "El plan está vacío",
@@ -126,35 +131,63 @@ async function agregarCliente() {
         });
         verificado = false;
     }
+        if (foto == "") {
+        $q.notify({
+            type: "negative",
+            message: "Debe ingresar un link para la foto",
+            position: "bottom-right",
+        });
+        verificado = false;
+    } else{
+      
+    }
     return verificado;
+}
+
+async function listarClientes() {
+  const res = await useCliente.listarCliente();
+  console.log(res.data);
+  rows.value = res.data.cliente;
 }
 
 let rows = ref([]);
 let columns = ref([
+      {name:"idPlan", label:"Plan", field:"idPlan", align:"center"},
   { name: "nombre", sortable: true, label: "Nombre Cliente", field: "nombre", align: "center" },
   { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
   { name: "estado", label: "Estado", field: "estado", align: "center" },
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" }
 ]);
 
-async function listarClientes() {
-  const res = await useCliente.getCustomer();
-  console.log(res.data);
-  rows.value = res.data.cliente;
-}
+
 async function listarPlanes(){
-    const res = await usePlan.getPlan()
+    const res = await usePlan.listarPlan()
     console.log(res.data);
     rows.value=res.data.plan
 }
-  
-
-
 
   onMounted(()=>{
   listarClientes(), listarPlanes()
 })
 
+const organizarPlanes = computed(() => {
+    nombreCodigo.value = sedesTodo.value.map((element) => ({
+        label: `${element.codigo}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function planes() {
+    try {
+    const res = await usePlan.getPlan()
+       planesTodo.value = res.data.planes;
+    } catch (error) {
+        console.error("Error al listar planes:", error);
+    }
+}
 </script>
 
 <template>
@@ -181,7 +214,7 @@ async function listarPlanes(){
       </template>
     </q-table>
 
-    <button class="button" @click="listarClientes()">Traer Datos</button>
+    <!-- <button class="button" @click="listarClientes()">Traer Datos</button> -->
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
 
     <div class="crearcliente" v-if="agregar">
@@ -195,7 +228,8 @@ async function listarPlanes(){
         <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
         <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-        <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
+       <q-select standout v-model="idPlan" :options="'organizarPlanes'" option-value="valor" option-label="label" label="Plan"  style="background-color: #grey; margin-bottom: 20px"
+      />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
       </div>
       <button class="button" @click="agregarCliente()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

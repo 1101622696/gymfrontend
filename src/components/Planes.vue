@@ -18,19 +18,24 @@ onMounted(()=>{
   listarPlanes();
 })
 
+let codigo = ref("");
+let descripcion = ref("");
+let valor = ref("");
+let dias = ref("");
+
 let rows=ref([])
 let columns =ref([
 {name:"codigo", sortable:true, label:"Código", field:"codigo", align:"center",},
     {name:"descripcion", label:"descripcion", field:"descripcion", align:"center"},
-    {name:"total", label:"Total", field:"total", align:"center"},
     {name:"valor", label:"Valor", field:"valor", align:"center"},
     {name:"dias", label:"Dias del plan", field:"dias", align:"center"},
+    {name:"total", label:"Total", field:"total", align:"center"},
     {name:"estado", label:"Estado del plan", field:"estado", align:"center"},
 
 ])
 
 async function listarPlanes(){
-    const res = await usePlan.getPlan()
+    const res = await usePlan.listarPlan()
     console.log(res.data);
     rows.value=res.data.plan
 }
@@ -74,13 +79,10 @@ async function listarPlanes(){
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
-        <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-        <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
-        <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-        <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
-        <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
+        <input class="input" type="text" placeholder="Descripción" v-model.trim="Descripcion" />
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
+        <input class="input" type="text" placeholder="Dias" v-model.trim="dias" />
     </div>
     
     <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

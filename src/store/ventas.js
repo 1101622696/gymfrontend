@@ -7,19 +7,19 @@ export const useStoreVentas = defineStore("Ventas", () => {
 
     let loading = ref(false)
     let ventas =ref({})
-    const useVenta=useStoreUsuarios()
+    const useUsuario=useStoreUsuarios()
     
     
         const listarVenta= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                console.log(useUsuario.token);
                 const response = await axios.get("api/ventas/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               ventas.value = response.data;
+            //    ventas.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de ventas",error);
@@ -35,7 +35,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
                 loading.value =true
                 const r = await axios.get("api/ventas/escribir", data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -54,7 +54,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
                 loading.value =true
                 const r = await axios.get(`api/ventas/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -68,7 +68,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
             }
         }
     
-        return{ listarVenta, postVenta, putVenta, loading, ventas, useVenta}
+        return{ listarVenta, postVenta, putVenta, loading, ventas, useUsuario}
     
     },
     

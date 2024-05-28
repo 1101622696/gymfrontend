@@ -13,13 +13,13 @@ export const useStoreSedes = defineStore("Sedes", () => {
         const listarSede= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                console.log(useUsuario.token);
                 const response = await axios.get("api/sedes/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               sedes.value = response.data;
+            //    sedes.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de sedes",error);
@@ -35,7 +35,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
                 loading.value =true
                 const r = await axios.get("api/sedes/escribir", data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -54,7 +54,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
                 loading.value =true
                 const r = await axios.get(`api/sedes/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -73,7 +73,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
                 loading.value =true
                 const r = await axios.get(`api/sedes/activar/activos/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -92,7 +92,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
                 loading.value =true
                 const r = await axios.get(`api/sedes/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);

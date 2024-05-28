@@ -8,19 +8,19 @@ export const useStoreMaquina = defineStore("Maquina", () => {
 
     let loading = ref(false)
     let maquinas =ref({})
-    const useMaquina=useStoreUsuarios()
+    const useUsuario=useStoreUsuarios()
     
     
         const listarMaquina= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                console.log(useUsuario.token);
                 const response = await axios.get("api/maquinas/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               maquinas.value = response.data;
+            //    maquinas.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de maquinas",error);
@@ -36,7 +36,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
                 loading.value =true
                 const r = await axios.get("api/maquinas/escribir", data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -55,7 +55,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
                 loading.value =true
                 const r = await axios.get(`api/maquinas/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -73,7 +73,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
                 loading.value =true
                 const r = await axios.get(`api/maquinas/activar/activos/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -92,7 +92,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
                 loading.value =true
                 const r = await axios.get(`api/maquinas/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -107,7 +107,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         }
     
     
-        return{ listarMaquina, postMaquina, putMaquina, putActivarMaquina, putDesactivarMaquina, loading, maquinas, useMaquina}
+        return{ listarMaquina, postMaquina, putMaquina, putActivarMaquina, putDesactivarMaquina, loading, maquinas, useUsuario}
     
     },
     

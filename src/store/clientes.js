@@ -8,19 +8,19 @@ export const useStoreClientes = defineStore("Cliente", () => {
 
     let loading = ref(false)
     let clientes =ref({})
-    const useCliente=useStoreUsuarios()
+    const useUsuario=useStoreUsuarios()
     
     
         const listarCliente= async() =>{
             try {
                 loading.value  = true;
-                console.log(token.value);
+                console.log(useUsuario.token);
                 const response = await axios.get("api/clientes/listar",{
                     headers:{
-                        token: token.value
+                        token: useUsuario.token
                     }
             });
-               clientes.value = response.data;
+            //    clientes.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de clientes",error);
@@ -36,7 +36,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
                 loading.value =true
                 const r = await axios.get("api/clientes/escribir", data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -55,7 +55,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
                 loading.value =true
                 const r = await axios.get(`api/clientes/modificar/${id}`, data,{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -73,7 +73,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
                 loading.value =true
                 const r = await axios.get(`api/clientes/activar/activos/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -92,7 +92,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
                 loading.value =true
                 const r = await axios.get(`api/clientes/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        token:token.value
+                        token:useUsuario.token
                     }
                 })
                 console.log(r);
@@ -107,7 +107,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
         }
     
     
-        return{ listarCliente, postCliente, putCliente, putActivarCliente, putDesactivarCliente, loading, clientes, useCliente}
+        return{ listarCliente, postCliente, putCliente, putActivarCliente, putDesactivarCliente, loading, clientes, useUsuario}
     
     },
     

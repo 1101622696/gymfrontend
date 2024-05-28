@@ -8,7 +8,7 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
 
     let token = ref("")
 let loading = ref(false)
-    let usuarios =ref({})
+    let usuarios =ref([])
     let user = ref({})
 
 
@@ -109,16 +109,33 @@ let loading = ref(false)
         }
     }
 
-    let login = async(data) =>{
+    // let login = async(data) =>{
+    //     try {
+    //         const r = await axios.get("api/usuarios/login", data)
+    //         token.value = r.data.token
+    //         user.value = r.data.usuario
+    //         console.log(r.data);
+    //         return r
+    //     } catch (error) {
+    //         console.log(error, data);
+    //         return error;
+    //     }
+    // }
+
+    let login = async (email, password) => {
         try {
-            const r = await axios.get("api/usuarios/login", data)
+            const res = await axios.post("api/usuarios/login", {email, password});
+            console.log(res);
+            token.value = res.data.token
+            user.value = res.data.usuario
             console.log(token.value);
-            return r
+            return res;
         } catch (error) {
             console.log(error);
+            console.log(email, "hola");
             return error;
         }
-    }
+    };
 
     
     

@@ -13,6 +13,12 @@ agregar.value = true;
 function cerrar(){
     agregar.value = false;
 }
+
+let codigo = ref("");
+let descripcion = ref("");
+let valor = ref("");
+let cantidad = ref("");
+
 let rows=ref([])
 let columns =ref([
     {name:"codigo", sortable:true, label:"Codigo", field:"codigo", align:"center",},
@@ -23,7 +29,7 @@ let columns =ref([
 ])
 
 async function listarInventario(){
-    const res = await useInventario.getInventory()
+    const res = await useInventario.listarInventario()
     console.log(res.data);
     rows.value=res.data.inventario
 }
@@ -59,7 +65,7 @@ onMounted(()=>{
         </template>
       </q-table>
   
-      <button class="button" @click="listarInventario()">Traer Datos</button>
+      <!-- <button class="button" @click="listarInventario()">Traer Datos</button> -->
   
       <button class="button" @click="agregarInventario()">Agregar Inventario</button>
   
@@ -69,13 +75,10 @@ onMounted(()=>{
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="Nombre" />
-        <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-        <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
-        <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-        <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
-        <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
+        <input class="input" type="text" placeholder="Descripcion" v-model.trim="descripcion" />
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
+        <input class="input" type="date" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
     <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
