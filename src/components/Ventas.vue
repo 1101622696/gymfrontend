@@ -46,49 +46,24 @@ let columns =ref([
 async function agregarventa() {
     let verificado = true;
 
-    if (nombre.value === "") {
-        mostrarMensajeError("El nombre está vacío");
+    if (id.value === "") {
+        mostrarMensajeError("seleccione un inventario");
         verificado = false;
     }
-    if (documento.value === "") {
-        mostrarMensajeError("El tipo de documento está vacío");
+    if (fecha.value === "") {
+        mostrarMensajeError("la fecha de la venta está vacía");
         verificado = false;
     }
-    if (direccion.value === "") {
-        mostrarMensajeError("La dirección está vacía");
+    if (codigo.value === "") {
+        mostrarMensajeError("el codigo está vacío");
         verificado = false;
-    } else if (!isNaN(direccion.value) || direccion.value < 0) {
-        mostrarMensajeError("La dirección debe ser un número válido");
+    } 
+    if (valorUnitario.value === "") {
+        mostrarMensajeError("Digite un valor Unitario");
         verificado = false;
-    }
-    if (fechaNacimiento.value === "") {
-        mostrarMensajeError("La fecha de nacimiento está vacía");
-        verificado = false;
-    } else {
-        let fechaNacimientoDate = new Date(fechaNacimiento.value);
-        let fechaActual = new Date();
-        let edad = fechaActual.getFullYear() - fechaNacimientoDate.getFullYear();
-        if (fechaActual.getMonth() < fechaNacimientoDate.getMonth() || (fechaActual.getMonth() === fechaNacimientoDate.getMonth() && fechaActual.getDate() < fechaNacimientoDate.getDate())) {
-            edad--;
-        }
-        if (edad < 12) {
-            mostrarMensajeError("Debes tener al menos 12 años");
-            verificado = false;
-        }
-    }
-    if (telefono.value === "") {
-        mostrarMensajeError("El teléfono está vacío");
-        verificado = false;
-    } else if (isNaN(telefono.value) || telefono.value < 0 || telefono.value.length < 10) {
-        mostrarMensajeError("El teléfono debe ser un número válido y tener al menos 10 caracteres");
-        verificado = false;
-    }
-    if (idplan.value === "") {
-        mostrarMensajeError("El plan está vacío");
-        verificado = false;
-    }
-    if (foto.value === "") {
-        mostrarMensajeError("Debe ingresar un link para la foto");
+    } 
+    if (cantidad.value === "") {
+        mostrarMensajeError("Ingrese la cantidad");
         verificado = false;
     }
 
