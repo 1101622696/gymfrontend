@@ -19,6 +19,8 @@ let fechaNacimiento = ref("");
 let telefono = ref("");
 let idplan = ref("");
 let foto = ref("");
+let planesTodo = ref([]);
+let nombreCodigo = ref([]);
 
 let rows = ref([]);
 let columns = ref([
@@ -163,21 +165,18 @@ async function listarClientes() {
   rows.value = res.data.cliente;
 }
 
-
-
-
-async function listarPlanes(){
+/*async function listarPlanes(){
     const res = await usePlan.listarPlan()
     console.log(res.data);
     rows.value=res.data.plan
-}
+}*/
 
   onMounted(()=>{
   listarClientes(), listarPlanes()
 })
 
 const organizarPlanes = computed(() => {
-    nombreCodigo.value = sedesTodo.value.map((element) => ({
+    nombreCodigo.value = planesTodo.value.map((element) => ({
         label: `${element.codigo}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
@@ -186,10 +185,10 @@ const organizarPlanes = computed(() => {
 });
 
 
-async function planes() {
+async function listarPlanes() {
     try {
     const res = await usePlan.listarPlan()
-       planesTodo.value = res.data.planes;
+       planesTodo.value = res.data.plan;
     } catch (error) {
         console.error("Error al listar planes:", error);
     }
@@ -238,7 +237,7 @@ function cerrar() {
         <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
         <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-       <q-select standout v-model="idPlan" :options="'organizarPlanes'" option-value="valor" option-label="label" label="Plan"  style="background-color: #grey; margin-bottom: 20px"
+       <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan"  style="background-color: #grey; margin-bottom: 20px"
       />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
       </div>

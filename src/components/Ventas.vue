@@ -19,19 +19,21 @@ function cerrar(){
 }
 
 onMounted(()=>{
-  listarVentas(), listarInventario();
+  listarVentas(), listarInventarios();
 })
 
-let idInventario = ref("");
+let id = ref("");
 let fecha = ref("");
 let codigo = ref("");
 let valorUnitario = ref("");
 let cantidad = ref("");
 let total = ref("");
+let inventarioTodo = ref([]);
+let nombreCodigo = ref([]);
 
 let rows=ref([])
 let columns =ref([
-    {name:"idInventario", label:"Inventario", field:"idInventario", align:"center"},
+    {name:"id", label:"Inventario", field:"id", align:"center"},
     {name:"fecha", label:"fecha", field:"fecha", align:"center"},
     {name:"codigo", label:"Código", field:"codigo", align:"center"},
     {name:"valorUnitario", label:"Valor por unidad", field:"valorUnitario", align:"center"},
@@ -41,22 +43,33 @@ let columns =ref([
 
 ])
 
-      const model = ref(null);
-      const options = [
-        '1', '2', '3', '4'
-      ];
 
 async function listarVentas(){
     const res = await useSales.listarVenta()
     console.log(res.data);
-    rows.value=res.data.ventas
+    rows.value=res.data.venta
 }
 
-async function listarInventario(){
-    const res = await useInventario.listarInventario()
+const organizarInventario = computed(() => {
+    nombreCodigo.value = inventarioTodo.value.map((element) => ({
+        label: `${element.codigo}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function listarInventarios() {
+    try {
+   const res = await useInventario.listarInventario()
     console.log(res.data);
-    rows.value=res.data.inventario
+    inventarioTodo.value=res.data.inventario
+    } catch (error) {
+        console.error("Error al listar inventario:", error);
+    }
 }
+
 
       
 </script>
@@ -96,7 +109,7 @@ async function listarInventario(){
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
- <q-select standout v-model="idInventario" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
+ <q-select standout v-model="id" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
       />
         <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
         <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" />

@@ -14,16 +14,17 @@ function cerrar(){
     agregar.value = false;
 }
 
-let idsede = ref("");
+let idSede = ref("");
 let codigo = ref("");
 let descripcion = ref("");
 let fechaIngreso = ref("");
 let fechaUltmantenimiento = ref("");
-
+let sedesTodo = ref([]);
+let nombreCodigo = ref([]);
 
 let rows=ref([])
 let columns =ref([
-      {name:"idsede", label:"Sede", field:"idsede", align:"center"},
+      {name:"idSede", label:"Sede", field:"idSede", align:"center"},
     {name:"codigo", sortable:true, label:"Código de la máquina", field:"codigo", align:"center",},
     {name:"descripcion", label:"Descripción", field:"descripcion", align:"center"},
     {name:"fecha", label:"Fecha del ingreso", field:"fechaIngreso", align:"center"},
@@ -49,11 +50,24 @@ onMounted(()=>{
 
 import { useStoreSedes } from "../store/sedes.js";
 const useSedes = useStoreSedes();
-async function listarSedes(){
+const organizarSedes = computed(() => {
+    nombreCodigo.value = sedesTodo.value.map((element) => ({
+        label: `${element.nombre}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function listarSedes() {
+    try {
     const res = await useSedes.listarSede()
-    console.log(res.data);
-    rows.value=res.data.sede
-} 
+       sedesTodo.value = res.data.sede;
+    } catch (error) {
+        console.error("Error al listar sedes:", error);
+    }
+}
       
 </script>
 
@@ -92,7 +106,7 @@ async function listarSedes(){
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-       <q-select standout v-model="idsede" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+       <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
       />
         <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />

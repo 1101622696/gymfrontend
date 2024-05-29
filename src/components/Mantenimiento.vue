@@ -1,13 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useStoreMantenimiento } from "../store/mantenimiento.js";
-import { useStoreMaquina } from "../store/maquinas.js";
-const useMaquina = useStoreMaquina();
-async function listarMaquina(){
-    const res = await useMaquina.listarMaquina()
-    console.log(res.data);
-    rows.value=res.data.maquina
-}
+
 
 
 const useMantenimiento = useStoreMantenimiento();
@@ -22,16 +16,17 @@ function cerrar(){
     agregar.value = false;
 }
 
-let idMaquina = ref("");
+let idMantenimiento = ref("");
 let fecha = ref("");
 let descripcion = ref("");
 let responsable = ref("");
 let valor = ref("");
-
+let maquinaTodo = ref([]);
+let nombreCodigo = ref([]);
 
 let rows=ref([])
 let columns =ref([
-      {name:"idMaquina", label:"Máquina", field:"idMaquina", align:"center"},
+      {name:"idMantenimiento", label:"Máquina", field:"idMantenimiento", align:"center"},
     {name:"fecha", sortable:true, label:"Fecha del mantenimiento", field:"fecha", align:"center",},
     {name:"descripcion", label:"Descripción del mantenimiento", field:"descripcion", align:"center"},
     {name:"responsable", label:"Responsable encargado", field:"responsable", align:"center"},
@@ -53,7 +48,30 @@ async function listarMantenimiento(){
 onMounted(()=>{
   listarMaquina(), listarMantenimiento();
 })
+
+import { useStoreMaquina } from "../store/maquinas.js";
+const useMaquina = useStoreMaquina();
+
+const organizarMaquinas = computed(() => {
+    nombreCodigo.value = maquinaTodo.value.map((element) => ({
+        label: `${element.codigo}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function listarMaquina() {
+    try {
+    const res = await useMaquina.listarMaquina()
+       maquinaTodo.value = res.data.maquina;
+    } catch (error) {
+        console.error("Error al listar planes:", error);
+    }
+}
       
+
 </script>
 
 <template>
@@ -91,7 +109,7 @@ onMounted(()=>{
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <q-select standout v-model="idMaquina" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Máquina" style="background-color: #grey; margin-bottom: 20px"
+        <q-select standout v-model="idMantenimiento" :options="organizarMaquinas" option-value="valor" option-label="label" label="Máquina" style="background-color: #grey; margin-bottom: 20px"
       />
         <input class="input" type="text" placeholder="Fecha" v-model.trim="fecha" />
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />

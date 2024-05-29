@@ -22,6 +22,8 @@ let id = ref("");
 let plan = ref("");
 let fecha = ref("");
 let valor = ref("");
+let clientesTodo = ref([]);
+let nombreCodigo = ref([]);
 
 let rows=ref([])
 let columns =ref([
@@ -43,16 +45,32 @@ async function listarPagos(){
     console.log(res.data);
     rows.value=res.data.pago
 }
-async function listarClientes() {
-  const res = await useCliente.listarCliente();
-  console.log(res.data);
-  rows.value = res.data.cliente;
-}
+
 
 
 onMounted(()=>{
   listarPagos(), listarClientes();
 })
+
+const organizarClientes = computed(() => {
+    nombreCodigo.value = clientesTodo.value.map((element) => ({
+        label: `${element.documento}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function listarClientes() {
+    try {
+    const res = await useCliente.listarCliente()
+       clientesTodo.value = res.data.cliente;
+    } catch (error) {
+        console.error("Error al listar clientes:", error);
+    }
+}
+
       
 </script>
 
@@ -91,7 +109,7 @@ onMounted(()=>{
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-               <q-select standout v-model="idCliente" :options="'funciondecomosevaallmar'" option-value="valor" option-label="label" label="Cliente"         style="background-color: #grey; margin-bottom: 20px"
+               <q-select standout v-model="id" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente"         style="background-color: #grey; margin-bottom: 20px"
       />
         <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
         <input class="input" type="date" placeholder="Fecha de pago" v-model.trim="fechaPago" />

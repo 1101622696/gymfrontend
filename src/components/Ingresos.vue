@@ -7,14 +7,18 @@ let alert = ref(false)
 let accion = ref(1)
 let rows=ref([])
 
-let idsede = ref("");
-let Cliente = ref("");
+let idSede = ref("");
+let idCliente = ref("");
 let fecha = ref("");
+let sedesTodo = ref([]);
+let clientesTodo = ref([]);
+let nombreCodigoS = ref([]);
+let nombreCodigoC = ref([]);
 
 
 let columns =ref([
-      {name:"idsede", label:"Sede", field:"idsede", align:"center"},
-    {name:"Cliente", sortable:true, label:"Nombre Cliente", field:"Cliente", align:"center",},
+      {name:"idSede", label:"Sede", field:"idSede", align:"center"},
+    {name:"idCliente", sortable:true, label:"Nombre Cliente", field:"idCliente", align:"center",},
     {name:"fecha", label:"Fecha del ingreso", field:"fecha", align:"center"},
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
@@ -25,7 +29,7 @@ async function listarIngresos(){
     console.log(res.data);
     rows.value=res.data.ingreso
 
-async function useIngreso() {
+async function agregarIngreso() {
     let verificado = true;
 
     if (fecha.value == "") {
@@ -78,59 +82,50 @@ function cerrar() {
 
 
       onMounted(()=>{
-  listarClientes(), listarSedes(), listarIngresos();
+  listarIngresos(), listarClientes(), listarSedes();
 })
 
 import { useStoreSedes } from "../store/sedes.js";
 const useSedes = useStoreSedes();
-async function listarSedes(){
-    const res = await useSedes.listarSede()
-    console.log(res.data);
-    rows.value=res.data.sede
-} 
+
 
 import { useStoreClientes } from "../store/clientes.js";
 const useCliente = useStoreClientes();
-async function listarClientes() {
-  const res = await useCliente.listarCliente();
-  console.log(res.data);
-  rows.value = res.data.cliente;
-}
 
 
 const organizarSedes = computed(() => {
-    nombreCodigo.value = sedesTodo.value.map((element) => ({
+    nombreCodigoS.value = sedesTodo.value.map((element) => ({
         label: `${element.nombre}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
     }));
-    return nombreCodigo.value;
+    return nombreCodigoS.value;
 });
 
 
-async function sedes() {
+async function listarSedes() {
     try {
     const res = await useSedes.listarSede()
-       sedesTodo.value = res.data.sedes;
+       sedesTodo.value = res.data.sede;
     } catch (error) {
         console.error("Error al listar sedes:", error);
     }
 }
 
 const organizarClientes = computed(() => {
-    nombreCodigo.value = sedesTodo.value.map((element) => ({
+    nombreCodigoC.value = clientesTodo.value.map((element) => ({
         label: `${element.documento}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
     }));
-    return nombreCodigo.value;
+    return nombreCodigoC.value;
 });
 
 
-async function clientes() {
+async function listarClientes() {
     try {
-    const res = await useSedes.listarCliente()
-       clientesTodo.value = res.data.clientes;
+    const res = await useCliente.listarCliente()
+       clientesTodo.value = res.data.cliente;
     } catch (error) {
         console.error("Error al listar clientes:", error);
     }
@@ -178,11 +173,11 @@ async function clientes() {
             </div>
           </q-card-section>
 <q-input outlined v-model="fecha" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="fecha del ingreso" type="text" />
-      <q-select standout v-model="idsede" :options="'organizarSedes'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+                        class="q-my-md q-mx-md" label="fecha del ingreso" type="date" />
+      <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
       />
      
-       <q-select standout v-model="idcliente" :options="'organizarClientes'" option-value="valor" option-label="label" label="Cliente" style="background-color: #grey; margin-bottom: 20px"
+       <q-select standout v-model="idCliente" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente" style="background-color: #grey; margin-bottom: 20px"
       />
           <q-card-actions align="right">
             <q-btn

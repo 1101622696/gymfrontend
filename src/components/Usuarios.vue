@@ -12,10 +12,6 @@ onMounted(()=>{
   listarUsuarios(), listarSedes();
 })
 
-/*onMounted(()=>{
-  listarUsuarios()
-})*/
-
 
 let alert = ref(false)
 let accion = ref(1)
@@ -25,7 +21,8 @@ let nombre = ref("");
 let email = ref("");
 let telefono = ref("");
 let rol = ref("");
-const sedesTodo = ref([]);
+let sedesTodo = ref([]);
+let nombreCodigo = ref([]);
 
 
 let rows=ref([])
@@ -61,11 +58,7 @@ async function listarUsuarios(){
     rows.value=res.data.usuario
 }
 
-/*async function listarSedes(){
-    const res = await useSedes.listarSede()
-    console.log(res.data);
-    rows.value=res.data.sede
-}*/
+
 
 const organizarSedes = computed(() => {
     nombreCodigo.value = sedesTodo.value.map((element) => ({
@@ -88,9 +81,7 @@ async function listarSedes() {
     }
 }
 
-
-      
-
+    
 </script>
 
 
@@ -134,7 +125,7 @@ async function listarSedes() {
               {{ accion == 1 ? "Agregar Usuario" : "Editar Usuario" }}
             </div>
           </q-card-section>
-                 <q-select standout v-model="idsede" :options="'organizarSedes'" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
+                 <q-select standout v-model="id" :options="organizarSedes" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px"
       />
 <q-input outlined v-model="nombre" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Nombre del Usuario" type="text" />
