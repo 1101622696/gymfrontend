@@ -38,13 +38,57 @@ async function listarInventario(){
 onMounted(()=>{
   listarInventario()
 })
+
+async function agregarInventario() {
+    let verificado = true;
+
+    if (codigo.value === "") {
+        mostrarMensajeError("El codigo está vacío");
+        verificado = false;
+    }
+    if (descripcion.value === "") {
+        mostrarMensajeError("la descripcion está vacío");
+        verificado = false;
+    }
+    if (valor.value === "") {
+        mostrarMensajeError("Ingrese un valor");
+        verificado = false;
+}
+    if (cantidad.value === "") {
+        mostrarMensajeError("la cantidad está vacía");
+        verificado = false;
+    }
+
+    if (verificado) {
+        mostrarMensajeExito("El formulario se envió correctamente");
+    }
+
+    return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
       
 </script>
 
 <template>
     <div class="container">
   
-      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="Inventario" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -65,9 +109,7 @@ onMounted(()=>{
           </q-td>
         </template>
       </q-table>
-  
-      <!-- <button class="button" @click="listarInventario()">Traer Datos</button> -->
-  
+    
       <button class="button" @click="agregarInventario()">Agregar Inventario</button>
   
       <div class="crearcliente" v-if="agregar">

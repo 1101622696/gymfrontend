@@ -26,37 +26,43 @@ let columns =ref([
 
 
 
-async function agregarIngreso() {
+async function Agregar() {
     let verificado = true;
 
-    if (fecha.value == "") {
-        $q.notify({
-            type: "negative",
-            message: "la fecha está vacía",
-            position: "bottom-right",
-        });
+    if (fecha.value === "") {
+        mostrarMensajeError("ingrese una fecha");
         verificado = false;
     }
-    if (idsede.value == "") {
-        $q.notify({
-            type: "negative",
-            message: "El tipo de documento está vacío",
-            position: "bottom-right",
-        });
+    if (idSede.value === "") {
+        mostrarMensajeError("seleccione una sede");
         verificado = false;
     }
-    if (Cliente == "") {
-        $q.notify({
-            type: "negative",
-            message: "la direccion está vacío",
-            position: "bottom-right",
-        });
+    if (idCliente.value === "") {
+        mostrarMensajeError("seleccione un cliente");
         verificado = false;
-    } else{
+    }
 
-
+    if (verificado) {
+        mostrarMensajeExito("El formulario se envió correctamente");
     }
+
     return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
 }
 
       

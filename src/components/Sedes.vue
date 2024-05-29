@@ -26,6 +26,58 @@ let columns =ref([
 
 ])
 
+async function Agregar() {
+    let verificado = true;
+
+    if (nombre.value === "") {
+        mostrarMensajeError("El nombre está vacío");
+        verificado = false;
+    }
+    if (ciudad.value === "") {
+        mostrarMensajeError("Ingrese una ciudad");
+        verificado = false;
+    }
+    if (direccion.value === "") {
+        mostrarMensajeError("La dirección está vacía");
+        verificado = false;
+    } 
+    if (codigo.value === "") {
+        mostrarMensajeError("Ingrese un código");
+        verificado = false;
+    } 
+    if (horario.value === "") {
+        mostrarMensajeError("escriba el horario de la sede");
+        verificado = false;
+    }
+        if (telefono.value === "" || isNaN(telefono.value) || telefono.value.length < 10) {
+        mostrarMensajeError("El teléfono debe ser un número válido y tener al menos 10 caracteres");
+        verificado = false;
+    }
+
+    if (verificado) {
+        mostrarMensajeExito("El formulario se envió correctamente");
+    }
+
+    return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+
 async function listarSedes(){
     const res = await useSedes.listarSede()
     console.log(res.data);
@@ -49,7 +101,7 @@ onMounted(()=>{
 
 <template>
     <div>
-            <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+            <q-table class="table" flat bordered title="Sedes" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">

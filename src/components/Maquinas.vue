@@ -34,6 +34,50 @@ let columns =ref([
 
 ])
 
+async function agregarmaquina() {
+    let verificado = true;
+
+    if (idSede.value === "") {
+        mostrarMensajeError("seleccione una sede");
+        verificado = false;
+    }
+    if (codigo.value === "") {
+        mostrarMensajeError("El codigo está vacío");
+        verificado = false;
+    }
+    if (descripcion.value === "") {
+        mostrarMensajeError("La descripcion está vacía");
+        verificado = false;
+    }
+    if (fechaIngreso.value === "") {
+        mostrarMensajeError("digite la fecha de ingreso");
+        verificado = false;
+    } 
+    if (fechaUltmantenimiento.value === "") {
+        mostrarMensajeError("fecha ultimo de mantenimiento");
+        verificado = false;
+    }
+
+    return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+
 async function listarMaquina(){
     const res = await useMaquina.listarMaquina()
     console.log(res.data);

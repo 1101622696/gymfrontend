@@ -33,6 +33,46 @@ let columns = ref([
       { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
     ]);
 
+async function agregarpago() {
+    let verificado = true;
+
+    if (id.value === "") {
+        mostrarMensajeError("Seleccione un cliente");
+        verificado = false;
+    }
+    if (plan.value === "") {
+        mostrarMensajeError("escriba el plan");
+        verificado = false;
+    }
+    if (fecha.value === "") {
+        mostrarMensajeError("La fecha está vacía");
+        verificado = false;
+    } 
+    if (valor.value === "") {
+        mostrarMensajeError("El valor está vacío");
+        verificado = false;
+    } 
+
+    return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+
 async function listarPagos() {
       try {
         const res = await usePagos.listarPago();
@@ -122,9 +162,7 @@ async function listarPagos() {
           </q-td>
         </template>
       </q-table>
-  
-      <!-- <button class="button" @click="listarPagos()">Traer Datos</button> -->
-  
+    
       <button class="button" @click="agregarpago()">Agregar Pago</button>
   
       <div class="crearcliente" v-if="agregar">

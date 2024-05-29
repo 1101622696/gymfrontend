@@ -35,7 +35,58 @@ let columns =ref([
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
+function validarEmail(email) {
+    // Expresión regular para validar un email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+async function Agregar() {
+    let verificado = true;
 
+    if (nombre.value === "") {
+        mostrarMensajeError("El nombre está vacío");
+        verificado = false;
+    }
+    if (id.value === "") {
+        mostrarMensajeError("Seleccione una sede");
+        verificado = false;
+    }
+    if (email.value === "" || !validarEmail(email.value)) {
+        mostrarMensajeError("El email no es válido");
+        verificado = false;
+    }
+    
+    if (telefono.value === "" || isNaN(telefono.value) || telefono.value.length < 10) {
+        mostrarMensajeError("El teléfono debe ser un número válido y tener al menos 10 caracteres");
+        verificado = false;
+    }
+    if (rol.value === "") {
+        mostrarMensajeError("Debe seleccionar un rol");
+        verificado = false;
+    }
+
+    if (verificado) {
+        mostrarMensajeExito("El formulario se envió correctamente");
+    }
+
+    return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
 
   function abrir() {
 accion.value = 1;

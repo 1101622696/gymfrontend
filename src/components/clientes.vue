@@ -48,116 +48,75 @@ function llamaragregarCliente() {
 async function agregarCliente() {
     let verificado = true;
 
-    if (nombre.value == "") {
-        $q.notify({
-            type: "negative",
-            message: "El nombre está vacío",
-            position: "bottom-right",
-        });
+    if (nombre.value === "") {
+        mostrarMensajeError("El nombre está vacío");
         verificado = false;
     }
-    if (documento.value == "") {
-        $q.notify({
-            type: "negative",
-            message: "El tipo de documento está vacío",
-            position: "bottom-right",
-        });
+    if (documento.value === "") {
+        mostrarMensajeError("El tipo de documento está vacío");
         verificado = false;
     }
-    if (direccion == "") {
-        $q.notify({
-            type: "negative",
-            message: "la direccion está vacío",
-            position: "bottom-right",
-        });
+    if (direccion.value === "") {
+        mostrarMensajeError("La dirección está vacía");
+        verificado = false;
+    } else if (!isNaN(direccion.value) || direccion.value < 0) {
+        mostrarMensajeError("La dirección debe ser un número válido");
+        verificado = false;
+    }
+    if (fechaNacimiento.value === "") {
+        mostrarMensajeError("La fecha de nacimiento está vacía");
         verificado = false;
     } else {
-        if (!isNaN(direccion) || direccion < 0) {
-            $q.notify({
-                type: "negative",
-                message: "la direccion debe ser un numero valido",
-                position: "bottom-right",
-            });
+        let fechaNacimientoDate = new Date(fechaNacimiento.value);
+        let fechaActual = new Date();
+        let edad = fechaActual.getFullYear() - fechaNacimientoDate.getFullYear();
+        if (fechaActual.getMonth() < fechaNacimientoDate.getMonth() || (fechaActual.getMonth() === fechaNacimientoDate.getMonth() && fechaActual.getDate() < fechaNacimientoDate.getDate())) {
+            edad--;
+        }
+        if (edad < 12) {
+            mostrarMensajeError("Debes tener al menos 12 años");
             verificado = false;
         }
     }
-if (fechaNacimiento === "") {
-    $q.notify({
-        type: "negative",
-        message: "La fecha de nacimiento está vacía",
-        position: "bottom-right",
-    });
-    verificado = false;
-} else {
-    let fechaNacimientoDate = new Date(fechaNacimiento);
-    
-    let fechaActual = new Date();
-    
-    let edad = fechaActual.getFullYear() - fechaNacimientoDate.getFullYear();
-    
-    if (fechaActual.getMonth() < fechaNacimientoDate.getMonth() || 
-        (fechaActual.getMonth() === fechaNacimientoDate.getMonth() && fechaActual.getDate() < fechaNacimientoDate.getDate())) {
-        edad--;
-    }
-    
-    if (edad < 13) {
-        $q.notify({
-            type: "negative",
-            message: "Debes tener al menos 13 años",
-            position: "bottom-right",
-        });
+    if (telefono.value === "") {
+        mostrarMensajeError("El teléfono está vacío");
         verificado = false;
-    } else {
-        verificado = true;
+    } else if (isNaN(telefono.value) || telefono.value < 0 || telefono.value.length < 10) {
+        mostrarMensajeError("El teléfono debe ser un número válido y tener al menos 10 caracteres");
+        verificado = false;
     }
-}
+    if (idplan.value === "") {
+        mostrarMensajeError("El plan está vacío");
+        verificado = false;
+    }
+    if (foto.value === "") {
+        mostrarMensajeError("Debe ingresar un link para la foto");
+        verificado = false;
+    }
 
-    if (telefono == "") {
-        $q.notify({
-            type: "negative",
-            message: "El telefono está vacía",
-            position: "bottom-right",
-        });
-        verificado = false;
-    } else {
-        if (!isNaN(telefono) || telefono < 0) {
-            $q.notify({
-                type: "negative",
-                message: "El telefono debe ser un numero valido",
-                position: "bottom-right",
-            });
-            verificado = false;
-        }
-        if (telefono < 10) {
-            $q.notify({
-                type: "negative",
-                message: "El telefono debe tener minimo 10 caracteres",
-                position: "bottom-right",
-            });
-            verificado = false;
-        }
+    if (verificado) {
+        mostrarMensajeExito("El formulario se envió correctamente");
     }
-   
-    if (idplan == "") {
-        $q.notify({
-            type: "negative",
-            message: "El plan está vacío",
-            position: "bottom-right",
-        });
-        verificado = false;
-    }
-        if (foto == "") {
-        $q.notify({
-            type: "negative",
-            message: "Debe ingresar un link para la foto",
-            position: "bottom-right",
-        });
-        verificado = false;
-    } else{
-      
-    }
+
     return verificado;
 }
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
 
 async function listarClientes() {
   try {

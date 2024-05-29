@@ -35,6 +35,53 @@ let columns =ref([
 
 ])
 
+async function agregarPlan() {
+    let verificado = true;
+
+    if (codigo.value === "") {
+        mostrarMensajeError("El codigo está vacío");
+        verificado = false;
+    }
+    if (valor.value === "") {
+        mostrarMensajeError("El valor está vacío");
+        verificado = false;
+    }
+    if (descripcion.value === "") {
+        mostrarMensajeError("La descripcion está vacía");
+        verificado = false;
+    } 
+    if (dias.value === "") {
+        mostrarMensajeError("Escriba cuantos dias va a durar ese plan");
+        verificado = false;
+    } 
+    if (total.value === "") {
+        mostrarMensajeError("El total está vacío");
+        verificado = false;
+    } 
+    if (verificado) {
+        mostrarMensajeExito("El formulario se envió correctamente");
+    }
+
+    return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+
 async function listarPlanes(){
     const res = await usePlan.listarPlan()
     console.log(res.data);
@@ -46,7 +93,7 @@ async function listarPlanes(){
 <template>
     <div class="container">
   
-      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="Planes" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">

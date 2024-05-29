@@ -34,10 +34,50 @@ let columns =ref([
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
-      const model = ref(null);
-      const options = [
-        '1', '2', '3', '4'
-      ];
+
+async function agregarmantenimiento() {
+    let verificado = true;
+
+    if (idMantenimiento.value === "") {
+        mostrarMensajeError("Seleccione una máquina");
+        verificado = false;
+    }
+    if (fecha.value === "") {
+        mostrarMensajeError("Ingrese una fecha");
+        verificado = false;
+    }
+    if (descripcion.value === "") {
+        mostrarMensajeError("La descripcion está vacía");
+        verificado = false;
+    } 
+    if (responsable.value === "") {
+        mostrarMensajeError("El responsable está vacío");
+        verificado = false;
+    } 
+    if (valor.value === "") {
+        mostrarMensajeError("El valor está vacío");
+        verificado = false;
+    }
+
+    return verificado;
+}
+
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+
 
 async function listarMantenimiento(){
     const res = await useMantenimiento.listarMantenimiento()
@@ -117,9 +157,7 @@ function getMaquinaCodigo(id) {
           </q-td>
         </template>
       </q-table>
-  
-      <!-- <button class="button" @click="listarMantenimiento()">Traer Datos</button> -->
-  
+    
       <button class="button" @click="agregarmantenimiento()">Agregar Mantenimiento</button>
   
       <div class="crearcliente" v-if="agregar">
