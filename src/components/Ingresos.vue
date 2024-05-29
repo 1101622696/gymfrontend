@@ -18,7 +18,7 @@ let nombreCodigoC = ref([]);
 
 let columns =ref([
       {name:"idSede", label:"Sede", field:"idSede", align:"center"},
-    {name:"idCliente", sortable:true, label:"Nombre Cliente", field:"idCliente", align:"center",},
+    {name:"idCliente", sortable:true, label:"Documento Cliente", field:"idCliente", align:"center",},
     {name:"fecha", label:"Fecha del ingreso", field:"fecha", align:"center"},
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
@@ -85,68 +85,72 @@ async function listarIngresos() {
   try {
     const res = await useIngreso.listarIngreso();
     console.log("Ingresos:", res.data);
-    rows.value = res.data.ingreso.map((ingreso) => ({
-      ...ingreso,
-      direccionsede: getSedeDireccion(ingreso.idSede),
-      nombrecliente: getClienteNombre(ingreso.idCliente),
-    }));
+    rows.value = res.data.ingreso;
   } catch (error) {
     console.error("Error al listar ingresos:", error);
   }
 }
 
 const organizarSedes = computed(() => {
-    nombreCodigoS.value = sedesTodo.value.map((element) => ({
-        label: `${element.nombre}`,
-        valor: `${element._id}`,
-        nombre: `${element.nombre}`,
-    }));
-    return nombreCodigoS.value;
+  nombreCodigoS.value = sedesTodo.value.map((element) => ({
+    label: `${element.nombre}`,
+    valor: `${element._id}`,
+    nombre: `${element.nombre}`,
+  }));
+  return nombreCodigoS.value;
 });
 
-
 async function listarSedes() {
-    try {
-    const res = await useSedes.listarSede()
-       sedesTodo.value = res.data.sede;
-    } catch (error) {
-        console.error("Error al listar sedes:", error);
-    }
+  try {
+    const res = await useSedes.listarSede();
+    sedesTodo.value = res.data.sede;
+  } catch (error) {
+    console.error("Error al listar sedes:", error);
+  }
 }
 
 const organizarClientes = computed(() => {
-    nombreCodigoC.value = clientesTodo.value.map((element) => ({
-        label: `${element.documento}`,
-        valor: `${element._id}`,
-        nombre: `${element.nombre}`,
-    }));
-    return nombreCodigoC.value;
+  nombreCodigoC.value = clientesTodo.value.map((element) => ({
+    label: `${element.documento}`,
+    valor: `${element._id}`,
+    nombre: `${element.nombre}`,
+  }));
+  return nombreCodigoC.value;
 });
-
 
 async function listarClientes() {
   try {
     const res = await useCliente.listarCliente();
-    console.log(res.data);
     clientesTodo.value = res.data.cliente;
   } catch (error) {
     console.error("Error al listar clientes:", error);
   }
 }
+
 function getSedeDireccion(id) {
   const sede = sedesTodo.value.find((sede) => sede._id === id);
   return sede ? sede.direccion : "Dirección no encontrada";
 }
 
-const getClienteNombre = (idCliente) => {
-  const cliente = clientesTodo.value.find((c) => c._id === idCliente);
-  return cliente ? cliente.nombre : "";
-};
+function getClienteDocumento(id) {
+  const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
+  return cliente ? cliente.documento : "Documento no encontrado";
+}
 </script>
 
 <template>
     <div>
-        <q-table class="table" flat bordered title="tabla" :rows="rows" :columns="columns" row-key="id">
+        <q-table class="table" flat bordered title="Ingresos" :rows="rows" :columns="columns" row-key="id">
+  <template v-slot:body-cell-idSede="props">
+    <q-td :props="props">
+      <p>{{ getSedeDireccion(props.row.idSede) }}</p>
+    </q-td>
+  </template>
+  <template v-slot:body-cell-idCliente="props">
+    <q-td :props="props">
+      <p>{{ getClienteDocumento(props.row.idCliente) }}</p>
+    </q-td>
+  </template>
   <template v-slot:body-cell-opciones="props">
     <q-td :props="props">
       <q-btn class="option-button" @click="editar(props.row)">
@@ -165,14 +169,6 @@ const getClienteNombre = (idCliente) => {
       <p v-if="props.row.estado == 1" style="color:green">Activo</p>
       <p v-else style="color:red">Inactivo</p>
     </q-td>
-  </template>
-  <template v-slot:body-cell-idSede="props">
-    <q-td :props="props">
-      {{ getSedeDireccion(props.row.idSede) }}
-    </q-td>
-  </template>
-  <template v-slot:body-cell-idCliente="props">
-    <q-td :props="props">{{ getClienteNombre(props.row.idCliente) }}</q-td>
   </template>
 </q-table>
 

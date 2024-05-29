@@ -17,67 +17,91 @@ agregar.value = true;
 function cerrar(){
     agregar.value = false;
 }
-
 let id = ref("");
 let plan = ref("");
 let fecha = ref("");
 let valor = ref("");
 let clientesTodo = ref([]);
 let nombreCodigo = ref([]);
+let rows = ref([]);
+let columns = ref([
+      { name: "id", label: "Cliente", field: "id", align: "center" },
+      { name: "plan", sortable: true, label: "Plan", field: "plan", align: "center" },
+      { name: "fecha", label: "Fecha del pago", field: "fecha", align: "center" },
+      { name: "valor", label: "Valor", field: "valor", align: "center" },
+      { name: "estado", label: "Estado del pago", field: "estado", align: "center" },
+      { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
+    ]);
 
-let rows=ref([])
-let columns =ref([
-    {name:"id", label:"Cliente", field:"id", align:"center"},
-    {name:"plan", sortable:true, label:"Plan", field:"plan", align:"center",},
-    {name:"fecha", label:"Fecha del pago", field:"fecha", align:"center"},
-    {name:"valor", label:"Valor", field:"valor", align:"center"},
-    {name:"estado", label:"Estado del pago", field:"estado", align:"center"},
-  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
+async function listarPagos() {
+      try {
+        const res = await usePagos.listarPago();
+        console.log("Pagos:", res.data);
+        rows.value = res.data.pago.map((pago) => ({
+          ...pago,
+          clienteDocumento: getClienteDocumento(pago.id),
+        }));
+      } catch (error) {
+        console.error("Error al listar pagos:", error);
+      }
+    }
 
-])
+    onMounted(async () => {
+      await listarClientes();
+      await listarPagos();
+    });
 
-      const model = ref(null);
-      const options = [
-        '1', '2', '3', '4'
-      ];
-async function listarPagos(){
-    const res = await usePagos.listarPago()
-    console.log(res.data);
-    rows.value=res.data.pago
-}
-
-
-
-onMounted(()=>{
-  listarPagos(), listarClientes();
-})
-
-const organizarClientes = computed(() => {
-    nombreCodigo.value = clientesTodo.value.map((element) => ({
+    const organizarClientes = computed(() => {
+      nombreCodigo.value = clientesTodo.value.map((element) => ({
         label: `${element.documento}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
-    }));
-    return nombreCodigo.value;
-});
+      }));
+      return nombreCodigo.value;
+    });
 
-
-async function listarClientes() {
-    try {
-    const res = await useCliente.listarCliente()
-       clientesTodo.value = res.data.cliente;
-    } catch (error) {
+    async function listarClientes() {
+      try {
+        const res = await useCliente.listarCliente();
+        console.log("Clientes:", res.data);
+        clientesTodo.value = res.data.cliente;
+      } catch (error) {
         console.error("Error al listar clientes:", error);
+      }
     }
-}
 
-      
+    function getClienteDocumento(id) {
+      console.log("buscando cliente con ID:", id);
+      const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
+      if (cliente) {
+        console.log("cliente encontrado:", cliente);
+      } else {
+        console.log("cliente no encontrado para el ID:", id);
+      }
+      return cliente ? cliente.documento : "Documento no encontrado";
+    }
+
+    function formatDate(dateStr) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateStr).toLocaleDateString(undefined, options);
+    }
+
 </script>
 
 <template>
     <div class="container">
   
-      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="Pagos" :rows="rows" :columns="columns" row-key="id">
+<template v-slot:body-cell-id="props">
+      <q-td :props="props">
+        <p>{{ getClienteDocumento(props.row.id) }}</p>
+      </q-td>
+    </template>
+        <template v-slot:body-cell-fecha="props">
+      <q-td :props="props">
+        <p>{{ formatDate(props.row.fecha) }}</p>
+      </q-td>
+    </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -278,3 +302,76 @@ margin-left: auto;
 }
 
 </style>
+
+
+<!--import mongoose from "mongoose"; const pagosSchema=new mongoose.Schema({ id:{type:mongoose.Schema.Types.ObjectId,ref:'Cliente',required:true}, plan:{type:String,required:true}, fecha:{type:Date,default:Date.now()}, valor:{ type: Number, require: true }, estado:{type:Number,default:1}, }) export default mongoose.model("Pago",pagosSchema) import mongoose from "mongoose"; const clientesSchema = new mongoose.Schema({ nombre: { type: String, require: true }, fechaIngreso: { type: Date, default: Date.now()}, documento: { type: String, required: true, unique: true }, direccion: { type: String, required: true }, fechaNacimiento: { type: Date, required: true }, telefono: { type: String, required: true}, estado: { type: Number, default: 1 }, idPlan:{type:mongoose.Schema.Types.ObjectId,ref:'Plan',required:true}, fechavencimiento: { type: Date, default:"" }, foto: { type: String, required: true }, seguimiento: [ { fecha: { type: Date, required: true }, peso: { type: Number, require: true }, imc: { type: Number, require: true }, brazo: { type: Number, require: true }, pierna: { type: Number, require: true }, edad: { type: Number, require: true }, }, ], }); export default mongoose.model("Cliente",clientesSchema); y estos son los modelos de pago y clientesD{ "pago": [ { "_id": "66393c34ffdb17b805327eb6", "id": "6633f7590eb25b349327248e", "plan": "2", "fecha": "2001-05-12T05:00:00.000Z", "valor": 2000, "estado": 1, "__v": 0 } ] } al momento de listar pagos en postman me salen estos datos, { "cliente": [ { "_id": "6639445ef23880b5ca0345ae", "nombre": "giselleDaniela", "fechaIngreso": "2024-05-06T20:57:24.786Z", "documento": "267667677676", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "9090909090", "estado": 1, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "fotoG", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "6639445ef23880b5ca0345af" } ], "__v": 0 }, { "_id": "663d1be7b093f46f12b4970c", "nombre": "Meghan", "fechaIngreso": "2024-05-09T18:46:58.575Z", "documento": "0777777777", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "9090909090", "estado": 1, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "fotoG", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "663d1be7b093f46f12b4970d" } ], "__v": 0 }, { "_id": "663d1d70e621e965b65987b6", "nombre": "Haylie", "fechaIngreso": "2024-05-09T19:01:00.398Z", "documento": "0777777770", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "337-697-4243", "estado": 0, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "http://loyal.com", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "663d1d70e621e965b65987b7" } ], "__v": 0 }, { "_id": "663d1dc3e621e965b65987bf", "nombre": "Cathrine", "fechaIngreso": "2024-05-09T19:01:00.398Z", "documento": "0777777707", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "434-672-4197", "estado": 1, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "http://rita.org", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "663d1dc3e621e965b65987c0" } ], "__v": 0 } ] } y estos son los clientes<template>
+  <template v-slot:body-cell-id="props">
+    <q-td :props="props">
+      <p>{{ getClienteDocumento(props.row.id) }}</p>
+    </q-td>
+  </template>
+</template>let id = ref("");
+let plan = ref("");
+let fecha = ref("");
+let valor = ref("");
+let clientesTodo = ref([]);
+let nombreCodigo = ref([]);
+let rows = ref([]);
+let columns = ref([
+  { name: "id", label: "Cliente", field: "id", align: "center" },
+  { name: "plan", sortable: true, label: "Plan", field: "plan", align: "center" },
+  { name: "fecha", label: "Fecha del pago", field: "fecha", align: "center" },
+  { name: "valor", label: "Valor", field: "valor", align: "center" },
+  { name: "estado", label: "Estado del pago", field: "estado", align: "center" },
+  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
+]);
+
+async function listarPagos() {
+  try {
+    const res = await usePagos.listarPago();
+    console.log("Pagos:", res.data);
+    rows.value = res.data.pago;
+  } catch (error) {
+    console.error("Error al listar pagos:", error);
+  }
+}
+
+onMounted(async () => {
+  await listarClientes();
+  await listarPagos();
+  // Mapping rows after ensuring clients are loaded
+  rows.value = rows.value.map((pago) => ({
+    ...pago,
+    clienteDocumento: getClienteDocumento(pago.id),
+  }));
+});
+
+const organizarClientes = computed(() => {
+  nombreCodigo.value = clientesTodo.value.map((element) => ({
+    label: `${element.documento}`,
+    valor: `${element._id}`,
+    nombre: `${element.nombre}`,
+  }));
+  return nombreCodigo.value;
+});
+
+async function listarClientes() {
+  try {
+    const res = await useCliente.listarCliente();
+    console.log("Clientes:", res.data);
+    clientesTodo.value = res.data.cliente;
+  } catch (error) {
+    console.error("Error al listar clientes:", error);
+  }
+}
+
+function getClienteDocumento(id) {
+  console.log("buscando cliente con ID:", id);
+  const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
+  if (cliente) {
+    console.log("cliente encontrado:", cliente);
+  } else {
+    console.log("cliente no encontrado para el ID:", id);
+  }
+  return cliente ? cliente.documento : "Documento no encontrado";
+}-->

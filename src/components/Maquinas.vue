@@ -68,13 +68,23 @@ async function listarSedes() {
         console.error("Error al listar sedes:", error);
     }
 }
+
+function getSedeNombre(id) {
+  const sede = sedesTodo.value.find(sede => sede._id === id);
+  return sede ? sede.nombre : '';
+}
       
 </script>
 
 <template>
     <div class="container">
   
-      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="Maquinas" :rows="rows" :columns="columns" row-key="id">
+            <template v-slot:body-cell-idSede="props">
+        <q-td :props="props">
+          <p>{{ getSedeNombre(props.row.idSede) }}</p>
+        </q-td>
+      </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">

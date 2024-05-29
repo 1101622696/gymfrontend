@@ -100,7 +100,7 @@ async function listarSedes() {
     <div>
 
 
-      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="Usuarios" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-id="props">
         <q-td :props="props">
           <p>{{ getSedeNombre(props.row.id) }}</p>
