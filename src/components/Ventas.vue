@@ -69,7 +69,15 @@ async function listarInventarios() {
         console.error("Error al listar inventario:", error);
     }
 }
+function getInventarioCodigo(id) {
+  const inventario = inventarioTodo.value.find(inventario => inventario._id === id);
+  return inventario ? inventario.codigo : '';
+}
 
+    function formatDate(dateStr) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateStr).toLocaleDateString(undefined, options);
+    }
 
       
 </script>
@@ -77,7 +85,17 @@ async function listarInventarios() {
 <template>
     <div class="container">
   
-      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="Ventas" :rows="rows" :columns="columns" row-key="id">
+            <template v-slot:body-cell-id="props">
+        <q-td :props="props">
+          <p>{{ getInventarioCodigo(props.row.id) }}</p>
+        </q-td>
+      </template>
+       <template v-slot:body-cell-fecha="props">
+      <q-td :props="props">
+        <p>{{ formatDate(props.row.fecha) }}</p>
+      </q-td>
+    </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">

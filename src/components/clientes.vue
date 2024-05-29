@@ -202,6 +202,13 @@ async function listarPlanes() {
 function cerrar() {
   agregar.value = false;
 } 
+
+   const formatDate = (dateStr) => {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      return new Date(dateStr).toLocaleDateString(undefined, options);
+    };
+
+
 </script>
 
 <template>
@@ -210,6 +217,11 @@ function cerrar() {
       <template v-slot:body-cell-idPlan="props">
         <q-td :props="props">
           <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
+        </q-td>
+      </template>
+            <template v-slot:body-cell-fechaNacimiento="props">
+        <q-td :props="props">
+          <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
       <template v-slot:body-cell-opciones="props">

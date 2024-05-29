@@ -27,17 +27,13 @@ let columns =ref([
       {name:"idSede", label:"Sede", field:"idSede", align:"center"},
     {name:"codigo", sortable:true, label:"Código de la máquina", field:"codigo", align:"center",},
     {name:"descripcion", label:"Descripción", field:"descripcion", align:"center"},
-    {name:"fecha", label:"Fecha del ingreso", field:"fechaIngreso", align:"center"},
-    {name:"fecha", label:"Fecha del último mantenimiento", field:"fechaUltmantenimiento", align:"center"},
+    {name:"fechaIngreso", label:"Fecha del ingreso", field:"fechaIngreso", align:"center"},
+    {name:"fechaUltmantenimiento", label:"Fecha del último mantenimiento", field:"fechaUltmantenimiento", align:"center"},
     {name:"estado", label:"Estado del pago", field:"estado", align:"center"},
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
 
-      const model = ref(null);
-      const options = [
-        '1', '2', '3', '4'
-      ];
 async function listarMaquina(){
     const res = await useMaquina.listarMaquina()
     console.log(res.data);
@@ -73,6 +69,10 @@ function getSedeNombre(id) {
   const sede = sedesTodo.value.find(sede => sede._id === id);
   return sede ? sede.nombre : '';
 }
+   const formatDate = (dateStr) => {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      return new Date(dateStr).toLocaleDateString(undefined, options);
+    };
       
 </script>
 
@@ -85,6 +85,16 @@ function getSedeNombre(id) {
           <p>{{ getSedeNombre(props.row.idSede) }}</p>
         </q-td>
       </template>
+  <template v-slot:body-cell-fechaIngreso="props">
+      <q-td :props="props">
+        <p>{{ formatDate(props.row.fechaIngreso) }}</p>
+      </q-td>
+    </template>
+    <template v-slot:body-cell-fechaUltmantenimiento="props">
+      <q-td :props="props">
+        <p>{{ formatDate(props.row.fechaUltmantenimiento) }}</p>
+      </q-td>
+    </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">

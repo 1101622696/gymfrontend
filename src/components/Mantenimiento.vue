@@ -75,17 +75,28 @@ function getMaquinaCodigo(id) {
   const mantenimiento = maquinaTodo.value.find((mantenimiento) => mantenimiento._id === id);
   return mantenimiento ? mantenimiento.codigo : "mantenimiento no encontrado";
 }
+
+   const formatDate = (dateStr) => {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      return new Date(dateStr).toLocaleDateString(undefined, options);
+    };
+
 </script>
 
 <template>
     <div class="container">
   
-      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="mantenimiento" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-idMantenimiento="props">
     <q-td :props="props">
       <p>{{ getMaquinaCodigo(props.row.idMantenimiento) }}</p>
     </q-td>
   </template>
+      <template v-slot:body-cell-fecha="props">
+      <q-td :props="props">
+        <p>{{ formatDate(props.row.fecha) }}</p>
+      </q-td>
+    </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
