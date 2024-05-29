@@ -24,7 +24,6 @@ let rol = ref("");
 let sedesTodo = ref([]);
 let nombreCodigo = ref([]);
 
-
 let rows=ref([])
 let columns =ref([
       {name:"id", label:"Sede", field:"id", align:"center"},
@@ -52,13 +51,25 @@ alert.value = false;
         'Administrador', 'Recepcionista', 'Entrenador'
       ];
 
-async function listarUsuarios(){
-    const res = await useUsuarios.listarUsuario()
-    console.log(res.data);
-    rows.value=res.data.usuario
+
+async function listarUsuarios() {
+  try {
+    const res = await useUsuarios.listarUsuario();
+    rows.value = res.data.usuario.map(usuario => {
+      return {
+        ...usuario,
+        sede: usuario.id, 
+      };
+    });
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+  }
 }
 
-
+function getSedeNombre(id) {
+  const sede = sedesTodo.value.find(sede => sede._id === id);
+  return sede ? sede.nombre : '';
+}
 
 const organizarSedes = computed(() => {
     nombreCodigo.value = sedesTodo.value.map((element) => ({
@@ -87,27 +98,34 @@ async function listarSedes() {
 
 <template>
     <div>
-          <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
-        <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
-            <q-btn class="option-button" @click="editar(props.row)">
-              ✏️
-            </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
-              ❌
-            </q-btn>
-            <q-btn v-else class="option-button">
-              ✅
-            </q-btn>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
-            <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-            <p v-else style="color:red">Inactivo</p>
-          </q-td>
-        </template>
-      </q-table>
+
+
+      <q-table class="table" flat bordered title="Treats" :rows="rows" :columns="columns" row-key="id">
+      <template v-slot:body-cell-id="props">
+        <q-td :props="props">
+          <p>{{ getSedeNombre(props.row.id) }}</p>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-opciones="props">
+        <q-td :props="props">
+          <q-btn class="option-button" @click="editar(props.row)">
+            ✏️
+          </q-btn>
+          <q-btn v-if="props.row.estado == 1" class="option-button">
+            ❌
+          </q-btn>
+          <q-btn v-else class="option-button">
+            ✅
+          </q-btn>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-estado="props">
+        <q-td :props="props">
+          <p v-if="props.row.estado == 1" style="color:green">Activo</p>
+          <p v-else style="color:red">Inactivo</p>
+        </q-td>
+      </template>
+    </q-table>
       
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>

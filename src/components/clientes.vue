@@ -160,16 +160,21 @@ if (fechaNacimiento === "") {
 }
 
 async function listarClientes() {
-  const res = await useCliente.listarCliente();
-  console.log(res.data);
-  rows.value = res.data.cliente;
+  try {
+    const res = await useCliente.listarCliente();
+    rows.value = res.data.cliente.map(cliente => ({
+      ...cliente,
+      idPlan: cliente.idPlan, 
+    }));
+  } catch (error) {
+    console.error("Error al listar clientes:", error);
+  }
 }
 
-/*async function listarPlanes(){
-    const res = await usePlan.listarPlan()
-    console.log(res.data);
-    rows.value=res.data.plan
-}*/
+function getPlanCodigo(id) {
+  const plan = planesTodo.value.find(plan => plan._id === id);
+  return plan ? plan.codigo : '';
+}
 
   onMounted(()=>{
   listarClientes(), listarPlanes()
@@ -201,7 +206,12 @@ function cerrar() {
 
 <template>
   <div class="container">
-    <q-table class="table" flat bordered title="tabla" :rows="rows" :columns="columns" row-key="id">
+    <q-table class="table" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
+      <template v-slot:body-cell-idPlan="props">
+        <q-td :props="props">
+          <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
+        </q-td>
+      </template>
       <template v-slot:body-cell-opciones="props">
         <q-td :props="props">
           <q-btn class="option-button" @click="editar(props.row)">
@@ -214,7 +224,7 @@ function cerrar() {
             ✅
           </q-btn>
         </q-td>
-      </template>
+        </template>
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
           <p v-if="props.row.estado == 1" style="color:green">Activo</p>

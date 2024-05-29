@@ -24,10 +24,7 @@ let columns =ref([
 
 ])
 
-async function listarIngresos(){
-    const res = await useIngreso.listarIngreso()
-    console.log(res.data);
-    rows.value=res.data.ingreso
+
 
 async function agregarIngreso() {
     let verificado = true;
@@ -62,9 +59,6 @@ async function agregarIngreso() {
     return verificado;
 }
 
-
-
-}
       
  function abrir() {
     accion.value = 1;
@@ -74,11 +68,6 @@ async function agregarIngreso() {
 function cerrar() {
     alert.value = false;
 }     
-
-      const model = ref(null);
-      const options = [
-        '1', '2', '3', '4'
-      ];
 
 
       onMounted(()=>{
@@ -92,6 +81,19 @@ const useSedes = useStoreSedes();
 import { useStoreClientes } from "../store/clientes.js";
 const useCliente = useStoreClientes();
 
+async function listarIngresos() {
+  try {
+    const res = await useIngreso.listarIngreso();
+    console.log("Ingresos:", res.data);
+    rows.value = res.data.ingreso.map((ingreso) => ({
+      ...ingreso,
+      direccionsede: getSedeDireccion(ingreso.idSede),
+      nombrecliente: getClienteNombre(ingreso.idCliente),
+    }));
+  } catch (error) {
+    console.error("Error al listar ingresos:", error);
+  }
+}
 
 const organizarSedes = computed(() => {
     nombreCodigoS.value = sedesTodo.value.map((element) => ({
@@ -123,38 +125,58 @@ const organizarClientes = computed(() => {
 
 
 async function listarClientes() {
-    try {
-    const res = await useCliente.listarCliente()
-       clientesTodo.value = res.data.cliente;
-    } catch (error) {
-        console.error("Error al listar clientes:", error);
-    }
+  try {
+    const res = await useCliente.listarCliente();
+    console.log(res.data);
+    clientesTodo.value = res.data.cliente;
+  } catch (error) {
+    console.error("Error al listar clientes:", error);
+  }
 }
+function getSedeDireccion(id) {
+  const sede = sedesTodo.value.find((sede) => sede._id === id);
+  return sede ? sede.direccion : "Dirección no encontrada";
+}
+
+const getClienteNombre = (idCliente) => {
+  const cliente = clientesTodo.value.find((c) => c._id === idCliente);
+  return cliente ? cliente.nombre : "";
+};
 </script>
 
 <template>
     <div>
-          <q-table class="table" flat bordered title="tabla" :rows="rows" :columns="columns" row-key="id">
-      <template v-slot:body-cell-opciones="props">
-        <q-td :props="props">
-          <q-btn class="option-button" @click="editar(props.row)">
-            ✏️
-          </q-btn>
-          <q-btn v-if="props.row.estado == 1" class="option-button">
-            ❌
-          </q-btn>
-          <q-btn v-else class="option-button">
-            ✅
-          </q-btn>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-estado="props">
-        <q-td :props="props">
-          <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-          <p v-else style="color:red">Inactivo</p>
-        </q-td>
-      </template>
-    </q-table>
+        <q-table class="table" flat bordered title="tabla" :rows="rows" :columns="columns" row-key="id">
+  <template v-slot:body-cell-opciones="props">
+    <q-td :props="props">
+      <q-btn class="option-button" @click="editar(props.row)">
+        ✏️
+      </q-btn>
+      <q-btn v-if="props.row.estado == 1" class="option-button">
+        ❌
+      </q-btn>
+      <q-btn v-else class="option-button">
+        ✅
+      </q-btn>
+    </q-td>
+  </template>
+  <template v-slot:body-cell-estado="props">
+    <q-td :props="props">
+      <p v-if="props.row.estado == 1" style="color:green">Activo</p>
+      <p v-else style="color:red">Inactivo</p>
+    </q-td>
+  </template>
+  <template v-slot:body-cell-idSede="props">
+    <q-td :props="props">
+      {{ getSedeDireccion(props.row.idSede) }}
+    </q-td>
+  </template>
+  <template v-slot:body-cell-idCliente="props">
+    <q-td :props="props">{{ getClienteNombre(props.row.idCliente) }}</q-td>
+  </template>
+</q-table>
+
+
 
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Ingreso</q-btn>
