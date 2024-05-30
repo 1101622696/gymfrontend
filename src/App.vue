@@ -1,94 +1,9 @@
 <template>
-  <q-layout view="hHh lpR fFf">
 
-    <q-header reveal elevated class="bg-primary text-white">
-      <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
-
-        <q-toolbar-title>
-          <q-avatar>
-<img src="https://img.freepik.com/vector-premium/logotipo-fitness-levantamiento-pesas_609277-112.jpg">
-          </q-avatar>
-          GIMNASIO
-        </q-toolbar-title>
-      </q-toolbar>
-    </q-header>
-<q-drawer v-model="leftDrawerOpen" side="left" overlay bordered>
-      <q-list>
-        <q-item to="/" clickable>
-          <q-item-section avatar>
-            <q-icon name="login" />
-          </q-item-section>
-          <q-item-section>Login</q-item-section>
-        </q-item>
-        <q-item to="/clientes" clickable>
-          <q-item-section avatar>
-            <q-icon name="people" />
-          </q-item-section>
-          <q-item-section>Clientes</q-item-section>
-        </q-item>
-        <q-item to="/ingresos" clickable>
-          <q-item-section avatar>
-            <q-icon name="attach_money" />
-          </q-item-section>
-          <q-item-section>Ingresos</q-item-section>
-        </q-item>
-        <q-item to="/inventario" clickable>
-          <q-item-section avatar>
-            <q-icon name="inventory" />
-          </q-item-section>
-          <q-item-section>Inventario</q-item-section>
-        </q-item>
-        <q-item to="/mantenimiento" clickable>
-          <q-item-section avatar>
-            <q-icon name="build" />
-          </q-item-section>
-          <q-item-section>Mantenimiento</q-item-section>
-        </q-item>
-        <q-item to="/maquinas" clickable>
-          <q-item-section avatar>
-            <q-icon name="fitness_center" />
-          </q-item-section>
-          <q-item-section>Máquinas</q-item-section>
-        </q-item>
-        <q-item to="/pagos" clickable>
-          <q-item-section avatar>
-            <q-icon name="credit_card" />
-          </q-item-section>
-          <q-item-section>Pagos</q-item-section>
-        </q-item>
-        <q-item to="/planes" clickable>
-          <q-item-section avatar>
-            <q-icon name="event_note" />
-          </q-item-section>
-          <q-item-section>Planes</q-item-section>
-        </q-item>
-        <q-item to="/sedes" clickable>
-          <q-item-section avatar>
-            <q-icon name="location_on" />
-          </q-item-section>
-          <q-item-section>Sedes</q-item-section>
-        </q-item>
-        <q-item to="/usuarios" clickable>
-          <q-item-section avatar>
-            <q-icon name="person" />
-          </q-item-section>
-          <q-item-section>Usuarios</q-item-section>
-        </q-item>
-        <q-item to="/ventas" clickable>
-          <q-item-section avatar>
-            <q-icon name="shopping_cart" />
-          </q-item-section>
-          <q-item-section>Ventas</q-item-section>
-        </q-item>
-      </q-list>
-    </q-drawer>
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-
-  </q-layout>
-</template>
+  <div id="#app">
+  </div>
+  <router-view></router-view>
+</template> 
 
 <script>
 import { ref } from 'vue'
@@ -116,7 +31,7 @@ export default {
   color: white;
 }
 </style>
-
+*/
 
 
 
