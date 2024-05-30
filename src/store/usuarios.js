@@ -19,7 +19,7 @@ let loading = ref(false)
             console.log(token.value);
             const response = await axios.get("api/usuarios/listar",{
                 headers:{
-                    token: token.value
+                    "x-token": token.value
                 }
         });
            usuarios.value = response.data;

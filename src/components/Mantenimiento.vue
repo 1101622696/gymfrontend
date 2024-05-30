@@ -35,7 +35,7 @@ let columns =ref([
 
 ])
 
-async function agregarmantenimiento() {
+async function guardar() {
     let verificado = true;
 
     if (idMantenimiento.value === "") {

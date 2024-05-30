@@ -39,7 +39,7 @@ onMounted(()=>{
   listarInventario()
 })
 
-async function agregarInventario() {
+async function guardar() {
     let verificado = true;
 
     if (codigo.value === "") {

@@ -9,14 +9,82 @@ const useCliente = useStoreClientes();
 
 
 let agregar=ref(false)
+let botoneditar=ref(false)
 
 function agregarpago(){
+  botoneditar.value=true
+    agregar.value = true;
+
+id.value=""
+plan.value=""
+fecha.value=""
+valor.value=""
+}
+
+
+async function guardar(){
+
 agregar.value = true;
+if (await validar()){
+  const todo={
+    id:id.value,
+    plan:plan.value,
+    fecha:fecha.value,
+    valor:valor.value
+    }
+let nombrez= await usePagos.postPago(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo eniar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPagos(), listarClientes()
+}
+}
+}
+
+function editar(info){
+    agregar.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+id.value=informacion.value
+plan.value=informacion.value
+fecha.value=informacion.value
+valor.value=informacion.value
+}
+
+async function editarpago(){
+if (await validar()){
+  const todo={
+    id:id.value,
+    plan:plan.value,
+    fecha:fecha.value,
+    valor:valor.value
+
+    }
+let nombrez= await usePagos.putPago(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo eniar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPagos(), listarClientes()
+}
+}
+}
+
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await usePagos.putDesactivarPago(info._id)
+}else if(info.estado == 0){
+let activado= await usePagos.putActivarPago(info._id)
+}
+listarPagos()
 }
 
 function cerrar(){
     agregar.value = false;
 }
+let informacion=ref("")
 let id = ref("");
 let plan = ref("");
 let fecha = ref("");
@@ -33,7 +101,7 @@ let columns = ref([
       { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
     ]);
 
-async function agregarpago() {
+async function validar() {
     let verificado = true;
 
     if (id.value === "") {
@@ -91,35 +159,31 @@ async function listarPagos() {
       await listarPagos();
     });
 
-    const organizarClientes = computed(() => {
-      nombreCodigo.value = clientesTodo.value.map((element) => ({
-        label: `${element.documento}`,
-        valor: `${element._id}`,
-        nombre: `${element.nombre}`,
-      }));
-      return nombreCodigo.value;
-    });
+const organizarClientes = computed(() => {
+  nombreCodigo.value = clientesTodo.value.map((element) => ({
+    label: `${element.documento}`,
+    valor: `${element._id}`,
+    nombre: `${element.nombre}`,
+  }));
+  return nombreCodigo.value;
+});
 
-    async function listarClientes() {
-      try {
-        const res = await useCliente.listarCliente();
-        console.log("Clientes:", res.data);
-        clientesTodo.value = res.data.cliente;
-      } catch (error) {
-        console.error("Error al listar clientes:", error);
-      }
-    }
+async function listarClientes() {
+  try {
+    const res = await useCliente.listarCliente();
+    clientesTodo.value = res.data.cliente;
+  } catch (error) {
+    console.error("Error al listar clientes:", error);
+  }
+}
 
-    function getClienteDocumento(id) {
-      console.log("buscando cliente con ID:", id);
-      const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
-      if (cliente) {
-        console.log("cliente encontrado:", cliente);
-      } else {
-        console.log("cliente no encontrado para el ID:", id);
-      }
-      return cliente ? cliente.documento : "Documento no encontrado";
-    }
+function getClienteDocumento(id) {
+  const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
+  console.log(id);
+  console.log(clientesTodo.value);
+
+  return cliente ? cliente.documento : "Documento no encontrado";
+}
 
     function formatDate(dateStr) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -134,7 +198,7 @@ async function listarPagos() {
       <q-table class="table" flat bordered title="Pagos" :rows="rows" :columns="columns" row-key="id">
 <template v-slot:body-cell-id="props">
       <q-td :props="props">
-        <p>{{ getClienteDocumento(props.row.id) }}</p>
+          <p>{{ getClienteDocumento(props.row.id) }}</p>
       </q-td>
     </template>
         <template v-slot:body-cell-fecha="props">
@@ -157,8 +221,12 @@ async function listarPagos() {
         </template>
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
-            <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-            <p v-else style="color:red">Inactivo</p>
+            <q-btn v-if="props.row.estado == 1"
+            @click="editarestado(props.row)"
+             style="color:green">Activo</q-btn>
+            <q-btn v-else 
+               @click="editarestado(props.row)"
+               style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
@@ -178,10 +246,13 @@ async function listarPagos() {
         <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
     </div>
     
-    <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-
+    
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
       </div>
+
+
     </div>
   </template>
   

@@ -34,7 +34,7 @@ let columns =ref([
 
 ])
 
-async function agregarmaquina() {
+async function guardar() {
     let verificado = true;
 
     if (idSede.value === "") {

@@ -35,17 +35,13 @@ let columns = ref([
   { name: "estado", label: "Estado", field: "estado", align: "center" },
 ]);
 
-      const model = ref(null);
-      const options = [
-        '1', '2', '3', '4'
-      ];
 
 function llamaragregarCliente() {   
   agregar.value = true;
 }
 
 
-async function agregarCliente() {
+async function guardar() {
     let verificado = true;
 
     if (nombre.value === "") {

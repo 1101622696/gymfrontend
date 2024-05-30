@@ -35,7 +35,7 @@ let columns =ref([
 
 ])
 
-async function agregarPlan() {
+async function guardar() {
     let verificado = true;
 
     if (codigo.value === "") {

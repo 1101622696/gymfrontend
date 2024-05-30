@@ -43,7 +43,7 @@ let columns =ref([
 
 ])
 
-async function agregarventa() {
+async function guardar() {
     let verificado = true;
 
     if (id.value === "") {
