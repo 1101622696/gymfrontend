@@ -7,10 +7,9 @@ let alert = ref(false)
 let accion = ref(1)
 let rows=ref([])
 
-let botoneditar=ref(false)
 
 function abrir(){
-  botoneditar.value=true
+  accion.value=1
     alert.value = true;
 
 idSede.value=""
@@ -33,14 +32,14 @@ if(nombrez.status!=200){
   mostrarMensajeError("no se pudo enviar")
 }else{
   mostrarMensajeExito("muy bien")
-  listarPagos(), listarClientes()
+  listarIngresos(), listarClientes(), listarSedes();
 }
 }
 }
 
 function editar(info){
     alert.value = true;
-    botoneditar.value = false;
+    accion.value !=1;
 
 informacion.value=info
 idSede.value=informacion.value
@@ -58,10 +57,10 @@ if (await validar()){
     }
 let nombrez= await useIngreso.putIngresos(informacion._id, todo)
 if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo eniar")
+  mostrarMensajeError("no se pudo enviar")
 }else{
   mostrarMensajeExito("muy bien")
-  listarPagos(), listarClientes()
+  listarIngresos()
 }
 }
 }
@@ -87,7 +86,7 @@ let columns =ref([
 
 
 
-async function Agregar() {
+async function validar() {
     let verificado = true;
 
     if (fecha.value === "") {

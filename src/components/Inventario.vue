@@ -6,9 +6,72 @@ const useInventario = useStoreInventario();
 
 let agregar=ref(false)
 
+let botoneditar=ref(false)
+
 function agregarInventario(){
-agregar.value = true;
+  botoneditar.value=true
+    agregar.value = true;
+
+codigo.value=""
+descripcion.value=""
+valor.value=""
+cantidad.value=""
+
 }
+
+
+async function guardar(){
+
+agregar.value = true;
+if (await validar()){
+  const todo={
+    codigo:codigo.value,
+    descripcion:descripcion.value,
+    valor:valor.value,
+    cantidad:cantidad.value
+
+    }
+let nombrez= await useInventario.postInventario(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarInventario()
+}
+}
+}
+
+function editar(info){
+    agregar.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+codigo.value=informacion.value
+descripcion.value=informacion.value
+valor.value=informacion.value
+cantidad.value=informacion.value
+
+}
+
+async function editarinventario(){
+if (await validar()){
+  const todo={
+    codigo:codigo.value,
+    descripcion:descripcion.value,
+    valor:valor.value,
+    cantidad:cantidad.value
+
+    }
+let nombrez= await useInventario.putInventario(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo eniar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarInventario()
+}
+}
+}
+
 
 function cerrar() {
   agregar.value = false;
@@ -40,7 +103,7 @@ onMounted(()=>{
   listarInventario()
 })
 
-async function guardar() {
+async function validar() {
     let verificado = true;
 
     if (codigo.value === "") {
@@ -95,22 +158,6 @@ function mostrarMensajeExito(mensaje) {
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
-              ❌
-            </q-btn>
-            <q-btn v-else class="option-button">
-              ✅
-            </q-btn>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
-            <q-btn v-if="props.row.estado == 1"
-            @click="editarestado(props.row)"
-             style="color:green">Activo</q-btn>
-            <q-btn v-else 
-               @click="editarestado(props.row)"
-               style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
@@ -130,7 +177,7 @@ function mostrarMensajeExito(mensaje) {
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-else class="button" @click="editarinventario()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
       </div>
     </div>

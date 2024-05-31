@@ -6,6 +6,85 @@ const useSedes = useStoreSedes();
 let alert = ref(false)
 let accion = ref(1)
 
+function abrir(){
+  accion.value=1
+    alert.value = true;
+
+nombre.value=""
+direccion.value=""
+telefono.value=""
+ciudad.value=""
+codigo.value=""
+horario.value=""
+}
+
+
+async function guardar(){
+
+alert.value = true;
+if (await validar()){
+  const todo={
+    nombre:nombre.value,
+    direccion:direccion.value,
+    telefono:telefono.value,
+    ciudad:ciudad.value,
+    codigo:codigo.value,
+    horario:horario.value
+    }
+let nombrez= await useSedes.postSede(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarSedes();
+}
+}
+}
+
+function editar(info){
+    alert.value = true;
+    accion.value !=1;
+
+informacion.value=info
+nombre.value=informacion.value
+direccion.value=informacion.value
+telefono.value=informacion.value
+ciudad.value=informacion.value
+codigo.value=informacion.value
+horario.value=informacion.value
+}
+
+async function editarsede(){
+if (await validar()){
+  const todo={
+    nombre:nombre.value,
+    direccion:direccion.value,
+    telefono:telefono.value,
+    ciudad:ciudad.value,
+    codigo:codigo.value,
+    horario:horario.value
+
+    }
+let nombrez= await useSedes.putSedes(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarSedes();
+}
+}
+}
+
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await useSedes.putDesactivarSede(info._id)
+}else if(info.estado == 0){
+let activado= await useSedes.putActivarSede(info._id)
+}
+  listarSedes();
+}
+
+
 let informacion=ref("")
 let nombre = ref("");
 let direccion = ref("");
@@ -27,7 +106,7 @@ let columns =ref([
 
 ])
 
-async function Agregar() {
+async function validar() {
     let verificado = true;
 
     if (nombre.value === "") {
@@ -85,11 +164,7 @@ async function listarSedes(){
     rows.value=res.data.sede
 }
       
-       function abrir() {
-    accion.value = 1;
-    alert.value = true;
 
-}
 function cerrar() {
     alert.value = false;
 }  
@@ -167,7 +242,7 @@ onMounted(()=>{
               </template>
             </q-btn>
             <q-btn
-            @click="editarpago()"
+            @click="editarsede()"
               v-if="accion !== 1"
               color="blue"
               class="text-white"

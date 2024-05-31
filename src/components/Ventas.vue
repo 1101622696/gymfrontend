@@ -17,9 +17,11 @@ function agregarventa(){
     agregar.value = true;
 
 id.value=""
-plan.value=""
+codigo.value=""
 fecha.value=""
-valor.value=""
+valorUnitario.value=""
+cantidad.value=""
+
 }
 
 
@@ -29,16 +31,17 @@ agregar.value = true;
 if (await validar()){
   const todo={
     id:id.value,
-    plan:plan.value,
+    codigo:codigo.value,
     fecha:fecha.value,
-    valor:valor.value
+    valorUnitario:valorUnitario.value,
+    cantidad:cantidad.value
     }
-let nombrez= await usePagos.postPago(todo)
+let nombrez= await useSales.postVenta(todo)
 if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo eniar")
+  mostrarMensajeError("no se pudo enviar")
 }else{
   mostrarMensajeExito("muy bien")
-  listarPagos(), listarClientes()
+  listarVentas(), listarInventarios();
 }
 }
 }
@@ -49,37 +52,30 @@ function editar(info){
 
 informacion.value=info
 id.value=informacion.value
-plan.value=informacion.value
+codigo.value=informacion.value
 fecha.value=informacion.value
-valor.value=informacion.value
+valorUnitario.value=informacion.value
+cantidad.value=informacion.value
 }
 
-async function editarpago(){
+async function editarventa(){
 if (await validar()){
   const todo={
     id:id.value,
-    plan:plan.value,
+    codigo:codigo.value,
     fecha:fecha.value,
-    valor:valor.value
+    valorUnitario:valorUnitario.value,
+    cantidad:cantidad.value
 
     }
-let nombrez= await usePagos.putPago(informacion._id, todo)
+let nombrez= await useSales.putVenta(informacion._id, todo)
 if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo eniar")
+  mostrarMensajeError("no se pudo enviar")
 }else{
   mostrarMensajeExito("muy bien")
-  listarPagos(), listarClientes()
+  listarVentas(), listarInventarios();
 }
 }
-}
-
-async function editarestado(info){
-if(info.estado == 1){
-let desactivado= await usePagos.putDesactivarPago(info._id)
-}else if(info.estado == 0){
-let activado= await usePagos.putActivarPago(info._id)
-}
-listarPagos()
 }
 
 function cerrar(){
@@ -92,8 +88,8 @@ onMounted(()=>{
 
 let informacion=ref("")
 let id = ref("");
-let fecha = ref("");
 let codigo = ref("");
+let fecha = ref("");
 let valorUnitario = ref("");
 let cantidad = ref("");
 let total = ref("");
@@ -112,7 +108,7 @@ let columns =ref([
 
 ])
 
-async function guardar() {
+async function validar() {
     let verificado = true;
 
     if (id.value === "") {
@@ -254,7 +250,7 @@ function getInventarioCodigo(id) {
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-else class="button" @click="editarventa()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

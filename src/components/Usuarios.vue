@@ -8,13 +8,89 @@ const useUsuarios = useStoreUsuarios();
 const useSedes = useStoreSedes();
 
 
+let alert = ref(false)
+let accion = ref(1)
+
+function abrir(){
+  accion.value=1
+  alert.value = true;
+
+id.value=""
+nombre.value=""
+email.value=""
+telefono.value=""
+rol.value=""
+
+}
+
+
+async function guardar(){
+
+alert.value = true;
+if (await validar()){
+  const todo={
+    id:id.value,
+    nombre:nombre.value,
+    email:email.value,
+    telefono:telefono.value,
+    rol:rol.value
+    }
+let nombrez= await useSedes.postUsuario(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarUsuarios(), listarSedes();
+}
+}
+}
+
+function editar(info){
+    alert.value = true;
+    accion.value !=1;
+
+informacion.value=info
+id.value=informacion.value
+nombre.value=informacion.value
+email.value=informacion.value
+telefono.value=informacion.value
+rol.value=informacion.value
+}
+
+async function editarusuario(){
+if (await validar()){
+  const todo={
+    id:id.value,
+    nombre:nombre.value,
+    email:email.value,
+    telefono:telefono.value,
+    rol:rol.value
+
+    }
+let nombrez= await useSedes.putUsuarios(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarUsuarios(), listarSedes();
+}
+}
+}
+
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await useSedes.putDesactivarUsuario(info._id)
+}else if(info.estado == 0){
+let activado= await useSedes.putActivarUsuario(info._id)
+}
+ listarSedes();
+}
+
+
+
 onMounted(()=>{
   listarUsuarios(), listarSedes();
 })
-
-
-let alert = ref(false)
-let accion = ref(1)
 
 let informacion=ref("")
 let id = ref("");
@@ -37,11 +113,10 @@ let columns =ref([
 
 ])
 function validarEmail(email) {
-    // Expresión regular para validar un email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
-async function Agregar() {
+async function validar() {
     let verificado = true;
 
     if (nombre.value === "") {
@@ -89,11 +164,7 @@ function mostrarMensajeExito(mensaje) {
     });
 }
 
-  function abrir() {
-accion.value = 1;
-alert.value = true;
 
-}
 function cerrar() {
 alert.value = false;
 }  
@@ -222,7 +293,7 @@ async function listarSedes() {
               </template>
             </q-btn>
             <q-btn
-            @click="editarpago()"
+            @click="editarusuario()"
               v-if="accion !== 1"
               color="red"
               class="text-white"

@@ -5,9 +5,82 @@ import { useStoreMaquina } from "../store/maquinas.js";
 const useMaquina = useStoreMaquina();
 
 let agregar=ref(false)
+let botoneditar=ref(false)
 
 function agregarmaquina(){
+  botoneditar.value=true
+  agregar.value = true;
+
+idSede.value=""
+codigo.value=""
+descripcion.value=""
+fechaIngreso.value=""
+fechaUltmantenimiento.value=""
+
+}
+
+
+async function guardar(){
+
 agregar.value = true;
+if (await validar()){
+  const todo={
+    idSede:idSede.value,
+    codigo:codigo.value,
+    descripcion:descripcion.value,
+    fechaIngreso:fechaIngreso.value,
+    fechaUltmantenimiento:fechaUltmantenimiento.value
+    }
+let nombrez= await useMaquina.postMaquina(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarMaquina(), listarSedes();
+}
+}
+}
+
+function editar(info){
+    agregar.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+idSede.value=informacion.value
+codigo.value=informacion.value
+descripcion.value=informacion.value
+fechaIngreso.value=informacion.value
+fechaUltmantenimiento.value=informacion.value
+}
+
+async function editarmaquina(){
+if (await validar()){
+  const todo={
+    idSede:idSede.value,
+    codigo:codigo.value,
+    descripcion:descripcion.value,
+    fechaIngreso:fechaIngreso.value,
+    fechaUltmantenimiento:fechaUltmantenimiento.value
+
+
+    }
+let nombrez= await useMaquina.putMaquina(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarMaquina(), listarSedes();
+}
+}
+}
+
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await useMaquina.putDesactivarMaquina(info._id)
+}else if(info.estado == 0){
+let activado= await useMaquina.putActivarMaquina(info._id)
+}
+  listarMaquina()
 }
 
 function cerrar(){
@@ -35,7 +108,7 @@ let columns =ref([
 
 ])
 
-async function guardar() {
+async function validar() {
     let verificado = true;
 
     if (idSede.value === "") {
@@ -184,7 +257,7 @@ function getSedeNombre(id) {
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-else class="button" @click="editarmaquina()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

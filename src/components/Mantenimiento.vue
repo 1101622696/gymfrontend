@@ -7,10 +7,73 @@ import { useStoreMantenimiento } from "../store/mantenimiento.js";
 const useMantenimiento = useStoreMantenimiento();
 
 let agregar=ref(false)
+let botoneditar=ref(false)
 
 function agregarmantenimiento(){
-agregar.value = true;
+  botoneditar.value=true
+    agregar.value = true;
+
+idMantenimiento.value=""
+descripcion.value=""
+responsable.value=""
+fecha.value=""
+valor.value=""
 }
+
+
+async function guardar(){
+
+agregar.value = true;
+if (await validar()){
+  const todo={
+    idMantenimiento:idMantenimiento.value,
+    descripcion:descripcion.value,
+    responsable:responsable.value,
+    fecha:fecha.value,
+    valor:valor.value
+    }
+let nombrez= await useMantenimiento.postMantenimiento(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarMaquina(), listarMantenimiento();
+}
+}
+}
+
+function editar(info){
+    agregar.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+idMantenimiento.value=informacion.value
+descripcion.value=informacion.value
+responsable.value=informacion.value
+fecha.value=informacion.value
+valor.value=informacion.value
+}
+
+async function editarmantenimiento(){
+if (await validar()){
+  const todo={
+    idMantenimiento:idMantenimiento.value,
+    descripcion:descripcion.value,
+    responsable:responsable.value,
+    fecha:fecha.value,
+    valor:valor.value
+
+    }
+let nombrez= await useMantenimiento.putMantenimiento(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarMantenimiento();
+}
+}
+}
+
 
 function cerrar(){
     agregar.value = false;
@@ -18,9 +81,9 @@ function cerrar(){
 
 let informacion=ref("")
 let idMantenimiento = ref("");
-let fecha = ref("");
 let descripcion = ref("");
 let responsable = ref("");
+let fecha = ref("");
 let valor = ref("");
 let maquinaTodo = ref([]);
 let nombreCodigo = ref([]);
@@ -36,7 +99,7 @@ let columns =ref([
 
 ])
 
-async function guardar() {
+async function validar() {
     let verificado = true;
 
     if (idMantenimiento.value === "") {
@@ -108,7 +171,7 @@ async function listarMaquina() {
     const res = await useMaquina.listarMaquina()
        maquinaTodo.value = res.data.maquina;
     } catch (error) {
-        console.error("Error al listar planes:", error);
+        console.error("Error al listar maquinas:", error);
     }
 }
       
@@ -180,7 +243,7 @@ function getMaquinaCodigo(id) {
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-else class="button" @click="editarmantenimiento()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

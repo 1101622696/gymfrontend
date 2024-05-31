@@ -6,9 +6,78 @@ const usePlan = useStorePlanes();
 
 let agregar=ref(false)
 
+let botoneditar=ref(false)
+
 function agregarPlan(){
-agregar.value = true;
+  botoneditar.value=true
+    agregar.value = true;
+
+codigo.value=""
+descripcion.value=""
+dias.value=""
+valor.value=""
 }
+
+
+async function guardar(){
+
+agregar.value = true;
+if (await validar()){
+  const todo={
+    codigo:codigo.value,
+    descripcion:descripcion.value,
+    dias:dias.value,
+    valor:valor.value
+    }
+let nombrez= await usePlan.postPlan(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPlanes();
+}
+}
+}
+
+function editar(info){
+    agregar.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+codigo.value=informacion.value
+descripcion.value=informacion.value
+dias.value=informacion.value
+valor.value=informacion.value
+}
+
+async function editarpago(){
+if (await validar()){
+  const todo={
+    codigo:codigo.value,
+    descripcion:descripcion.value,
+    dias:dias.value,
+    valor:valor.value
+
+    }
+let nombrez= await usePlan.putPlan(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPlanes();
+}
+}
+}
+
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await usePlan.putDesactivarPlan(info._id)
+}else if(info.estado == 0){
+let activado= await usePlan.putActivarPlan(info._id)
+}
+  listarPlanes();
+}
+
 
 function cerrar(){
     agregar.value = false;
@@ -21,8 +90,8 @@ onMounted(()=>{
 let informacion=ref("")
 let codigo = ref("");
 let descripcion = ref("");
-let valor = ref("");
 let dias = ref("");
+let valor = ref("");
 
 let rows=ref([])
 let columns =ref([
@@ -36,7 +105,7 @@ let columns =ref([
 
 ])
 
-async function guardar() {
+async function validar() {
     let verificado = true;
 
     if (codigo.value === "") {
