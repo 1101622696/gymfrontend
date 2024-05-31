@@ -34,7 +34,7 @@ if (await validar()){
     }
 let nombrez= await usePagos.postPago(todo)
 if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo eniar")
+  mostrarMensajeError("no se pudo enviar")
 }else{
   mostrarMensajeExito("muy bien")
   listarPagos(), listarClientes()
@@ -80,6 +80,8 @@ let activado= await usePagos.putActivarPago(info._id)
 }
 listarPagos()
 }
+
+
 
 function cerrar(){
     agregar.value = false;

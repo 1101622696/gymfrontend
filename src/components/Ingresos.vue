@@ -7,6 +7,67 @@ let alert = ref(false)
 let accion = ref(1)
 let rows=ref([])
 
+let botoneditar=ref(false)
+
+function abrir(){
+  botoneditar.value=true
+    alert.value = true;
+
+idSede.value=""
+idCliente.value=""
+fecha.value=""
+}
+
+
+async function guardar(){
+
+alert.value = true;
+if (await validar()){
+  const todo={
+    idSede:idSede.value,
+    idCliente:idCliente.value,
+    fecha:fecha.value,
+    }
+let nombrez= await useIngreso.postIngresos(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPagos(), listarClientes()
+}
+}
+}
+
+function editar(info){
+    alert.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+idSede.value=informacion.value
+idCliente.value=informacion.value
+fecha.value=informacion.value
+}
+
+async function editarpago(){
+if (await validar()){
+  const todo={
+    idSede:idSede.value,
+    idCliente:idCliente.value,
+    fecha:fecha.value,
+
+    }
+let nombrez= await useIngreso.putIngresos(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo eniar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPagos(), listarClientes()
+}
+}
+}
+
+let informacion=ref("")
+
 let idSede = ref("");
 let idCliente = ref("");
 let fecha = ref("");
@@ -65,12 +126,7 @@ function mostrarMensajeExito(mensaje) {
     });
 }
 
-      
- function abrir() {
-    accion.value = 1;
-    alert.value = true;
 
-}
 function cerrar() {
     alert.value = false;
 }     
@@ -169,25 +225,13 @@ function getClienteDocumento(id) {
           <p>{{ formatDate(props.row.fecha) }}</p>
         </q-td>
       </template>
-      <template v-slot:body-cell-opciones="props">
-        <q-td :props="props">
-          <q-btn class="option-button" @click="editar(props.row)">
-            ✏️
-          </q-btn>
-          <q-btn v-if="props.row.estado == 1" class="option-button">
-            ❌
-          </q-btn>
-          <q-btn v-else class="option-button">
-            ✅
-          </q-btn>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-estado="props">
-        <q-td :props="props">
-          <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-          <p v-else style="color:red">Inactivo</p>
-        </q-td>
-      </template>
+        <template v-slot:body-cell-opciones="props">
+          <q-td :props="props">
+            <q-btn class="option-button" @click="editar(props.row)">
+              ✏️
+            </q-btn>
+          </q-td>
+        </template>
     </q-table>
 
     <div style="margin-left: 5%; text-align: end; margin-right: 5%">
@@ -206,12 +250,12 @@ function getClienteDocumento(id) {
           <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede" style="background-color: #grey; margin-bottom: 20px" />
           <q-select standout v-model="idCliente" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente" style="background-color: #grey; margin-bottom: 20px" />
           <q-card-actions align="right">
-            <q-btn v-if="accion === 1" color="red" class="text-white" :loading="useIngreso.loading">Agregar
+            <q-btn @click="guardar()" v-if="accion === 1" color="red" class="text-white" :loading="useIngreso.loading">Agregar
               <template v-slot:loading>
                 <q-spinner color="primary" size="1em" />
               </template>
             </q-btn>
-            <q-btn v-if="accion !== 1" color="red" class="text-white" :loading="useIngreso.loading">Editar
+            <q-btn @click="editarpago()" v-if="accion !== 1" color="red" class="text-white" :loading="useIngreso.loading">Editar
               <template v-slot:loading>
                 <q-spinner color="primary" size="1em" />
               </template>

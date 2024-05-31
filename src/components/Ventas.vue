@@ -10,8 +10,76 @@ const useInventario = useStoreInventario();
 
 let agregar=ref(false)
 
+let botoneditar=ref(false)
+
 function agregarventa(){
+  botoneditar.value=true
+    agregar.value = true;
+
+id.value=""
+plan.value=""
+fecha.value=""
+valor.value=""
+}
+
+
+async function guardar(){
+
 agregar.value = true;
+if (await validar()){
+  const todo={
+    id:id.value,
+    plan:plan.value,
+    fecha:fecha.value,
+    valor:valor.value
+    }
+let nombrez= await usePagos.postPago(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo eniar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPagos(), listarClientes()
+}
+}
+}
+
+function editar(info){
+    agregar.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+id.value=informacion.value
+plan.value=informacion.value
+fecha.value=informacion.value
+valor.value=informacion.value
+}
+
+async function editarpago(){
+if (await validar()){
+  const todo={
+    id:id.value,
+    plan:plan.value,
+    fecha:fecha.value,
+    valor:valor.value
+
+    }
+let nombrez= await usePagos.putPago(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo eniar")
+}else{
+  mostrarMensajeExito("muy bien")
+  listarPagos(), listarClientes()
+}
+}
+}
+
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await usePagos.putDesactivarPago(info._id)
+}else if(info.estado == 0){
+let activado= await usePagos.putActivarPago(info._id)
+}
+listarPagos()
 }
 
 function cerrar(){
@@ -22,6 +90,7 @@ onMounted(()=>{
   listarVentas(), listarInventarios();
 })
 
+let informacion=ref("")
 let id = ref("");
 let fecha = ref("");
 let codigo = ref("");
@@ -158,13 +227,15 @@ function getInventarioCodigo(id) {
         </template>
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
-            <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-            <p v-else style="color:red">Inactivo</p>
+            <q-btn v-if="props.row.estado == 1"
+            @click="editarestado(props.row)"
+             style="color:green">Activo</q-btn>
+            <q-btn v-else 
+               @click="editarestado(props.row)"
+               style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
-  
-      <!-- <button class="button" @click="listarVentas()">Traer Datos</button> -->
   
       <button class="button" @click="agregarventa()">Agregar Venta</button>
   
@@ -182,7 +253,8 @@ function getInventarioCodigo(id) {
         <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
-    <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

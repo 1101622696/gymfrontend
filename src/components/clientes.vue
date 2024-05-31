@@ -12,6 +12,94 @@ const usePlan = useStorePlanes();
 let agregar = ref(false);
 const useCliente = useStoreClientes();
 
+let botoneditar=ref(false)
+
+function llamaragregarCliente(){
+  botoneditar.value=true
+    agregar.value = true;
+
+nombre.value=""
+documento.value=""
+direccion.value=""
+fechaNacimiento.value=""
+telefono.value=""
+idplan.value=""
+foto.value=""
+
+}
+
+
+async function guardar(){
+
+agregar.value = true;
+if (await validar()){
+  const todo={
+    nombre:nombre.value,
+    documento:documento.value,
+    direccion:direccion.value,
+    fechaNacimiento:fechaNacimiento.value,
+    telefono:telefono.value,
+    idplan:idplan.value,
+    foto:foto.value
+
+    }
+let nombrez= await useCliente.postCliente(todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+listarClientes(), listarPlanes()}
+}
+}
+
+function editar(info){
+    agregar.value = true;
+    botoneditar.value = false;
+
+informacion.value=info
+
+nombre.value=informacion.value
+documento.value=informacion.value
+direccion.value=informacion.value
+fechaNacimiento.value=informacion.value
+telefono.value=informacion.value
+idplan.value=informacion.value
+foto.value=informacion.value
+
+}
+
+async function editarcliente(){
+if (await validar()){
+  const todo={
+    nombre:nombre.value,
+    documento:documento.value,
+    direccion:direccion.value,
+    fechaNacimiento:fechaNacimiento.value,
+    telefono:telefono.value,
+    idplan:idplan.value,
+    foto:foto.value
+
+
+    }
+let nombrez= await useCliente.putCliente(informacion._id, todo)
+if(nombrez.status!=200){
+  mostrarMensajeError("no se pudo enviar")
+}else{
+  mostrarMensajeExito("muy bien")
+listarClientes(), listarPlanes()}
+}
+}
+
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await useCliente.putDesactivarCliente(info._id)
+}else if(info.estado == 0){
+let activado= await useCliente.putActivarCliente(info._id)
+}
+listarClientes()
+}
+
+let informacion=ref("")
 let nombre = ref("");
 let documento = ref("");
 let direccion = ref("");
@@ -36,12 +124,7 @@ let columns = ref([
 ]);
 
 
-function llamaragregarCliente() {   
-  agregar.value = true;
-}
-
-
-async function guardar() {
+async function validar() {
     let verificado = true;
 
     if (nombre.value === "") {
@@ -179,28 +262,30 @@ function cerrar() {
           <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
-      <template v-slot:body-cell-opciones="props">
-        <q-td :props="props">
-          <q-btn class="option-button" @click="editar(props.row)">
-            ✏️
-          </q-btn>
-          <q-btn v-if="props.row.estado == 1" class="option-button">
-            ❌
-          </q-btn>
-          <q-btn v-else class="option-button">
-            ✅
-          </q-btn>
-        </q-td>
+        <template v-slot:body-cell-opciones="props">
+          <q-td :props="props">
+            <q-btn class="option-button" @click="editar(props.row)">
+              ✏️
+            </q-btn>
+            <q-btn v-if="props.row.estado == 1" class="option-button">
+              ❌
+            </q-btn>
+            <q-btn v-else class="option-button">
+              ✅
+            </q-btn>
+          </q-td>
         </template>
-      <template v-slot:body-cell-estado="props">
-        <q-td :props="props">
-          <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-          <p v-else style="color:red">Inactivo</p>
-        </q-td>
-      </template>
+        <template v-slot:body-cell-estado="props">
+          <q-td :props="props">
+            <q-btn v-if="props.row.estado == 1"
+            @click="editarestado(props.row)"
+             style="color:green">Activo</q-btn>
+            <q-btn v-else 
+               @click="editarestado(props.row)"
+               style="color:red">Inactivo</q-btn>
+          </q-td>
+        </template>
     </q-table>
-
-    <!-- <button class="button" @click="listarClientes()">Traer Datos</button> -->
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
 
     <div class="crearcliente" v-if="agregar">
@@ -218,7 +303,8 @@ function cerrar() {
       />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
       </div>
-      <button class="button" @click="agregarCliente()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarcliente()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
     </div>
   </div>
 </template>

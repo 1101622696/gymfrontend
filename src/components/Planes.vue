@@ -18,6 +18,7 @@ onMounted(()=>{
   listarPlanes();
 })
 
+let informacion=ref("")
 let codigo = ref("");
 let descripcion = ref("");
 let valor = ref("");
@@ -109,14 +110,15 @@ async function listarPlanes(){
         </template>
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
-            <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-            <p v-else style="color:red">Inactivo</p>
+            <q-btn v-if="props.row.estado == 1"
+            @click="editarestado(props.row)"
+             style="color:green">Activo</q-btn>
+            <q-btn v-else 
+               @click="editarestado(props.row)"
+               style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
-  
-      <!-- <button class="button" @click="listarPlanes()">Traer Datos</button> -->
-
 
   <div>
       <button class="button" @click="agregarPlan()">Agregar Plan</button>
@@ -133,7 +135,8 @@ async function listarPlanes(){
         <input class="input" type="text" placeholder="Dias" v-model.trim="dias" />
     </div>
     
-    <button class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

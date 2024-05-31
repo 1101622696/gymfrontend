@@ -6,6 +6,7 @@ const useSedes = useStoreSedes();
 let alert = ref(false)
 let accion = ref(1)
 
+let informacion=ref("")
 let nombre = ref("");
 let direccion = ref("");
 let telefono = ref("");
@@ -117,17 +118,18 @@ onMounted(()=>{
         </template>
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
-            <p v-if="props.row.estado == 1" style="color:green">Activo</p>
-            <p v-else style="color:red">Inactivo</p>
+            <q-btn v-if="props.row.estado == 1"
+            @click="editarestado(props.row)"
+             style="color:green">Activo</q-btn>
+            <q-btn v-else 
+               @click="editarestado(props.row)"
+               style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
         </div>
-
-  <!-- <button @click="listarSedes()">traer datos</button> -->
-
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
@@ -154,6 +156,7 @@ onMounted(()=>{
 
           <q-card-actions align="right">
             <q-btn
+            @click="guardar()"
               v-if="accion === 1"
               color="blue"
               class="text-white"
@@ -164,6 +167,7 @@ onMounted(()=>{
               </template>
             </q-btn>
             <q-btn
+            @click="editarpago()"
               v-if="accion !== 1"
               color="blue"
               class="text-white"
