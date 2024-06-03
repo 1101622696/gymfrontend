@@ -64,7 +64,6 @@ if (await validar()){
     nombre:nombre.value,
     email:email.value,
     telefono:telefono.value,
-    rol:rol.value
 
     }
 let nombrez= await useSedes.putUsuarios(informacion._id, todo)
@@ -215,14 +214,33 @@ async function listarSedes() {
     }
 }
 
+const opcioneslistar = computed(() => {
+    nombreCodigo.value = sedesTodo.value.map((element) => ({
+        label: `${element.nombre}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigo.value;
+});
+
+
+async function listar() {
+    try {
+   const res = await useSedes.listarSede()
+    console.log(res.data);
+    sedesTodo.value=res.data.sede
+
+    } catch (error) {
+        console.error("Error al listar sedes:", error);
+    }
+}
+
     
 </script>
 
 
 <template>
-    <div>
-
-
+    
       <q-table class="table" flat bordered title="Usuarios" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-id="props">
         <q-td :props="props">
@@ -257,6 +275,9 @@ async function listarSedes() {
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
         </div>
+        <div style="margin-left: 5%; text-align: end; margin-right: 5%">
+<q-select standout v-model="listar" :options="opcioneslistar" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px"
+      />
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">

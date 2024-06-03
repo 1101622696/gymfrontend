@@ -19,13 +19,32 @@ let loading = ref(false)
             console.log(token.value);
             const response = await axios.get("api/usuarios/listar",{
                 headers:{
-                    "x-token": token.value
+                    token: token.value
                 }
         });
            usuarios.value = response.data;
            return response;
         } catch (error) {
             console.error("NO se pudo obtener la lista de usuarios",error);
+            throw error;
+        }
+        finally {
+            loading.value=false
+    }}
+
+    const listaractivados= async() =>{
+        try {
+            loading.value  = true;
+            console.log(token.value);
+            const response = await axios.get("api/usuarios/listaractivados",{
+                headers:{
+                    token: token.value
+                }
+        });
+           usuarios.value = response.data;
+           return response;
+        } catch (error) {
+            console.error("NO se pudo obtener la lista de activados",error);
             throw error;
         }
         finally {
@@ -139,7 +158,7 @@ let loading = ref(false)
 
     
     
-    return{ listarUsuario, postUsuario, putUsuarios, putActivarUsuario, putDesactivarUsuario, login, token, loading, usuarios, user}
+    return{ listarUsuario, listaractivados, postUsuario, putUsuarios, putActivarUsuario, putDesactivarUsuario, login, token, loading, usuarios, user}
 
 },
 

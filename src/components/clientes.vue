@@ -13,6 +13,8 @@ let agregar = ref(false);
 const useCliente = useStoreClientes();
 
 let botoneditar=ref(false)
+let mostrarFoto = ref(false)
+
 
 function llamaragregarCliente(){
   botoneditar.value=true
@@ -109,6 +111,14 @@ let idplan = ref("");
 let foto = ref("");
 let planesTodo = ref([]);
 let nombreCodigo = ref([]);
+let seguimientos = ref([{
+      fecha: '',
+      peso: '',
+      imc: '',
+      brazo: '',
+      pierna: '',
+      edad: ''
+    }])
 
 let rows = ref([]);
 let columns = ref([
@@ -121,6 +131,8 @@ let columns = ref([
   { name: "foto", label: "Foto", field: "foto", align: "center" },
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
   { name: "estado", label: "Estado", field: "estado", align: "center" },
+  { name: "seguimiento", label: "Seguimiento", field: "seguimiento", align: "center" },
+
 ]);
 
 
@@ -171,6 +183,36 @@ async function validar() {
     if (foto.value === "") {
         mostrarMensajeError("Debe ingresar un link para la foto");
         verificado = false;
+    }
+
+    for (let i = 0; i < seguimientos.length; i++) {
+    const seguimiento = seguimientos[i];
+
+    if (seguimiento.fecha === "") {
+      mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
+      verificado = false;
+    }
+
+    if (isNaN(seguimiento.peso) || seguimiento.peso < 0) {
+      mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.imc) || seguimiento.imc < 0) {
+      mostrarMensajeError(`El imc del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.brazo) || seguimiento.brazo < 0) {
+      mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.pierna) || seguimiento.pierna < 0) {
+      mostrarMensajeError(`El pierna del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.edad) || seguimiento.edad < 0) {
+      mostrarMensajeError(`El edad del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
     }
 
     if (verificado) {
@@ -246,7 +288,31 @@ function cerrar() {
       return new Date(dateStr).toLocaleDateString(undefined, options);
     };
 
+    const seguimientoColumns = ref([
+      { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
+      { name: 'peso', label: 'Peso', field: 'peso', align: 'center' },
+      { name: 'imc', label: 'IMC', field: 'imc', align: 'center' },
+      { name: 'brazo', label: 'Brazo', field: 'brazo', align: 'center' },
+      { name: 'pierna', label: 'Pierna', field: 'pierna', align: 'center' },
+      { name: 'edad', label: 'Edad', field: 'edad', align: 'center' }
+    ]);
 
+    const seguimientoModalOpen = ref(false);
+    const selectedCliente = ref(null);
+
+    const openSeguimientoModal = (cliente) => {
+      selectedCliente.value = cliente;
+      seguimientoModalOpen.value = true;
+    };
+
+    const formateDate = (date) => {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(date).toLocaleDateString(undefined, options);
+    };
+
+function verlafoto() {
+  veafoto.value = true;
+}
 </script>
 
 <template>
@@ -262,6 +328,21 @@ function cerrar() {
           <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
+  <template v-slot:body-cell-foto="props">
+    <q-td :props="props">
+      <div class="photo-container">
+        <q-btn class="fotico" @click="mostrarFoto = true">
+          Vea la foto aquí
+        </q-btn>
+      </div>
+      <div v-if="mostrarFoto" class="foto-modal">
+        <div class="foto-modal-contenido">
+          <img :src="props.row.foto" alt="Foto de Cliente" class="foto-modal-imagen" />
+          <q-btn color="primary" @click="mostrarFoto = false" class="foto-modal-cerrar">X</q-btn>
+        </div>
+      </div>
+    </q-td>
+  </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -275,7 +356,17 @@ function cerrar() {
             </q-btn>
           </q-td>
         </template>
-        <template v-slot:body-cell-estado="props">
+ <template v-slot:body-cell-seguimiento="props">
+        <q-td :props="props">
+          <q-btn class="segui" @click="openSeguimientoModal(props.row)">
+            Seguimiento
+          </q-btn>
+        </q-td>
+      </template>
+    <!-- <q-table class="table" v-if="irseguimiento == true" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
+    </q-table> -->
+
+  <template v-slot:body-cell-estado="props">
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
             @click="editarestado(props.row)"
@@ -287,6 +378,37 @@ function cerrar() {
         </template>
     </q-table>
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
+
+
+<q-dialog v-model="seguimientoModalOpen" persistent>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">{{ selectedCliente?.nombre }}</div>
+        </q-card-section>
+        <q-card-section>
+          <q-avatar size="100px">
+            <img :src="selectedCliente?.foto" />
+          </q-avatar>
+          <q-table
+            flat
+            bordered
+            :rows="selectedCliente?.seguimiento || []"
+            :columns="seguimientoColumns"
+            row-key="fecha"
+          >
+            <template v-slot:body-cell-fecha="props">
+              <q-td :props="props">
+                {{ formatDate(props.row.fecha) }}
+              </q-td>
+            </template>
+          </q-table>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cerrar" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
 
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">
@@ -302,8 +424,17 @@ function cerrar() {
        <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan"  style="background-color: #grey; margin-bottom: 20px"
       />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+          <div v-for="(seguimiento, index) in seguimientos" :key="index">
+    <h4>Seguimiento {{ index + 1 }}</h4>
+    <input class="input" type="date"   :placeholder="'Formato: DD/MM/YYYY'" v-model.trim="seguimiento.fecha" />
+    <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
+    <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
+    <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
+    <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+    <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
+  </div>
       </div>
-    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-if="botoneditar == true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
     <button v-else class="button" @click="editarcliente()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
     </div>
   </div>
@@ -319,6 +450,44 @@ function cerrar() {
   width: 99.1vw;
 background-color: rgb(185, 185, 185);
 }
+
+.foto-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.foto-modal-contenido {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  max-width: 80%;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.foto-modal-imagen {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.foto-modal-cerrar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
 
 /* Estilos para el título */
 .title {
@@ -462,6 +631,19 @@ margin-left: auto;
 
 .crearcliente input[type="submit"]:hover {
   background-color: #45a049;
+}
+
+.q-dialog {
+  width: 80%;
+  max-width: 600px;
+}
+
+.seguimiento-entry {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
 }
 
 </style>
