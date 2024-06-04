@@ -299,6 +299,8 @@ function cerrar() {
 
     const seguimientoModalOpen = ref(false);
     const selectedCliente = ref(null);
+      let  clienteSeleccionado=ref(null);
+
 
     const openSeguimientoModal = (cliente) => {
       selectedCliente.value = cliente;
@@ -309,10 +311,9 @@ function cerrar() {
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
       return new Date(date).toLocaleDateString(undefined, options);
     };
-
-function verlafoto() {
-  veafoto.value = true;
-}
+    const verFoto = (cliente) => {
+      clienteSeleccionado.value = cliente
+    }
 </script>
 
 <template>
@@ -328,21 +329,40 @@ function verlafoto() {
           <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
-  <template v-slot:body-cell-foto="props">
-    <q-td :props="props">
-      <div class="photo-container">
-        <q-btn class="fotico" @click="mostrarFoto = true">
-          Vea la foto aquí
-        </q-btn>
+<!-- <template v-slot:body-cell-foto="props">
+  <q-td :props="props">
+    <div class="photo-container">
+      <q-btn class="fotico" @click="mostrarFoto = true">
+        Vea la foto aquí
+      </q-btn>
+    </div>
+    <div v-if="mostrarFoto" class="foto-modal">
+      <div class="foto-modal-contenedor">
+        <img :src="props.row.foto" class="foto-modal-imagen" />
+        <q-btn color="primary" @click="mostrarFoto = false" class="cierrefoto">X</q-btn>
+
       </div>
-      <div v-if="mostrarFoto" class="foto-modal">
-        <div class="foto-modal-contenido">
-          <img :src="props.row.foto" alt="Foto de Cliente" class="foto-modal-imagen" />
-          <q-btn color="primary" @click="mostrarFoto = false" class="foto-modal-cerrar">X</q-btn>
-        </div>
+    </div>
+  </q-td>
+</template> -->
+        <!-- <q-btn color="primary" @click="mostrarFoto = false" class="foto-modal-cerrar">X</q-btn> -->
+
+        <template v-slot:body-cell-foto="props">
+  <q-td :props="props">
+    <div class="photo-container">
+      <q-btn class="fotico" @click="verFoto(props.row)">
+        Vea la foto aquí
+      </q-btn>
+    </div>
+    <div v-if="clienteSeleccionado !== null" class="foto-modal">
+      <div class="foto-modal-contenedor">
+        <img :src="clienteSeleccionado.foto" class="foto-modal-imagen" />
+        <q-btn color="primary" @click="clienteSeleccionado = null" class="foto-modal-cerrar">X</q-btn>
       </div>
-    </q-td>
-  </template>
+    </div>
+  </q-td>
+</template>
+
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -386,7 +406,7 @@ function verlafoto() {
           <div class="text-h6">{{ selectedCliente?.nombre }}</div>
         </q-card-section>
         <q-card-section>
-          <q-avatar size="100px">
+          <q-avatar size="150px">
             <img :src="selectedCliente?.foto" />
           </q-avatar>
           <q-table
@@ -451,44 +471,47 @@ function verlafoto() {
 background-color: rgb(185, 185, 185);
 }
 
+
 .foto-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  /* background-color: rgba(0, 0, 0, 0.5); */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
 
-.foto-modal-contenido {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
+.foto-modal-contenedor {
   position: relative;
-  max-width: 80%;
-  max-height: 80%;
+   background-color: rgb(226, 226, 226);
+  /*padding: 20px;
+  border-radius: 8px; */
+  max-width: 400px;
+  min-height: 400px;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
-
 .foto-modal-imagen {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 50%;
+  max-height: 50%;
   object-fit: contain;
 }
-
 .foto-modal-cerrar {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 30px;
+  right: 30px;
 }
 
-
+/* estilos para el nombre dentro del seguimiento */
+.text-h6{
+  font-family: 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-transform: uppercase;
+}
 /* Estilos para el título */
 .title {
   font-size: 24px;
