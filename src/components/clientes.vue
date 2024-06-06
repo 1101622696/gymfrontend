@@ -93,10 +93,14 @@ listarClientes(), listarPlanes()}
 }
 
 async function editarestado(info){
+  console.log("holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", info);
 if(info.estado == 1){
 let desactivado= await useCliente.putDesactivarCliente(info._id)
+console.log(desactivado);
 }else if(info.estado == 0){
 let activado= await useCliente.putActivarCliente(info._id)
+console.log(activado);
+
 }
 listarClientes()
 }
@@ -251,6 +255,36 @@ async function listarClientes() {
   }
 }
 
+
+async function listaractivados() {
+  try {
+    const res = await useCliente.listaractivados();
+    rows.value = res.data.activados.map(cliente => ({
+      ...cliente,
+      idPlan: cliente.idPlan, 
+    }));
+  } catch (error) {
+    console.error("Error al listar clientes:", error);
+  }
+}
+
+
+
+async function listardesactivados() {
+  try {
+    const res = await useCliente.listardesactivados();
+    rows.value = res.data.desactivados.map(cliente => ({
+      ...cliente,
+      idPlan: cliente.idPlan, 
+    }));
+    console.log(res)
+  } catch (error) {
+    console.error("Error al listar clientes:", error);
+  }
+}
+
+
+
 function getPlanCodigo(id) {
   const plan = planesTodo.value.find(plan => plan._id === id);
   return plan ? plan.codigo : '';
@@ -281,7 +315,7 @@ async function listarPlanes() {
 
 function cerrar() {
   agregar.value = false;
-} 
+    } 
 
    const formatDate = (dateStr) => {
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -314,10 +348,36 @@ function cerrar() {
     const verFoto = (cliente) => {
       clienteSeleccionado.value = cliente
     }
+
+    const ordenar= ref("Todos")
+
+   function ejecutarFiltro() {
+
+      if (ordenar.value == 'Todos') {
+        listarClientes();
+      } else if (ordenar.value == 'Activos') {
+        listaractivados();
+      } else if (ordenar.value == 'Inactivos') {
+        listardesactivados();
+      }
+    };
+
+
+
 </script>
 
 <template>
   <div class="container">
+    <div class="contenedorFiltro">   
+       <q-select v-model="ordenar" :options="['Todos', 'Activos', 'Inactivos']" label="Seleccionar filtro" @update:model-value="ejecutarFiltro" outlined dense class="custom-select" menu-class="custom-dropdown"/>
+    </div>
+    <!-- <select v-model="ordenar" @change="ejecutarFiltro">
+      <option value="Todos">Todos</option>
+      <option value="Activos">Activos</option>
+      <option value="Inactivos">Inactivos</option>
+    </select> -->
+
+
     <q-table class="table" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idPlan="props">
         <q-td :props="props">
@@ -368,10 +428,10 @@ function cerrar() {
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
+            <q-btn v-if="props.row.estado == 1" class="option-button" @click="editarestado(props.row)">
               ❌
             </q-btn>
-            <q-btn v-else class="option-button">
+            <q-btn v-else class="option-button" @click="editarestado(props.row)">
               ✅
             </q-btn>
           </q-td>
@@ -668,5 +728,22 @@ margin-left: auto;
   border: 1px solid #ddd;
   border-radius: 5px;
 }
+
+.custom-select {
+  width: 10vmax;
+  margin-right: 2vmin;
+  border-color: #333 !important; 
+  background-color: rgb(240, 240, 240);
+  border-radius: 1vmin;
+
+}
+
+.contenedorFiltro{
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+
 
 </style>

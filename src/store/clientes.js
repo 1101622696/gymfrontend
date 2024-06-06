@@ -29,7 +29,44 @@ export const useStoreClientes = defineStore("Cliente", () => {
             finally {
                 loading.value=false
         }}
-    
+
+        const listaractivados= async() =>{
+            try {
+                loading.value  = true;
+                console.log(useUsuario.token);
+                const response = await axios.get("api/clientes/listaractivados",{
+                    headers:{
+                        token: useUsuario.token
+                    }
+            });
+            //    clientes.value = response.data;
+               return response;
+            } catch (error) {
+                console.error("NO se pudo obtener la lista de clientes",error);
+                throw error;
+            }
+            finally {
+                loading.value=false
+        }}
+        
+        const listardesactivados= async() =>{
+            try {
+                loading.value  = true;
+                console.log(useUsuario.token);
+                const response = await axios.get("api/clientes/listardesactivados",{
+                    headers:{
+                        token: useUsuario.token
+                    }
+            });
+            //    clientes.value = response.data;
+               return response;
+            } catch (error) {
+                console.error("NO se pudo obtener la lista de clientes",error);
+                throw error;
+            }
+            finally {
+                loading.value=false
+        }}
     
         const postCliente= async(data) =>{
             try {
@@ -107,7 +144,7 @@ export const useStoreClientes = defineStore("Cliente", () => {
         }
     
     
-        return{ listarCliente, postCliente, putCliente, putActivarCliente, putDesactivarCliente, loading, clientes, useUsuario}
+        return{ listarCliente,listaractivados,listardesactivados,postCliente, putCliente, putActivarCliente, putDesactivarCliente, loading, clientes, useUsuario}
     
     },
     
