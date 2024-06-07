@@ -283,6 +283,18 @@ async function listardesactivados() {
   }
 }
 
+async function buscarClientesPorNombre() {
+  try {
+    const res = await useCliente.listarCliente(listNombre.value);
+    rows.value = res.data.cliente.map(cliente => ({
+      ...cliente,
+      idPlan: cliente.idPlan, 
+    }));
+    console.log(res);
+  } catch (error) {
+    console.error("Error al buscar clientes por nombre:", error);
+  }
+};
 
 
 function getPlanCodigo(id) {
@@ -350,6 +362,12 @@ function cerrar() {
     }
 
     const ordenar= ref("Todos")
+    let listNoPlan= ref("");
+    let listFechaNacimiento = ref("");
+    let listNombre = ref("")
+    let listP= ref(false);
+    let listF= ref(false);
+    let listN= ref(false);
 
    function ejecutarFiltro() {
 
@@ -360,24 +378,70 @@ function cerrar() {
       } else if (ordenar.value == 'Inactivos') {
         listardesactivados();
       }
+      else if (ordenar.value == 'Plan') {
+        listP.value=true
+      }
+      else if (ordenar.value == 'Fecha') {
+        listF.value=true
+      }
+      else if (ordenar.value == 'Nombre') {
+        listN.value=true
+      }
+
     };
 
+    function ejecutarlistnombre(){
+      buscarClientesPorNombre()
+      listN.value=false
+      console.log(listNombre.value);
+    }
+    function agregaedita() {
+  segui.value = true;
+    } 
 
 
+    async function actualizarsegui() {
+    try {
+    const res = await useCliente.putSeguimientoCliente()
+       clienteTodo.value = res.data.cliente;
+    } catch (error) {
+        console.error("Error al listar clientes:", error);
+    }
+}
+
+// para listar por plan fecha y nombre se usa un input que abarque la panytalla, 
+// usando la misma funcion de listar activos etc, este a su ves ejecutara la funcion de abiri 
+// el input y pedir los datos que necesite 
 </script>
 
 <template>
   <div class="container">
-    <div class="contenedorFiltro">   
-       <q-select v-model="ordenar" :options="['Todos', 'Activos', 'Inactivos']" label="Seleccionar filtro" @update:model-value="ejecutarFiltro" outlined dense class="custom-select" menu-class="custom-dropdown"/>
-    </div>
-    <!-- <select v-model="ordenar" @change="ejecutarFiltro">
+
+<div class="inputlistar" v-if="listP">
+  <input class="input" type="text" placeholder=" Dijite no. Plan " v-model.trim="listNoPlan" />
+  
+
+</div>
+<div class="inputlistar" v-if="listF">
+  <input class="input" type="date" placeholder=" Dijite no. Plan " v-model.trim="listFechaNacimiento" />
+</div>
+<div class="inputlistar" v-if="listN">
+  <input class="input" type="text" placeholder=" Dijite nombre " v-model.trim="listNombre"  />
+  <button class="button" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+</div>
+
+    <div class="tablaselect">
+      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select" >
       <option value="Todos">Todos</option>
       <option value="Activos">Activos</option>
       <option value="Inactivos">Inactivos</option>
-    </select> -->
+      <option value="Plan">Por Plan</option>
+      <option value="Fecha">Por Cumpleaños</option>
+      <option value="Nombre">Por Nombre</option>
+    </select>
 
 
+ <!-- se modifico el custo-slect en css. hasta aca........... -->
     <q-table class="table" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idPlan="props">
         <q-td :props="props">
@@ -457,6 +521,7 @@ function cerrar() {
           </q-td>
         </template>
     </q-table>
+    </div>
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
 
 
@@ -489,6 +554,29 @@ function cerrar() {
       </q-card>
     </q-dialog>
 
+
+    <div class="agregarseguimiento">
+      <q-btn class="agregaedita" @click="agregarsegui()">
+      ✏️
+      </q-btn>
+    </div>
+    <div v-if="segui == true" class="segui-modal">
+      <div class="segui-modal-contenedor">
+        <div v-for="(seguimiento, index) in seguimientos" :key="index">
+        <h4>Seguimiento {{ index + 1 }}</h4>
+        <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
+        <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
+        <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
+        <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
+        <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+        <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
+      <q-btn class="agregaedita" @click="actualizarsegui()">
+      Actualizar Seguimiento
+      </q-btn>
+      </div>
+        <q-btn color="primary" @click="segui = false" class="segui-modal-cerrar">X</q-btn>
+      </div>
+    </div>
 
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">
@@ -730,12 +818,19 @@ margin-left: auto;
 }
 
 .custom-select {
+ position:absolute;
   width: 10vmax;
-  margin-right: 2vmin;
-  border-color: #333 !important; 
-  background-color: rgb(240, 240, 240);
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
   border-radius: 1vmin;
-
+  right: 1%;
+  top:3%;
+  z-index: 1;
+}
+.tablaselect{
+  display: flex;
+  position: absolute;
+  width: 100%;
 }
 
 .contenedorFiltro{
@@ -743,7 +838,6 @@ margin-left: auto;
   justify-content: flex-end;
   width: 100%;
 }
-
 
 
 </style>
