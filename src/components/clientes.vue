@@ -346,6 +346,7 @@ function cerrar() {
     const seguimientoModalOpen = ref(false);
     const selectedCliente = ref(null);
       let  clienteSeleccionado=ref(null);
+    const segui = ref(false);
 
 
     const openSeguimientoModal = (cliente) => {
@@ -395,14 +396,19 @@ function cerrar() {
       listN.value=false
       console.log(listNombre.value);
     }
-    function agregaedita() {
-  segui.value = true;
-    } 
 
 
-    async function actualizarsegui() {
+  //   function agregarsegui() {
+  // segui.value = true;
+  //   } 
+
+    const toggleSegui = () => {
+      segui.value = !segui.value;
+    };
+
+    async function actualizarSegui() {
     try {
-    const res = await useCliente.putSeguimientoCliente()
+    const res = await useCliente.actualizarSeguimiento()
        clienteTodo.value = res.data.cliente;
     } catch (error) {
         console.error("Error al listar clientes:", error);
@@ -453,23 +459,6 @@ function cerrar() {
           <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
-<!-- <template v-slot:body-cell-foto="props">
-  <q-td :props="props">
-    <div class="photo-container">
-      <q-btn class="fotico" @click="mostrarFoto = true">
-        Vea la foto aquí
-      </q-btn>
-    </div>
-    <div v-if="mostrarFoto" class="foto-modal">
-      <div class="foto-modal-contenedor">
-        <img :src="props.row.foto" class="foto-modal-imagen" />
-        <q-btn color="primary" @click="mostrarFoto = false" class="cierrefoto">X</q-btn>
-
-      </div>
-    </div>
-  </q-td>
-</template> -->
-        <!-- <q-btn color="primary" @click="mostrarFoto = false" class="foto-modal-cerrar">X</q-btn> -->
 
         <template v-slot:body-cell-foto="props">
   <q-td :props="props">
@@ -550,13 +539,18 @@ function cerrar() {
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Cerrar" color="primary" v-close-popup />
+              <div class="agregarseguimiento">
+      <q-btn class="agregaedita" @click="toggleSegui">
+        ✏️
+      </q-btn>
+    </div>
         </q-card-actions>
       </q-card>
     </q-dialog>
 
 
-    <div class="agregarseguimiento">
-      <q-btn class="agregaedita" @click="agregarsegui()">
+    <!-- <div class="agregarseguimiento">
+      <q-btn class="agregasegui" @click="agregarsegui()">
       ✏️
       </q-btn>
     </div>
@@ -570,13 +564,43 @@ function cerrar() {
         <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
         <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
         <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
-      <q-btn class="agregaedita" @click="actualizarsegui()">
+      <q-btn class="agregasegui" @click="actualizarsegui()">
       Actualizar Seguimiento
       </q-btn>
       </div>
         <q-btn color="primary" @click="segui = false" class="segui-modal-cerrar">X</q-btn>
       </div>
+    </div> -->
+
+<template>
+  <div>
+    <div class="agregarseguimiento">
+      <q-btn class="agregaedita" @click="toggleSegui">
+        ✏️
+      </q-btn>
     </div>
+    
+    <div v-if="segui" class="segui-modal">
+      <div class="segui-modal-contenedor">
+        <div v-for="(seguimiento, index) in seguimientos" :key="index">
+          <h4>Seguimiento {{ index + 1 }}</h4>
+          <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
+          <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
+          <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
+          <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
+          <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+          <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
+        </div>
+        <q-btn class="agregaedita" @click="actualizarSegui">
+          Actualizar Seguimiento
+        </q-btn>
+        <q-btn color="primary" @click="toggleSegui" class="segui-modal-cerrar">
+          X
+        </q-btn>
+      </div>
+    </div>
+  </div>
+</template>
 
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">

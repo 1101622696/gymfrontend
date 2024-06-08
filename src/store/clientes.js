@@ -153,7 +153,25 @@ export const useStoreClientes = defineStore(
         loading.value = false;
       }
     };
-
+    
+    const actualizarSeguimiento = async () => {
+      try {
+        const r = await axios.put(
+          `api/clientes/modificar/seguimiento/${clienteTodo._id.value}`,
+          { seguimientos: seguimientos.value },
+          {
+            headers: {
+              token: useUsuario.token,
+            },
+          }
+        );
+        console.log(r);
+        clienteTodo.value = r.data.cliente;
+      } catch (error) {
+        console.error("Error al listar clientes:", error);
+      }
+    };
+    
     return {
       listarCliente,
       listaractivados,
@@ -161,7 +179,8 @@ export const useStoreClientes = defineStore(
       postCliente,
       putCliente,
       putActivarCliente,
-      putDesactivarCliente,
+      // putseaguictivarCliente,
+      actualizarSeguimiento,
       loading,
       clientes,
       useUsuario,
