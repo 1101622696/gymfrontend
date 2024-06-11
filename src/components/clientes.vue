@@ -113,6 +113,7 @@ let fechaNacimiento = ref("");
 let telefono = ref("");
 let idplan = ref("");
 let foto = ref("");
+let clienteTodo= ref(null)
 let planesTodo = ref([]);
 let nombreCodigo = ref([]);
 let seguimientos = ref([{
@@ -398,123 +399,155 @@ function cerrar() {
     }
 
 
-  //   function agregarsegui() {
-  // segui.value = true;
-  //   } 
 
     const toggleSegui = () => {
       segui.value = !segui.value;
     };
 
-    async function actualizarSegui() {
-    try {
-    const res = await useCliente.actualizarSeguimiento()
-       clienteTodo.value = res.data.cliente;
-    } catch (error) {
-        console.error("Error al listar clientes:", error);
+function validarSeguimiento(seguimiento) {
+
+      for (let i = 0; i < seguimientos.length; i++) {
+    const seguimiento = seguimientos[i];
+
+ if (seguimiento.fecha === "") {
+      mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
+      verificado = false;
     }
+
+    if (isNaN(seguimiento.peso) || seguimiento.peso < 0) {
+      mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.imc) || seguimiento.imc < 0) {
+      mostrarMensajeError(`El imc del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.brazo) || seguimiento.brazo < 0) {
+      mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.pierna) || seguimiento.pierna < 0) {
+      mostrarMensajeError(`El pierna del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+        if (isNaN(seguimiento.edad) || seguimiento.edad < 0) {
+      mostrarMensajeError(`El edad del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+      }
+return (
+    seguimiento.fecha &&
+    seguimiento.peso &&
+    seguimiento.imc &&
+    seguimiento.brazo &&
+    seguimiento.pierna &&
+    seguimiento.edad
+  );
 }
 
-// para listar por plan fecha y nombre se usa un input que abarque la panytalla, 
-// usando la misma funcion de listar activos etc, este a su ves ejecutara la funcion de abiri 
-// el input y pedir los datos que necesite 
-</script>
+async function actualizarSegui(row) {
+  try {
+    const seguimientosValidos = seguimientos.value.filter(validarSeguimiento);
 
+    if (seguimientosValidos.length === seguimientos.value.length) {
+      const res = await useCliente.actualizarSeguimiento(row.id, seguimientosValidos); // Pasar el ID del cliente y los seguimientos válidos
+      clienteTodo.value = res.data.cliente;
+    } else {
+      console.warn("Hay campos de seguimiento incompletos");
+    }
+  } catch (error) {
+    console.error("Error al actualizar seguimiento:", error);
+  }
+}
+
+</script>
 <template>
   <div class="container">
+    <!-- Input Fields for Filtering -->
+    <div class="inputlistar" v-if="listP">
+      <input class="input" type="text" placeholder="Digite no. Plan" v-model.trim="listNoPlan" />
+    </div>
+    <div class="inputlistar" v-if="listF">
+      <input class="input" type="date" placeholder="Digite no. Plan" v-model.trim="listFechaNacimiento" />
+    </div>
+    <div class="inputlistar" v-if="listN">
+      <input class="input" type="text" placeholder="Digite nombre" v-model.trim="listNombre" />
+      <button class="button" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+    </div>
 
-<div class="inputlistar" v-if="listP">
-  <input class="input" type="text" placeholder=" Dijite no. Plan " v-model.trim="listNoPlan" />
-  
-
-</div>
-<div class="inputlistar" v-if="listF">
-  <input class="input" type="date" placeholder=" Dijite no. Plan " v-model.trim="listFechaNacimiento" />
-</div>
-<div class="inputlistar" v-if="listN">
-  <input class="input" type="text" placeholder=" Dijite nombre " v-model.trim="listNombre"  />
-  <button class="button" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
-</div>
-
+    <!-- Filter Dropdown -->
     <div class="tablaselect">
-      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select" >
-      <option value="Todos">Todos</option>
-      <option value="Activos">Activos</option>
-      <option value="Inactivos">Inactivos</option>
-      <option value="Plan">Por Plan</option>
-      <option value="Fecha">Por Cumpleaños</option>
-      <option value="Nombre">Por Nombre</option>
-    </select>
+      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+        <option value="Todos">Todos</option>
+        <option value="Activos">Activos</option>
+        <option value="Inactivos">Inactivos</option>
+        <option value="Plan">Por Plan</option>
+        <option value="Fecha">Por Cumpleaños</option>
+        <option value="Nombre">Por Nombre</option>
+      </select>
+    </div>
 
-
- <!-- se modifico el custo-slect en css. hasta aca........... -->
+    <!-- Table of Clients -->
     <q-table class="table" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idPlan="props">
         <q-td :props="props">
           <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
         </q-td>
       </template>
-            <template v-slot:body-cell-fechaNacimiento="props">
+      <template v-slot:body-cell-fechaNacimiento="props">
         <q-td :props="props">
           <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
-
-        <template v-slot:body-cell-foto="props">
+      <template v-slot:body-cell-foto="props">
+        <q-td :props="props">
+          <div class="photo-container">
+            <q-btn class="fotico" @click="verFoto(props.row)">
+              Vea la foto aquí
+            </q-btn>
+          </div>
+          <div v-if="clienteSeleccionado !== null" class="foto-modal">
+            <div class="foto-modal-contenedor">
+              <img :src="clienteSeleccionado.foto" class="foto-modal-imagen" />
+              <q-btn color="primary" @click="clienteSeleccionado = null" class="foto-modal-cerrar">X</q-btn>
+            </div>
+          </div>
+        </q-td>
+      </template>
+<template v-slot:body-cell-opciones="props">
   <q-td :props="props">
-    <div class="photo-container">
-      <q-btn class="fotico" @click="verFoto(props.row)">
-        Vea la foto aquí
-      </q-btn>
-    </div>
-    <div v-if="clienteSeleccionado !== null" class="foto-modal">
-      <div class="foto-modal-contenedor">
-        <img :src="clienteSeleccionado.foto" class="foto-modal-imagen" />
-        <q-btn color="primary" @click="clienteSeleccionado = null" class="foto-modal-cerrar">X</q-btn>
-      </div>
-    </div>
+    <q-btn class="option-button" @click="editar(props.row)">
+      ✏️
+    </q-btn>
+    <q-btn v-if="props.row.estado == 1" class="option-button" @click="editarestado(props.row)">
+      ❌
+    </q-btn>
+    <q-btn v-else class="option-button" @click="editarestado(props.row)">
+      ✅
+    </q-btn>
   </q-td>
 </template>
 
-        <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
-            <q-btn class="option-button" @click="editar(props.row)">
-              ✏️
-            </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button" @click="editarestado(props.row)">
-              ❌
-            </q-btn>
-            <q-btn v-else class="option-button" @click="editarestado(props.row)">
-              ✅
-            </q-btn>
-          </q-td>
-        </template>
- <template v-slot:body-cell-seguimiento="props">
+      <template v-slot:body-cell-seguimiento="props">
         <q-td :props="props">
           <q-btn class="segui" @click="openSeguimientoModal(props.row)">
             Seguimiento
           </q-btn>
         </q-td>
       </template>
-    <!-- <q-table class="table" v-if="irseguimiento == true" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
-    </q-table> -->
-
-  <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
-            <q-btn v-if="props.row.estado == 1"
-            @click="editarestado(props.row)"
-             style="color:green">Activo</q-btn>
-            <q-btn v-else 
-               @click="editarestado(props.row)"
-               style="color:red">Inactivo</q-btn>
-          </q-td>
-        </template>
+      <template v-slot:body-cell-estado="props">
+        <q-td :props="props">
+          <q-btn v-if="props.row.estado == 1" @click="editarestado(props.row)" style="color:green">Activo</q-btn>
+          <q-btn v-else @click="editarestado(props.row)" style="color:red">Inactivo</q-btn>
+        </q-td>
+      </template>
     </q-table>
-    </div>
+
+    <!-- Add Client Button -->
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
 
-
-<q-dialog v-model="seguimientoModalOpen" persistent>
+    <!-- Seguimiento Modal -->
+    <q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
         <q-card-section>
           <div class="text-h6">{{ selectedCliente?.nombre }}</div>
@@ -539,69 +572,36 @@ function cerrar() {
         </q-card-section>
         <q-card-actions align="right">
           <q-btn flat label="Cerrar" color="primary" v-close-popup />
-              <div class="agregarseguimiento">
-      <q-btn class="agregaedita" @click="toggleSegui">
-        ✏️
-      </q-btn>
-    </div>
+          <div class="agregarseguimiento">
+            <q-btn class="agregaedita" @click="toggleSegui">✏️</q-btn>
+          </div>
         </q-card-actions>
       </q-card>
     </q-dialog>
 
-
-    <!-- <div class="agregarseguimiento">
-      <q-btn class="agregasegui" @click="agregarsegui()">
-      ✏️
-      </q-btn>
+    <!-- Seguimiento Form -->
+<div v-if="segui" class="segui-modal">
+  <div class="segui-modal-contenedor">
+    <div v-for="(seguimiento, index) in seguimientos" :key="index">
+      <h4>Seguimiento {{ index + 1 }}</h4>
+      <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
+      <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
+      <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
+      <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
+      <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+      <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
     </div>
-    <div v-if="segui == true" class="segui-modal">
-      <div class="segui-modal-contenedor">
-        <div v-for="(seguimiento, index) in seguimientos" :key="index">
-        <h4>Seguimiento {{ index + 1 }}</h4>
-        <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
-        <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
-        <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
-        <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-        <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
-        <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
-      <q-btn class="agregasegui" @click="actualizarsegui()">
+    <q-btn class="agregaedita" @click="actualizarSegui(props.row)" :disabled="seguimientos.some(s => !validarSeguimiento(s))">
       Actualizar Seguimiento
-      </q-btn>
-      </div>
-        <q-btn color="primary" @click="segui = false" class="segui-modal-cerrar">X</q-btn>
-      </div>
-    </div> -->
-
-<template>
-  <div>
-    <div class="agregarseguimiento">
-      <q-btn class="agregaedita" @click="toggleSegui">
-        ✏️
-      </q-btn>
-    </div>
-    
-    <div v-if="segui" class="segui-modal">
-      <div class="segui-modal-contenedor">
-        <div v-for="(seguimiento, index) in seguimientos" :key="index">
-          <h4>Seguimiento {{ index + 1 }}</h4>
-          <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
-          <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
-          <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
-          <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-          <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
-          <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
-        </div>
-        <q-btn class="agregaedita" @click="actualizarSegui">
-          Actualizar Seguimiento
-        </q-btn>
-        <q-btn color="primary" @click="toggleSegui" class="segui-modal-cerrar">
-          X
-        </q-btn>
-      </div>
-    </div>
+    </q-btn>
+    <q-btn color="primary" @click="toggleSegui" class="segui-modal-cerrar">
+      X
+    </q-btn>
   </div>
-</template>
+</div>
 
+
+    <!-- Create Client Form -->
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">
         <h3>Ingresar Clientes</h3>
@@ -613,21 +613,20 @@ function cerrar() {
         <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
         <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
-       <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan"  style="background-color: #grey; margin-bottom: 20px"
-      />
+        <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan" style="background-color: #grey; margin-bottom: 20px" />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
-          <div v-for="(seguimiento, index) in seguimientos" :key="index">
-    <h4>Seguimiento {{ index + 1 }}</h4>
-    <input class="input" type="date"   :placeholder="'Formato: DD/MM/YYYY'" v-model.trim="seguimiento.fecha" />
-    <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
-    <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
-    <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-    <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
-    <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
-  </div>
+        <div v-for="(seguimiento, index) in seguimientos" :key="index">
+          <h4>Seguimiento {{ index + 1 }}</h4>
+          <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model.trim="seguimiento.fecha" />
+          <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
+          <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
+          <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
+          <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+          <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
+        </div>
       </div>
-    <button v-if="botoneditar == true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarcliente()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+      <button v-if="botoneditar" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+      <button v-else class="button" @click="editarcliente()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
     </div>
   </div>
 </template>

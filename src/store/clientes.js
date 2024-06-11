@@ -157,8 +157,8 @@ export const useStoreClientes = defineStore(
     const actualizarSeguimiento = async () => {
       try {
         const r = await axios.put(
-          `api/clientes/modificar/seguimiento/${clienteTodo._id.value}`,
-          { seguimientos: seguimientos.value },
+          `api/clientes/modificar/seguimiento/${clienteTodo.value._id}`, // Corregir el nombre del parámetro y acceder al ID correctamente
+          { seguimiento: seguimientos.value }, // Corregir el nombre del parámetro
           {
             headers: {
               token: useUsuario.token,
@@ -168,9 +168,10 @@ export const useStoreClientes = defineStore(
         console.log(r);
         clienteTodo.value = r.data.cliente;
       } catch (error) {
-        console.error("Error al listar clientes:", error);
+        console.error("Error al actualizar seguimiento:", error);
       }
     };
+    
     
     return {
       listarCliente,
@@ -179,6 +180,7 @@ export const useStoreClientes = defineStore(
       postCliente,
       putCliente,
       putActivarCliente,
+      putDesactivarCliente,
       // putseaguictivarCliente,
       actualizarSeguimiento,
       loading,
