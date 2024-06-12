@@ -25,33 +25,67 @@ documento.value=""
 direccion.value=""
 fechaNacimiento.value=""
 telefono.value=""
-idplan.value=""
+idPlan.value=""
 foto.value=""
+seguimiento.value=""
+// seguimientos.value=""
+
+
 
 }
 
 
-async function guardar(){
+// async function guardar(){
 
-agregar.value = true;
-if (await validar()){
-  const todo={
-    nombre:nombre.value,
-    documento:documento.value,
-    direccion:direccion.value,
-    fechaNacimiento:fechaNacimiento.value,
-    telefono:telefono.value,
-    idplan:idplan.value,
-    foto:foto.value
+// agregar.value = true;
+// if (await validar()){
+//   const todo={
+//     nombre:nombre.value,
+//     documento:documento.value,
+//     direccion:direccion.value,
+//     fechaNacimiento:fechaNacimiento.value,
+//     telefono:telefono.value,
+//     idPlan:idPlan.value,
+//     foto:foto.value
 
+//     }
+// let nombrez= await useCliente.postCliente(todo)
+// if(nombrez.status!=200){
+//   mostrarMensajeError("no se pudo enviar")
+// }else{
+//   mostrarMensajeExito("muy bien")
+// listarClientes(), listarPlanes()}
+// }
+// }
+
+async function guardar() {
+
+  agregar.value = true;
+  if (await validar()) {
+    const todo = {
+      nombre: nombre.value,
+      documento: documento.value,
+      direccion: direccion.value,
+      fechaNacimiento: fechaNacimiento.value,
+      telefono: telefono.value,
+      idPlan: idPlan.value.valor,
+      foto: foto.value,
+      seguimiento:seguimiento.value,
+      // seguimientos:seguimientos.value
+
+    };
+console.log(seguimientos.value);
+    let nombrez = await useCliente.postCliente(todo);
+
+    if (nombrez.status === 200) {
+      mostrarMensajeExito("Cliente agregado exitosamente");
+      listarClientes();
+      listarPlanes();
+
+    } else {
+      mostrarMensajeError("No se pudo agregar el cliente");
     }
-let nombrez= await useCliente.postCliente(todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-listarClientes(), listarPlanes()}
-}
+  }
 }
 
 function editar(info){
@@ -65,8 +99,12 @@ documento.value=informacion.value
 direccion.value=informacion.value
 fechaNacimiento.value=informacion.value
 telefono.value=informacion.value
-idplan.value=informacion.value
+idPlan.value=informacion.value
 foto.value=informacion.value
+seguimiento.value=informacion.value
+// seguimientos.value=informacion.value
+
+
 
 }
 
@@ -78,8 +116,12 @@ if (await validar()){
     direccion:direccion.value,
     fechaNacimiento:fechaNacimiento.value,
     telefono:telefono.value,
-    idplan:idplan.value,
-    foto:foto.value
+    idPlan:idPlan.value,
+    foto:foto.value,
+    seguimiento:seguimiento.value,
+    // seguimientos:seguimientos.value
+
+
 
 
     }
@@ -93,7 +135,7 @@ listarClientes(), listarPlanes()}
 }
 
 async function editarestado(info){
-  console.log("holaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", info);
+  console.log("holaa", info);
 if(info.estado == 1){
 let desactivado= await useCliente.putDesactivarCliente(info._id)
 console.log(desactivado);
@@ -111,8 +153,10 @@ let documento = ref("");
 let direccion = ref("");
 let fechaNacimiento = ref("");
 let telefono = ref("");
-let idplan = ref("");
+let idPlan = ref("");
 let foto = ref("");
+let seguimiento = ref("");
+
 let clienteTodo= ref(null)
 let planesTodo = ref([]);
 let nombreCodigo = ref([]);
@@ -142,57 +186,52 @@ let columns = ref([
 
 
 async function validar() {
-    let verificado = true;
+  let verificado = true;
 
-    if (nombre.value === "") {
-        mostrarMensajeError("El nombre está vacío");
-        verificado = false;
+  if (nombre.value === "") {
+    mostrarMensajeError("El nombre está vacío");
+    verificado = false;
+  }
+  if (documento.value === "") {
+    mostrarMensajeError("El tipo de documento está vacío");
+    verificado = false;
+  }
+  if (direccion.value === "" || isNaN(direccion.value) || direccion.value < 0) {
+    mostrarMensajeError("La dirección debe ser un número válido");
+    verificado = false;
+  }
+  if (fechaNacimiento.value === "") {
+    mostrarMensajeError("La fecha de nacimiento está vacía");
+    verificado = false;
+  } else {
+    let fechaNacimientoDate = new Date(fechaNacimiento.value);
+    let fechaActual = new Date();
+    let edad = fechaActual.getFullYear() - fechaNacimientoDate.getFullYear();
+    if (fechaActual.getMonth() < fechaNacimientoDate.getMonth() || (fechaActual.getMonth() === fechaNacimientoDate.getMonth() && fechaActual.getDate() < fechaNacimientoDate.getDate())) {
+      edad--;
     }
-    if (documento.value === "") {
-        mostrarMensajeError("El tipo de documento está vacío");
-        verificado = false;
+    if (edad < 12) {
+      mostrarMensajeError("Debes tener al menos 12 años");
+      verificado = false;
     }
-    if (direccion.value === "") {
-        mostrarMensajeError("La dirección está vacía");
-        verificado = false;
-    } else if (!isNaN(direccion.value) || direccion.value < 0) {
-        mostrarMensajeError("La dirección debe ser un número válido");
-        verificado = false;
-    }
-    if (fechaNacimiento.value === "") {
-        mostrarMensajeError("La fecha de nacimiento está vacía");
-        verificado = false;
-    } else {
-        let fechaNacimientoDate = new Date(fechaNacimiento.value);
-        let fechaActual = new Date();
-        let edad = fechaActual.getFullYear() - fechaNacimientoDate.getFullYear();
-        if (fechaActual.getMonth() < fechaNacimientoDate.getMonth() || (fechaActual.getMonth() === fechaNacimientoDate.getMonth() && fechaActual.getDate() < fechaNacimientoDate.getDate())) {
-            edad--;
-        }
-        if (edad < 12) {
-            mostrarMensajeError("Debes tener al menos 12 años");
-            verificado = false;
-        }
-    }
-    if (telefono.value === "") {
-        mostrarMensajeError("El teléfono está vacío");
-        verificado = false;
-    } else if (isNaN(telefono.value) || telefono.value < 0 || telefono.value.length < 10) {
-        mostrarMensajeError("El teléfono debe ser un número válido y tener al menos 10 caracteres");
-        verificado = false;
-    }
-    if (idplan.value === "") {
-        mostrarMensajeError("El plan está vacío");
-        verificado = false;
-    }
-    if (foto.value === "") {
-        mostrarMensajeError("Debe ingresar un link para la foto");
-        verificado = false;
-    }
+  }
+  if (telefono.value === "" || isNaN(telefono.value) || telefono.value < 0 || telefono.value.length < 10) {
+    mostrarMensajeError("El teléfono debe ser un número válido y tener al menos 10 caracteres");
+    verificado = false;
+  }
+  if (idPlan.value === "") {
+    mostrarMensajeError("El plan está vacío");
+    verificado = false;
+  }
+  if (foto.value === "") {
+    mostrarMensajeError("Debe ingresar un enlace para la foto");
+    verificado = false;
+  }
 
-    for (let i = 0; i < seguimientos.length; i++) {
-    const seguimiento = seguimientos[i];
 
+      console.log(seguimiento.value);
+    for (let i = 0; i < seguimientos.value.length; i++) {
+    const seguimiento = seguimientos.value[i];
     if (seguimiento.fecha === "") {
       mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
       verificado = false;
@@ -408,7 +447,7 @@ function validarSeguimiento(seguimiento) {
 
       for (let i = 0; i < seguimientos.length; i++) {
     const seguimiento = seguimientos[i];
-
+console.log(seguimientos.value);
  if (seguimiento.fecha === "") {
       mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
       verificado = false;
@@ -450,7 +489,7 @@ async function actualizarSegui(row) {
     const seguimientosValidos = seguimientos.value.filter(validarSeguimiento);
 
     if (seguimientosValidos.length === seguimientos.value.length) {
-      const res = await useCliente.actualizarSeguimiento(row.id, seguimientosValidos); // Pasar el ID del cliente y los seguimientos válidos
+      const res = await useCliente.actualizarSeguimiento(row.id, seguimientosValidos); 
       clienteTodo.value = res.data.cliente;
     } else {
       console.warn("Hay campos de seguimiento incompletos");
@@ -519,10 +558,10 @@ async function actualizarSegui(row) {
     <q-btn class="option-button" @click="editar(props.row)">
       ✏️
     </q-btn>
-    <q-btn v-if="props.row.estado == 1" class="option-button" @click="editarestado(props.row)">
+    <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button" >
       ❌
     </q-btn>
-    <q-btn v-else class="option-button" @click="editarestado(props.row)">
+    <q-btn @click="editarestado(props.row)" v-else class="option-button">
       ✅
     </q-btn>
   </q-td>
@@ -537,8 +576,8 @@ async function actualizarSegui(row) {
       </template>
       <template v-slot:body-cell-estado="props">
         <q-td :props="props">
-          <q-btn v-if="props.row.estado == 1" @click="editarestado(props.row)" style="color:green">Activo</q-btn>
-          <q-btn v-else @click="editarestado(props.row)" style="color:red">Inactivo</q-btn>
+          <q-btn v-if="props.row.estado == 1"  style="color:green">Activo</q-btn>
+          <q-btn v-else  style="color:red">Inactivo</q-btn>
         </q-td>
       </template>
     </q-table>

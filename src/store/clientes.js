@@ -19,7 +19,7 @@ export const useStoreClientes = defineStore(
         else ruta=`api/clientes/listar?busqueda=${payload}`;
         const response = await axios.get(ruta, {
           headers: {
-            token: useUsuario.token,
+            "x-token": useUsuario.token,
           },
         });
         //    clientes.value = response.data;
@@ -39,7 +39,7 @@ export const useStoreClientes = defineStore(
         console.log(useUsuario.token);
         const response = await axios.get("api/clientes/listaractivados", {
           headers: {
-            token: useUsuario.token,
+            "x-token": useUsuario.token,
           },
         });
         //    clientes.value = response.data;
@@ -58,7 +58,7 @@ export const useStoreClientes = defineStore(
         console.log(useUsuario.token);
         const response = await axios.get("api/clientes/listardesactivados", {
           headers: {
-            token: useUsuario.token,
+            "x-token": useUsuario.token,
           },
         });
         //    clientes.value = response.data;
@@ -71,18 +71,35 @@ export const useStoreClientes = defineStore(
       }
     };
 
+    // const postCliente = async (data) => {
+    //   try {
+    //     loading.value = true;
+    //     const r = await axios.get("api/clientes/escribir", data, {
+    //       headers: {
+    //         token: useUsuario.token,
+    //       },
+    //     });
+    //     console.log(r);
+    //     return r;
+    //   } catch (error) {
+    //     loading.value = true;
+    //     console.log(error);
+    //     return error;
+    //   } finally {
+    //     loading.value = false;
+    //   }
+    // };
     const postCliente = async (data) => {
       try {
         loading.value = true;
-        const r = await axios.get("api/clientes/escribir", data, {
+        const r = await axios.post("api/clientes/escribir", data, {
           headers: {
-            token: useUsuario.token,
+            "x-token": useUsuario.token,
           },
         });
         console.log(r);
         return r;
       } catch (error) {
-        loading.value = true;
         console.log(error);
         return error;
       } finally {
@@ -93,9 +110,9 @@ export const useStoreClientes = defineStore(
     const putCliente = async (id, data) => {
       try {
         loading.value = true;
-        const r = await axios.get(`api/clientes/modificar/${id}`, data, {
+        const r = await axios.put(`api/clientes/modificar/${id}`, data, {
           headers: {
-            token: useUsuario.token,
+            "x-token": useUsuario.token,
           },
         });
         console.log(r);
@@ -111,12 +128,12 @@ export const useStoreClientes = defineStore(
     const putActivarCliente = async (id) => {
       try {
         loading.value = true;
-        const r = await axios.get(
-          `api/clientes/activar/activos/${id}`,
+        const r = await axios.put(
+          `api/clientes/activar/activados/${id}`,
           {},
           {
             headers: {
-              token: useUsuario.token,
+              "x-token": useUsuario.token,
             },
           }
         );
@@ -134,12 +151,12 @@ export const useStoreClientes = defineStore(
     const putDesactivarCliente = async (id) => {
       try {
         loading.value = true;
-        const r = await axios.get(
+        const r = await axios.put(
           `api/clientes/desactivar/desactivados/${id}`,
           {},
           {
             headers: {
-              token: useUsuario.token,
+              "x-token": useUsuario.token,
             },
           }
         );
@@ -161,7 +178,7 @@ export const useStoreClientes = defineStore(
           { seguimiento: seguimientos.value }, // Corregir el nombre del parámetro
           {
             headers: {
-              token: useUsuario.token,
+              "x-token": useUsuario.token,
             },
           }
         );

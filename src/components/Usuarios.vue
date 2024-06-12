@@ -2,10 +2,12 @@
 import { ref, onMounted, computed } from "vue";
 import { useStoreUsuarios } from "../store/usuarios.js";
 import { useStoreSedes } from "../store/sedes.js";
+import { useQuasar } from 'quasar'
 
 
 const useUsuarios = useStoreUsuarios();
 const useSedes = useStoreSedes();
+const $q = useQuasar();
 
 
 let alert = ref(false)
@@ -235,11 +237,61 @@ async function listar() {
     }
 }
 
+async function listaractivados() {
+  try {
+    const res = await useUsuarios.listaractivados();
+    console.log(res.data,"resactivsdas");
+    rows.value = res.data.activados.map(usuario => {
+      return {
+        ...usuario,
+        sede: usuario.id, 
+      };
+    });
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+  }
+}
+
+async function listardesactivados() {
+  try {
+    const res = await useUsuarios.listardesactivados();
+    console.log(res,"descativados")
+    rows.value = res.data.desactivados.map(usuario => {
+      return {
+        ...usuario,
+        sede: usuario.id, 
+      };
+    });
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+  }
+}
+
+    const ordenar= ref("Todos")
+   function ejecutarFiltro() {
+
+      if (ordenar.value == 'Todos') {
+        listarUsuarios();
+      } else if (ordenar.value == 'Activos') {
+        listaractivados();
+      } else if (ordenar.value == 'Inactivos') {
+        listardesactivados();
+      }
+    };
+
+
     
 </script>
 
 
 <template>
+
+<div class="tablaselect">
+  <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+    <option value="Todos">Todos</option>
+    <option value="Activos">Activos</option>
+    <option value="Inactivos">Inactivos</option>
+  </select>  
     
       <q-table class="table" flat bordered title="Usuarios" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-id="props">
@@ -271,6 +323,7 @@ async function listar() {
           </q-td>
         </template>
     </q-table>
+    </div>
       
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>

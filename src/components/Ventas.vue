@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import { useStoreVentas } from "../store/ventas.js";
 import { useStoreInventario } from "../store/inventario.js";
+import { useQuasar } from 'quasar'
 
 
 const useSales = useStoreVentas();
@@ -9,6 +10,7 @@ const useInventario = useStoreInventario();
 
 
 let agregar=ref(false)
+const $q = useQuasar();
 
 let botoneditar=ref(false)
 
@@ -123,7 +125,7 @@ async function validar() {
         mostrarMensajeError("el codigo está vacío");
         verificado = false;
     } 
-    if (valorUnitario.value === "") {
+    if (valorUnitario.value == "") {
         mostrarMensajeError("Digite un valor Unitario");
         verificado = false;
     } 

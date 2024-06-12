@@ -17,7 +17,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
                 console.log(useUsuario.token);
                 const response = await axios.get("api/maquinas/listar",{
                     headers:{
-                        token: useUsuario.token
+                        "x-token": useUsuario.token
                     }
             });
             //    maquinas.value = response.data;
@@ -29,14 +29,51 @@ export const useStoreMaquina = defineStore("Maquina", () => {
             finally {
                 loading.value=false
         }}
+
+        const listaractivadas = async () => {
+            try {
+              loading.value = true;
+              console.log(useUsuario.token);
+              const response = await axios.get("api/maquinas/listaractivadas", {
+                headers: {
+                  "x-token": useUsuario.token,
+                },
+              });
+              return response;
+            } catch (error) {
+              console.error("NO se pudo obtener la lista de maquinas", error);
+              throw error;
+            } finally {
+              loading.value = false;
+            }
+          };
+      
+          const listardesactivadas = async () => {
+            try {
+              loading.value = true;
+              console.log(useUsuario.token);
+              const response = await axios.get("api/maquinas/listardesactivadas", {
+                headers: {
+                  "x-token": useUsuario.token,
+                },
+              });
+              return response;
+            } catch (error) {
+              console.error("NO se pudo obtener la lista de maquinas", error);
+              throw error;
+            } finally {
+              loading.value = false;
+            }
+          };
+
     
     
         const postMaquina= async(data) =>{
             try {
                 loading.value =true
-                const r = await axios.get("api/maquinas/escribir", data,{
+                const r = await axios.post("api/maquinas/escribir", data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -53,9 +90,9 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const putMaquina= async(id, data) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/maquinas/modificar/${id}`, data,{
+                const r = await axios.put(`api/maquinas/modificar/${id}`, data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -71,9 +108,9 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const putActivarMaquina= async(id) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/maquinas/activar/activos/${id}`, {},{
+                const r = await axios.put(`api/maquinas/activar/activos/${id}`, {},{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -90,9 +127,9 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const putDesactivarMaquina= async(id) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/maquinas/desactivar/desactivados/${id}`, {},{
+                const r = await axios.put(`api/maquinas/desactivar/desactivos/${id}`, {},{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -107,7 +144,7 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         }
     
     
-        return{ listarMaquina, postMaquina, putMaquina, putActivarMaquina, putDesactivarMaquina, loading, maquinas, useUsuario}
+        return{ listarMaquina,listaractivadas,listardesactivadas, postMaquina, putMaquina, putActivarMaquina, putDesactivarMaquina, loading, maquinas, useUsuario}
     
     },
     

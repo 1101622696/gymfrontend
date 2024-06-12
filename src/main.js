@@ -12,6 +12,8 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 
 axios.defaults.baseURL = "http://localhost:4000/";
+// axios.defaults.baseURL = "localhost:4000/";
+
 
 let requestsPending = 0;
 

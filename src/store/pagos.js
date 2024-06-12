@@ -16,7 +16,7 @@ export const useStorePagos = defineStore("Pagos", () => {
                 console.log(useUsuario.token);
                 const response = await axios.get("api/pagos/listar",{
                     headers:{
-                        token: useUsuario.token
+                        "x-token": useUsuario.token
                     }
             });
             //    pagos.value = response.data;
@@ -33,9 +33,9 @@ export const useStorePagos = defineStore("Pagos", () => {
         const postPago= async(data) =>{
             try {
                 loading.value =true
-                const r = await axios.get("api/pagos/escribir", data,{
+                const r = await axios.post("api/pagos/escribir", data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -52,9 +52,9 @@ export const useStorePagos = defineStore("Pagos", () => {
         const putPago= async(id, data) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/pagos/modificar/${id}`, data,{
+                const r = await axios.put(`api/pagos/modificar/${id}`, data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -67,12 +67,12 @@ export const useStorePagos = defineStore("Pagos", () => {
                 loading.value = false
             }
         }
-        const putActivarPago= async(id) =>{
+        const putPagosActivar= async(id) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/pagos/activar/activos/${id}`, {},{
+                const r = await axios.put(`api/pagos/activar/activos/${id}`, {},{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -86,12 +86,12 @@ export const useStorePagos = defineStore("Pagos", () => {
             }
         }
     
-        const putDesactivarPago= async(id) =>{
+        const putPagosDesactivar= async(id) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/pagos/desactivar/desactivados/${id}`, {},{
+                const r = await axios.put(`api/pagos/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -106,7 +106,7 @@ export const useStorePagos = defineStore("Pagos", () => {
         }
     
     
-        return{ listarPago, postPago, putPago, putActivarPago, putDesactivarPago, loading, pagos, useUsuario}
+        return{ listarPago, postPago, putPago, putPagosActivar, putPagosDesactivar, loading, pagos, useUsuario}
     
     },
     

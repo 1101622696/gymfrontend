@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStorePlanes } from "../store/planes.js";
+import { useQuasar } from 'quasar'
 
 const usePlan = useStorePlanes();
 
 let agregar=ref(false)
+const $q = useQuasar();
 
 let botoneditar=ref(false)
 
@@ -158,10 +160,50 @@ async function listarPlanes(){
     rows.value=res.data.plan
 }
       
+
+async function listaractivados() {
+  try {
+    const res = await usePlan.listaractivados();
+    console.log(res.data,"resactivsdas");
+    rows.value=res.data.activados
+  } catch (error) {
+    console.error("Error al listar maquinas:", error);
+  }
+}
+
+async function listardesactivados() {
+  try {
+    const res = await usePlan.listardesactivados();
+    rows.value=res.data.desactivados
+  } catch (error) {
+    console.error("Error al listar maquinas:", error);
+  }
+}
+
+    const ordenar= ref("Todos")
+   function ejecutarFiltro() {
+
+      if (ordenar.value == 'Todos') {
+        listarPlanes();
+      } else if (ordenar.value == 'Activos') {
+        listaractivados();
+      } else if (ordenar.value == 'Inactivos') {
+        listardesactivados();
+      }
+    };
+
+
 </script>
 
 <template>
     <div class="container">
+
+      <div class="tablaselect">
+      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+        <option value="Todos">Todos</option>
+        <option value="Activos">Activos</option>
+        <option value="Inactivos">Inactivos</option>
+      </select>
   
       <q-table class="table" flat bordered title="Planes" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-opciones="props">
@@ -188,7 +230,7 @@ async function listarPlanes(){
           </q-td>
         </template>
       </q-table>
-
+    </div>
   <div>
       <button class="button" @click="agregarPlan()">Agregar Plan</button>
   
@@ -365,6 +407,22 @@ margin-left: auto;
 
 .crearcliente input[type="submit"]:hover {
   background-color: #45a049;
+}
+
+.custom-select {
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 1%;
+  top:3%;
+  z-index: 1;
+}
+.tablaselect{
+  display: flex;
+  position: relative;
+  width: 90vmax;
 }
 
 </style>

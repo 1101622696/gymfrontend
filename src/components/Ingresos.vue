@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { useQuasar } from 'quasar'
 import { useStoreIngresos } from "../store/ingresos.js";
 
 const useIngreso = useStoreIngresos();
 let alert = ref(false)
 let accion = ref(1)
 let rows=ref([])
+const $q = useQuasar();
 
 
 function abrir(){

@@ -2,19 +2,18 @@
   <div class="todo">
     <div class="body">
       <section>
-        <form>
+        <form @submit.prevent="iniciar">
           <h1>Inicio</h1>
           <div class="inputbox">
-            <!-- <ion-icon name="mail-outline"></ion-icon> -->
             <input type="email" required v-model="email" />
             <label for="">Usuario</label>
           </div>
-          <div class="inputbox">
-            <!-- <ion-icon name="lock-closed-outline"></ion-icon> -->
-            <input type="password" required v-model="passwordLogin" />
+          <div class="inputbox password-box">
+            <input :type="passwordFieldType" required v-model="passwordLogin" />
             <label for="">Contraseña</label>
+            <ion-icon :name="eyeIcon" @click="togglePasswordVisibility"></ion-icon>
           </div>
-          <button @click="iniciar()">Iniciar</button>
+          <button type="submit">Iniciar</button>
           <div class="register"></div>
         </form>
       </section>
@@ -22,44 +21,75 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref } from "vue";
-import { useStoreUsuarios } from "../store/usuarios";
-import { useRouter } from "vue-router";
+import { ref, computed } from 'vue';
+import { useStoreUsuarios } from '../store/usuarios';
+import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
 
 const router = useRouter();
-let UseUsuario = useStoreUsuarios();
-let email = ref("");
-let passwordLogin = ref("");
-// const datoslogin=([])
-// let nombre = ref ('');
-// let correo = ref ('');
-// let password = ref ('');
+const UseUsuario = useStoreUsuarios();
+const email = ref('');
+const passwordLogin = ref('');
+const passwordVisible = ref(false);
+const $q = useQuasar();
 
-// async function iniciar() {
-//   try {
-//     const res = await UseUsuario.login({
-//       email: email.value,
-//       password: passwordLogin.value,
-//     });
-//     UseUsuario.token = res.data.token;
-//     UseUsuario.user = res.data.usuario;
-//     console.log(res);
+const passwordFieldType = computed(() => (passwordVisible.value ? 'text' : 'password'));
+const eyeIcon = computed(() => (passwordVisible.value ? 'eye-off-outline' : 'eye-outline'));
 
-//     router.push("/");
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+const togglePasswordVisibility = () => {
+  passwordVisible.value = !passwordVisible.value;
+};
 
-async function iniciar() {
-    const res = await UseUsuario.login(email.value, passwordLogin.value);
-     router.push("/Home");
-    console.log(res);
+function mostrarMensajeError(mensaje) {
+    $q.notify({
+        type: "negative",
+        message: mensaje,
+        position: "bottom-right",
+    });
 }
 
+function mostrarMensajeExito(mensaje) {
+    $q.notify({
+        type: "positive",
+        message: mensaje,
+        position: "bottom-right",
+    });
+}
+const iniciar = async () => {
+  try {
+    if (email.value === '') {
+      mostrarMensajeError('El campo de correo electrónico es obligatorio');
+      return;
+    }
 
+    if (passwordLogin.value === '') {
+      mostrarMensajeError('El campo de contraseña es obligatorio');
+      return;
+    }
+
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    if (!emailRegex.test(email.value)) {
+      mostrarMensajeError('El formato del correo electrónico es incorrecto');
+      return;
+    }
+
+    const res = await UseUsuario.login(email.value, passwordLogin.value);
+    mostrarMensajeExito('Inicio de sesión exitoso');
+    router.push('/Home');
+  } catch (error) {
+    if (error.response && error.response.data) {
+      mostrarMensajeError(error.response.data.msg);
+    } else {
+      // Manejar el caso cuando no hay respuesta del servidor
+      mostrarMensajeError('Ha ocurrido un error en el servidor');
+      console.log(error);
+    }
+  }
+};
 </script>
+
 
 <style scoped>
 .todo {
@@ -67,6 +97,15 @@ async function iniciar() {
   padding: 0;
   box-sizing: border-box;
   font-family: "poppins" sans-serif;
+}
+
+.password-box ion-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 999;
 }
 .body {
   display: flex;

@@ -16,7 +16,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
                 console.log(useUsuario.token);
                 const response = await axios.get("api/ventas/listar",{
                     headers:{
-                        token: useUsuario.token
+                        "x-token": useUsuario.token
                     }
             });
             //    ventas.value = response.data;
@@ -33,9 +33,9 @@ export const useStoreVentas = defineStore("Ventas", () => {
         const postVenta= async(data) =>{
             try {
                 loading.value =true
-                const r = await axios.get("api/ventas/escribir", data,{
+                const r = await axios.post("api/ventas/escribir", data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -52,9 +52,9 @@ export const useStoreVentas = defineStore("Ventas", () => {
         const putVenta= async(id, data) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/ventas/modificar/${id}`, data,{
+                const r = await axios.put(`api/ventas/modificar/${id}`, data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);

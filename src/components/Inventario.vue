@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import { useQuasar } from 'quasar'
 import { useStoreInventario } from "../store/inventario.js";
 
 const useInventario = useStoreInventario();
 
 let agregar=ref(false)
+const $q = useQuasar();
 
 let botoneditar=ref(false)
 
@@ -89,6 +91,7 @@ let columns =ref([
     {name:"descripcion", label:"descripcion del producto", field:"descripcion", align:"center"},
     {name:"valor", label:"Valor del producto", field:"valor", align:"center"},
     {name:"cantidad", label:"cantidad disponible", field:"cantidad", align:"center"},
+  { name: "estado", label: "Estado", field: "estado", align: "center" },
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
@@ -99,6 +102,14 @@ async function listarInventario(){
     rows.value=res.data.inventario
 }
 
+async function editarestado(info){
+if(info.estado == 1){
+let desactivado= await useInventario.putDesactivarInventario(info._id)
+}else if(info.estado == 0){
+let activado= await useInventario.putActivarInventario(info._id)
+}
+  listarInventario()
+}
 onMounted(()=>{
   listarInventario()
 })
@@ -158,9 +169,23 @@ function mostrarMensajeExito(mensaje) {
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
+            <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
+              ❌
+            </q-btn>
+            <q-btn @click="editarestado(props.row)" v-else class="option-button">
+              ✅
+            </q-btn>
           </q-td>
         </template>
-      </q-table>
+        <template v-slot:body-cell-estado="props">
+          <q-td :props="props">
+            <q-btn v-if="props.row.estado == 1"
+             style="color:green">Activo</q-btn>
+            <q-btn v-else 
+               style="color:red">Inactivo</q-btn>
+          </q-td>
+        </template>
+    </q-table>
     
       <button class="button" @click="agregarInventario()">Agregar Inventario</button>
   

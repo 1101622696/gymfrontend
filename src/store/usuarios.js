@@ -17,12 +17,13 @@ let loading = ref(false)
         try {
             loading.value  = true;
             console.log(token.value);
+            console.log(`este es el token ${token.value}`);
             const response = await axios.get("api/usuarios/listar",{
                 headers:{
-                    token: token.value
+                    "x-token": token.value
                 }
         });
-           usuarios.value = response.data;
+        //    usuarios.value = response.data;
            return response;
         } catch (error) {
             console.error("NO se pudo obtener la lista de usuarios",error);
@@ -38,13 +39,32 @@ let loading = ref(false)
             console.log(token.value);
             const response = await axios.get("api/usuarios/listaractivados",{
                 headers:{
-                    token: token.value
+                    "x-token": token.value
                 }
         });
-           usuarios.value = response.data;
+        //    usuarios.value = response.data;
            return response;
         } catch (error) {
             console.error("NO se pudo obtener la lista de activados",error);
+            throw error;
+        }
+        finally {
+            loading.value=false
+    }}
+
+    const listardesactivados= async() =>{
+        try {
+            loading.value  = true;
+            console.log(token.value);
+            const response = await axios.get("api/usuarios/listardesactivados",{
+                headers:{
+                    "x-token": token.value
+                }
+        });
+        //    usuarios.value = response.data;
+           return response;
+        } catch (error) {
+            console.error("NO se pudo obtener la lista de desactivados",error);
             throw error;
         }
         finally {
@@ -55,7 +75,7 @@ let loading = ref(false)
     const postUsuario= async(data) =>{
         try {
             loading.value =true
-            const r = await axios.get("api/usuarios/escribir", data,{
+            const r = await axios.post("api/usuarios/escribir", data,{
                 headers:{
                     token:token.value
                 }
@@ -74,9 +94,9 @@ let loading = ref(false)
     const putUsuarios= async(id, data) =>{
         try {
             loading.value =true
-            const r = await axios.get(`api/usuarios/modificar/${id}`, data,{
+            const r = await axios.put(`api/usuarios/modificar/${id}`, data,{
                 headers:{
-                    token:token.value
+                    "x-token":token.value
                 }
             })
             console.log(r);
@@ -93,9 +113,9 @@ let loading = ref(false)
     const putActivarUsuario= async(id) =>{
         try {
             loading.value =true
-            const r = await axios.get(`api/usuarios/activar/activos/${id}`, {},{
+            const r = await axios.put(`api/usuarios/activar/activos/${id}`, {},{
                 headers:{
-                    token:token.value
+                    "x-token":token.value
                 }
             })
             console.log(r);
@@ -112,9 +132,9 @@ let loading = ref(false)
     const putDesactivarUsuario= async(id) =>{
         try {
             loading.value =true
-            const r = await axios.get(`api/usuarios/desactivar/desactivados/${id}`, {},{
+            const r = await axios.put(`api/usuarios/desactivar/desactivados/${id}`, {},{
                 headers:{
-                    token:token.value
+                    "x-token":token.value
                 }
             })
             console.log(r);
@@ -127,19 +147,6 @@ let loading = ref(false)
             loading.value = false
         }
     }
-
-    // let login = async(data) =>{
-    //     try {
-    //         const r = await axios.get("api/usuarios/login", data)
-    //         token.value = r.data.token
-    //         user.value = r.data.usuario
-    //         console.log(r.data);
-    //         return r
-    //     } catch (error) {
-    //         console.log(error, data);
-    //         return error;
-    //     }
-    // }
 
     let login = async (email, password) => {
         try {
@@ -156,9 +163,26 @@ let loading = ref(false)
         }
     };
 
+    // let login = async (email, password) => {
+    //     try {
+    //         const res = await axios.post("api/usuarios/login", {email, password});
+    //         console.log(res);
+    //         token.value = res.data.token
+    //         user.value = res.data.usuario
+    //         console.log(token.value);
+    //       return res;
+    //     } catch (error) {
+    //       if (error.response && error.response.data) {
+    //         throw error.response.data.msg;
+    //       } else {
+    //         throw "Error al iniciar sesión. Intente nuevamente.";
+    //       }
+    //     }
+    //   }
+
     
     
-    return{ listarUsuario, listaractivados, postUsuario, putUsuarios, putActivarUsuario, putDesactivarUsuario, login, token, loading, usuarios, user}
+    return{ listarUsuario, listaractivados,listardesactivados, postUsuario, putUsuarios, putActivarUsuario, putDesactivarUsuario, login, token, loading, usuarios, user}
 
 },
 

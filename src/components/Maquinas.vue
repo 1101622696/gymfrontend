@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useStoreMaquina } from "../store/maquinas.js";
+import { useQuasar } from 'quasar'
 
 const useMaquina = useStoreMaquina();
 
 let agregar=ref(false)
 let botoneditar=ref(false)
+const $q = useQuasar();
 
 function agregarmaquina(){
   botoneditar.value=true
@@ -192,10 +194,54 @@ function getSedeNombre(id) {
       return new Date(dateStr).toLocaleDateString(undefined, options);
     };
       
+
+
+    async function listaractivadas() {
+  try {
+    const res = await useMaquina.listaractivadas();
+    console.log(res.data,"resactivsdas");
+    rows.value=res.data.activadas
+  } catch (error) {
+    console.error("Error al listar maquinas:", error);
+  }
+}
+
+async function listardesactivadas() {
+  try {
+    const res = await useMaquina.listardesactivadas();
+    rows.value=res.data.desactivadas
+  } catch (error) {
+    console.error("Error al listar maquinas:", error);
+  }
+}
+
+    const ordenar= ref("Todos")
+   function ejecutarFiltro() {
+
+      if (ordenar.value == 'Todos') {
+        listarMaquina();
+      } else if (ordenar.value == 'Activos') {
+        listaractivadas();
+      } else if (ordenar.value == 'Inactivos') {
+        listardesactivadas();
+      }
+    };
+
+
+
+
 </script>
 
 <template>
     <div class="container">
+
+      <div class="tablaselect">
+      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+        <option value="Todos">Todos</option>
+        <option value="Activos">Activos</option>
+        <option value="Inactivos">Inactivos</option>
+      </select>
+    
   
       <q-table class="table" flat bordered title="Maquinas" :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idSede="props">
@@ -213,15 +259,15 @@ function getSedeNombre(id) {
         <p>{{ formatDate(props.row.fechaUltmantenimiento) }}</p>
       </q-td>
     </template>
-        <template v-slot:body-cell-opciones="props">
+              <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
+            <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
             </q-btn>
-            <q-btn v-else class="option-button">
+            <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
             </q-btn>
           </q-td>
@@ -229,15 +275,13 @@ function getSedeNombre(id) {
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
-            @click="editarestado(props.row)"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
-               @click="editarestado(props.row)"
                style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
-  
+    </div>
       <!-- <button class="button" @click="listarMaquina()">Traer Datos</button> -->
   
       <button class="button" @click="agregarmaquina()">Agregar Maquina</button>
@@ -416,6 +460,22 @@ margin-left: auto;
 
 .crearcliente input[type="submit"]:hover {
   background-color: #45a049;
+}
+
+.custom-select {
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 1%;
+  top:3%;
+  z-index: 1;
+}
+.tablaselect{
+  display: flex;
+  position: relative;
+  width: 90vmax;
 }
 
 </style>

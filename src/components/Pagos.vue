@@ -2,6 +2,8 @@
 import { ref, onMounted, computed } from "vue";
 import { useStorePagos } from "../store/pagos.js";
 import { useStoreClientes } from "../store/clientes.js";
+import { useQuasar } from 'quasar'
+const $q = useQuasar();
 
 
 const usePagos = useStorePagos();
@@ -74,9 +76,9 @@ if(nombrez.status!=200){
 
 async function editarestado(info){
 if(info.estado == 1){
-let desactivado= await usePagos.putDesactivarPago(info._id)
+let desactivado= await usePagos.putPagosDesactivar(info._id)
 }else if(info.estado == 0){
-let activado= await usePagos.putActivarPago(info._id)
+let activado= await usePagos.putPagosActivar(info._id)
 }
 listarPagos()
 }
@@ -114,10 +116,10 @@ async function validar() {
         mostrarMensajeError("escriba el plan");
         verificado = false;
     }
-    if (fecha.value === "") {
-        mostrarMensajeError("La fecha está vacía");
-        verificado = false;
-    } 
+    // if (fecha.value === "") {
+    //     mostrarMensajeError("La fecha está vacía");
+    //     verificado = false;
+    // } 
     if (valor.value === "") {
         mostrarMensajeError("El valor está vacío");
         verificado = false;
@@ -208,15 +210,15 @@ function getClienteDocumento(id) {
         <p>{{ formatDate(props.row.fecha) }}</p>
       </q-td>
     </template>
-        <template v-slot:body-cell-opciones="props">
+           <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
+            <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
             </q-btn>
-            <q-btn v-else class="option-button">
+            <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
             </q-btn>
           </q-td>
@@ -224,10 +226,8 @@ function getClienteDocumento(id) {
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
-            @click="editarestado(props.row)"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
-               @click="editarestado(props.row)"
                style="color:red">Inactivo</q-btn>
           </q-td>
         </template>

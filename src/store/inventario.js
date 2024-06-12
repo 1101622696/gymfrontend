@@ -17,7 +17,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
                 console.log(useUsuario.token);
                 const response = await axios.get("api/inventario/listar",{
                     headers:{
-                        token: useUsuario.token
+                        "x-token": useUsuario.token
                     }
             });
             //    inventario.value = response.data;
@@ -34,9 +34,9 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const postInventario= async(data) =>{
             try {
                 loading.value =true
-                const r = await axios.get("api/inventario/escribir", data,{
+                const r = await axios.post("api/inventario/escribir", data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -53,9 +53,9 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const putInventario= async(id, data) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/inventario/modificar/${id}`, data,{
+                const r = await axios.put(`api/inventario/modificar/${id}`, data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -68,8 +68,53 @@ export const useStoreInventario = defineStore("Inventario", () => {
                 loading.value = false
             }
         }
+        const putActivarInventario = async (id) => {
+            try {
+              loading.value = true;
+              const r = await axios.put(
+                `api/inventario/activar/activados/${id}`,
+                {},
+                {
+                  headers: {
+                    "x-token": useUsuario.token,
+                  },
+                }
+              );
+              console.log(r);
+              return r;
+            } catch (error) {
+              loading.value = true;
+              console.log(error);
+              return error;
+            } finally {
+              loading.value = false;
+            }
+          };
+      
+          const putDesactivarInventario = async (id) => {
+            try {
+              loading.value = true;
+              const r = await axios.put(
+                `api/inventario/desactivar/desactivados/${id}`,
+                {},
+                {
+                  headers: {
+                    "x-token": useUsuario.token,
+                  },
+                }
+              );
+              console.log(r);
+              return r;
+            } catch (error) {
+              loading.value = true;
+              console.log(error);
+              return error;
+            } finally {
+              loading.value = false;
+            }
+          };
     
-        return{ listarInventario, postInventario, putInventario, loading, inventario, useUsuario}
+        return{ listarInventario, postInventario, putInventario, putActivarInventario, putDesactivarInventario, loading, inventario, useUsuario}
     
     },
     

@@ -17,7 +17,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                 console.log(useUsuario.token);
                 const response = await axios.get("api/mantenimiento/listar",{
                     headers:{
-                        token: useUsuario.token
+                        "x-token": useUsuario.token
                     }
             });
             //    mantenimiento.value = response.data;
@@ -34,9 +34,9 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         const postMantenimiento= async(data) =>{
             try {
                 loading.value =true
-                const r = await axios.get("api/mantenimiento/escribir", data,{
+                const r = await axios.post("api/mantenimiento/escribir", data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);
@@ -53,9 +53,9 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         const putMantenimiento= async(id, data) =>{
             try {
                 loading.value =true
-                const r = await axios.get(`api/mantenimiento/modificar/${id}`, data,{
+                const r = await axios.put(`api/mantenimiento/modificar/${id}`, data,{
                     headers:{
-                        token:useUsuario.token
+                        "x-token":useUsuario.token
                     }
                 })
                 console.log(r);

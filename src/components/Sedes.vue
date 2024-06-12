@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useStoreSedes } from "../store/sedes.js";
+import { useQuasar } from 'quasar'
 
 const useSedes = useStoreSedes();
 let alert = ref(false)
 let accion = ref(1)
+const $q = useQuasar();
 
 function abrir(){
   accion.value=1
@@ -173,10 +175,49 @@ onMounted(()=>{
   listarSedes();
 })
 
+async function listaractivadas() {
+  try {
+    const res = await useSedes.listaractivadas();
+    console.log(res.data,"resactivsdas");
+    rows.value=res.data.activadas
+  } catch (error) {
+    console.error("Error al listar maquinas:", error);
+  }
+}
+
+async function listardesactivadas() {
+  try {
+    const res = await useSedes.listardesactivadas();
+    rows.value=res.data.desactivadas
+  } catch (error) {
+    console.error("Error al listar maquinas:", error);
+  }
+}
+
+    const ordenar= ref("Todos")
+   function ejecutarFiltro() {
+
+      if (ordenar.value == 'Todos') {
+        listarSedes();
+      } else if (ordenar.value == 'Activos') {
+        listaractivadas();
+      } else if (ordenar.value == 'Inactivos') {
+        listardesactivadas();
+      }
+    };
+
 </script>
 
 <template>
     <div>
+
+      <div class="tablaselect">
+        <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+          <option value="Todos">Todos</option>
+          <option value="Activos">Activos</option>
+          <option value="Inactivos">Inactivos</option>
+        </select>
+
             <q-table class="table" flat bordered title="Sedes" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
@@ -202,6 +243,8 @@ onMounted(()=>{
           </q-td>
         </template>
       </q-table>
+    </div>
+
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
         </div>

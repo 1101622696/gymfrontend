@@ -19,7 +19,7 @@
           <q-item-section avatar>
         <q-icon name="login" class="text-white" />
       </q-item-section>
-      <q-item-section class="text-white text-body1">Login pasar a home</q-item-section>
+      <q-item-section class="text-white text-body1">Cerrar sesión</q-item-section>
     </q-item>
 
 
