@@ -30,6 +30,43 @@ export const useStoreInventario = defineStore("Inventario", () => {
                 loading.value=false
         }}
     
+        const listaractivados = async () => {
+          try {
+            loading.value = true;
+            console.log(useUsuario.token);
+            const response = await axios.get("api/inventario/listaractivados", {
+              headers: {
+                "x-token": useUsuario.token,
+              },
+            });
+            return response;
+          } catch (error) {
+            console.error("NO se pudo obtener la lista de inventario", error);
+            console.log(`${useUsuario.token} es el token`);
+
+            throw error;
+          } finally {
+            loading.value = false;
+          }
+        };
+    
+        const listardesactivados = async () => {
+          try {
+            loading.value = true;
+            console.log(useUsuario.token);
+            const response = await axios.get("api/inventario/listardesactivados", {
+              headers: {
+                "x-token": useUsuario.token,
+              },
+            });
+            return response;
+          } catch (error) {
+            console.error("NO se pudo obtener la lista de inventario", error);
+            throw error;
+          } finally {
+            loading.value = false;
+          }
+        };
     
         const postInventario= async(data) =>{
             try {
@@ -114,7 +151,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
             }
           };
     
-        return{ listarInventario, postInventario, putInventario, putActivarInventario, putDesactivarInventario, loading, inventario, useUsuario}
+        return{ listarInventario,listaractivados,listardesactivados, postInventario, putInventario, putActivarInventario, putDesactivarInventario, loading, inventario, useUsuario}
     
     },
     

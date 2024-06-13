@@ -23,6 +23,8 @@ export const useStoreVentas = defineStore("Ventas", () => {
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de ventas",error);
+                console.log(`${useUsuario.token} es el token`);
+
                 throw error;
             }
             finally {

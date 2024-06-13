@@ -20,17 +20,40 @@ export const useStoreClientes = defineStore(
         const response = await axios.get(ruta, {
           headers: {
             "x-token": useUsuario.token,
+            // "x-token": `Bearer ${useUsuario.token}`,
           },
         });
-        //    clientes.value = response.data;
         return response;
       } catch (error) {
         console.error("NO se pudo obtener la lista de clientes", error);
+        console.log(`${useUsuario.token} es el token`);
         throw error;
       } finally {
         loading.value = false;
       }
     };
+
+  //   const listarCliente = async (payload) => {
+  //     try {
+  //         const token = localStorage.getItem('token');
+  //         if (!token) {
+  //             throw new Error('Token no disponible');
+  //         }
+  
+  //         const ruta = payload == null ? 'api/clientes/listar' : `api/clientes/listar?busqueda=${payload}`;
+  //         const response = await axios.get(ruta, {
+  //             headers: {
+  //                 'x-token': token,
+  //             },
+  //         });
+  
+  //         return response;
+  //     } catch (error) {
+  //         console.error('No se pudo obtener la lista de clientes', error);
+  //         throw error;
+  //     }
+  // };
+
 
 
     const listaractivados = async () => {
@@ -100,7 +123,7 @@ export const useStoreClientes = defineStore(
         console.log(r);
         return r;
       } catch (error) {
-        console.log(error);
+        console.log("paila", error);
         return error;
       } finally {
         loading.value = false;

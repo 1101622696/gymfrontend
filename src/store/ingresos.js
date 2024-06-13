@@ -25,6 +25,8 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de ingresos",error);
+        console.log(`${useUsuario.token} es el token`);
+
                 throw error;
             }
             finally {

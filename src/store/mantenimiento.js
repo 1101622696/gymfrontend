@@ -24,6 +24,8 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de mantenimiento",error);
+                console.log(`${useUsuario.token} es el token`);
+
                 throw error;
             }
             finally {

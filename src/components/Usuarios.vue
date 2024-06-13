@@ -80,11 +80,11 @@ if(nombrez.status!=200){
 
 async function editarestado(info){
 if(info.estado == 1){
-let desactivado= await useSedes.putDesactivarUsuario(info._id)
+let desactivado= await useUsuarios.putDesactivarUsuario(info._id)
 }else if(info.estado == 0){
-let activado= await useSedes.putActivarUsuario(info._id)
+let activado= await useUsuarios.putActivarUsuario(info._id)
 }
- listarSedes();
+ listarUsuarios();
 }
 
 
@@ -299,15 +299,15 @@ async function listardesactivados() {
           <p>{{ getSedeNombre(props.row.id) }}</p>
         </q-td>
       </template>
-        <template v-slot:body-cell-opciones="props">
+          <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
+            <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
             </q-btn>
-            <q-btn v-else class="option-button">
+            <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
             </q-btn>
           </q-td>
@@ -315,10 +315,8 @@ async function listardesactivados() {
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
-            @click="editarestado(props.row)"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
-               @click="editarestado(props.row)"
                style="color:red">Inactivo</q-btn>
           </q-td>
         </template>

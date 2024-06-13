@@ -163,24 +163,6 @@ let loading = ref(false)
         }
     };
 
-    // let login = async (email, password) => {
-    //     try {
-    //         const res = await axios.post("api/usuarios/login", {email, password});
-    //         console.log(res);
-    //         token.value = res.data.token
-    //         user.value = res.data.usuario
-    //         console.log(token.value);
-    //       return res;
-    //     } catch (error) {
-    //       if (error.response && error.response.data) {
-    //         throw error.response.data.msg;
-    //       } else {
-    //         throw "Error al iniciar sesión. Intente nuevamente.";
-    //       }
-    //     }
-    //   }
-
-    
     
     return{ listarUsuario, listaractivados,listardesactivados, postUsuario, putUsuarios, putActivarUsuario, putDesactivarUsuario, login, token, loading, usuarios, user}
 

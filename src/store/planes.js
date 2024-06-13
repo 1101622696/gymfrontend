@@ -24,7 +24,7 @@ export const useStorePlanes = defineStore("Planes", () => {
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de planes",error);
-                console.log(token, "es el token");
+                console.log(`${useUsuario.token} es el token`);
 
                 throw error;
             }

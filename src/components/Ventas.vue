@@ -215,12 +215,6 @@ function getInventarioCodigo(id) {
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
-              ❌
-            </q-btn>
-            <q-btn v-else class="option-button">
-              ✅
-            </q-btn>
           </q-td>
         </template>
         <template v-slot:body-cell-estado="props">

@@ -206,15 +206,15 @@ async function listardesactivados() {
       </select>
   
       <q-table class="table" flat bordered title="Planes" :rows="rows" :columns="columns" row-key="id">
-        <template v-slot:body-cell-opciones="props">
+         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
-            <q-btn v-if="props.row.estado == 1" class="option-button">
+            <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
             </q-btn>
-            <q-btn v-else class="option-button">
+            <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
             </q-btn>
           </q-td>
@@ -222,10 +222,8 @@ async function listardesactivados() {
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
-            @click="editarestado(props.row)"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
-               @click="editarestado(props.row)"
                style="color:red">Inactivo</q-btn>
           </q-td>
         </template>

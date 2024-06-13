@@ -23,6 +23,8 @@ export const useStorePagos = defineStore("Pagos", () => {
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de pagos",error);
+                console.log(`${useUsuario.token} es el token`);
+
                 throw error;
             }
             finally {

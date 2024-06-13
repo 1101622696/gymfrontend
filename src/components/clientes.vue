@@ -28,35 +28,7 @@ telefono.value=""
 idPlan.value=""
 foto.value=""
 seguimiento.value=""
-// seguimientos.value=""
-
-
-
 }
-
-
-// async function guardar(){
-
-// agregar.value = true;
-// if (await validar()){
-//   const todo={
-//     nombre:nombre.value,
-//     documento:documento.value,
-//     direccion:direccion.value,
-//     fechaNacimiento:fechaNacimiento.value,
-//     telefono:telefono.value,
-//     idPlan:idPlan.value,
-//     foto:foto.value
-
-//     }
-// let nombrez= await useCliente.postCliente(todo)
-// if(nombrez.status!=200){
-//   mostrarMensajeError("no se pudo enviar")
-// }else{
-//   mostrarMensajeExito("muy bien")
-// listarClientes(), listarPlanes()}
-// }
-// }
 
 async function guardar() {
 
@@ -70,15 +42,25 @@ async function guardar() {
       telefono: telefono.value,
       idPlan: idPlan.value.valor,
       foto: foto.value,
-      seguimiento:seguimiento.value,
-      // seguimientos:seguimientos.value
+      seguimientos:seguimientos.value,
 
     };
 console.log(seguimientos.value);
+console.log('este son seguimientos arriba');
+console.log(nombre.value);
+console.log(direccion.value);
+console.log(fechaNacimiento.value);
+console.log(telefono.value);
+console.log(idPlan.value);
+console.log(seguimiento.value);
+console.log('este es seguimiento');
+
+
     let nombrez = await useCliente.postCliente(todo);
 
     if (nombrez.status === 200) {
       mostrarMensajeExito("Cliente agregado exitosamente");
+
       listarClientes();
       listarPlanes();
 
@@ -101,7 +83,7 @@ fechaNacimiento.value=informacion.value
 telefono.value=informacion.value
 idPlan.value=informacion.value
 foto.value=informacion.value
-seguimiento.value=informacion.value
+seguimientos.value=informacion.value
 // seguimientos.value=informacion.value
 
 
@@ -118,7 +100,7 @@ if (await validar()){
     telefono:telefono.value,
     idPlan:idPlan.value,
     foto:foto.value,
-    seguimiento:seguimiento.value,
+    seguimientos:seguimiento.value,
     // seguimientos:seguimientos.value
 
 
@@ -156,6 +138,7 @@ let telefono = ref("");
 let idPlan = ref("");
 let foto = ref("");
 let seguimiento = ref("");
+
 
 let clienteTodo= ref(null)
 let planesTodo = ref([]);
@@ -196,8 +179,8 @@ async function validar() {
     mostrarMensajeError("El tipo de documento está vacío");
     verificado = false;
   }
-  if (direccion.value === "" || isNaN(direccion.value) || direccion.value < 0) {
-    mostrarMensajeError("La dirección debe ser un número válido");
+  if (direccion.value === "") {
+    mostrarMensajeError("La dirección está vacía");
     verificado = false;
   }
   if (fechaNacimiento.value === "") {
@@ -228,43 +211,41 @@ async function validar() {
     verificado = false;
   }
 
-
-      console.log(seguimiento.value);
-    for (let i = 0; i < seguimientos.value.length; i++) {
+  for (let i = 0; i < seguimientos.value.length; i++) {
     const seguimiento = seguimientos.value[i];
     if (seguimiento.fecha === "") {
       mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
       verificado = false;
     }
-
-    if (isNaN(seguimiento.peso) || seguimiento.peso < 0) {
+    if (isNaN(seguimiento.peso) || seguimiento.peso <= 0) {
       mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.imc) || seguimiento.imc < 0) {
+    if (isNaN(seguimiento.imc) || seguimiento.imc <= 0) {
       mostrarMensajeError(`El imc del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.brazo) || seguimiento.brazo < 0) {
+    if (isNaN(seguimiento.brazo) || seguimiento.brazo <= 0) {
       mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.pierna) || seguimiento.pierna < 0) {
-      mostrarMensajeError(`El pierna del seguimiento ${i + 1} debe ser un número válido`);
+    if (isNaN(seguimiento.pierna) || seguimiento.pierna <= 0) {
+      mostrarMensajeError(`La pierna del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.edad) || seguimiento.edad < 0) {
-      mostrarMensajeError(`El edad del seguimiento ${i + 1} debe ser un número válido`);
+    if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
+      mostrarMensajeError(`La edad del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-    }
+  }
 
-    if (verificado) {
-        mostrarMensajeExito("El formulario se envió correctamente");
-    }
+  if (verificado) {
+    mostrarMensajeExito("El formulario se envió correctamente");
+  }
 
-    return verificado;
+  return verificado;
 }
+
 
 function mostrarMensajeError(mensaje) {
     $q.notify({
@@ -453,23 +434,23 @@ console.log(seguimientos.value);
       verificado = false;
     }
 
-    if (isNaN(seguimiento.peso) || seguimiento.peso < 0) {
+    if ((seguimiento.peso) || seguimiento.peso < 0) {
       mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.imc) || seguimiento.imc < 0) {
+        if ((seguimiento.imc) || seguimiento.imc < 0) {
       mostrarMensajeError(`El imc del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.brazo) || seguimiento.brazo < 0) {
+        if ((seguimiento.brazo) || seguimiento.brazo < 0) {
       mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.pierna) || seguimiento.pierna < 0) {
+        if ((seguimiento.pierna) || seguimiento.pierna < 0) {
       mostrarMensajeError(`El pierna del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if (isNaN(seguimiento.edad) || seguimiento.edad < 0) {
+        if ((seguimiento.edad) || seguimiento.edad < 0) {
       mostrarMensajeError(`El edad del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }

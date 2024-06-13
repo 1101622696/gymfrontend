@@ -23,6 +23,8 @@ export const useStoreSedes = defineStore("Sedes", () => {
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de sedes",error);
+                console.log(`${useUsuario.token} es el token`);
+
                 throw error;
             }
             finally {

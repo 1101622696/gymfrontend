@@ -24,6 +24,8 @@ export const useStoreMaquina = defineStore("Maquina", () => {
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de maquinas",error);
+                console.log(`${useUsuario.token} es el token`);
+
                 throw error;
             }
             finally {

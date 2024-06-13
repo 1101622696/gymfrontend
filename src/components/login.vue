@@ -9,6 +9,7 @@
             <label for="">Usuario</label>
           </div>
           <div class="inputbox password-box">
+            <ion-icon name="lock-closed-outline"></ion-icon>
             <input :type="passwordFieldType" required v-model="passwordLogin" />
             <label for="">Contraseña</label>
             <ion-icon :name="eyeIcon" @click="togglePasswordVisibility"></ion-icon>
@@ -20,7 +21,6 @@
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, computed } from 'vue';
@@ -42,47 +42,48 @@ const togglePasswordVisibility = () => {
   passwordVisible.value = !passwordVisible.value;
 };
 
-function mostrarMensajeError(mensaje) {
-    $q.notify({
-        type: "negative",
-        message: mensaje,
-        position: "bottom-right",
-    });
-}
+const mostrarMensajeError = (mensaje) => {
+  $q.notify({
+    type: 'negative',
+    message: mensaje,
+    position: 'bottom-right',
+  });
+};
 
-function mostrarMensajeExito(mensaje) {
-    $q.notify({
-        type: "positive",
-        message: mensaje,
-        position: "bottom-right",
-    });
-}
+const mostrarMensajeExito = (mensaje) => {
+  $q.notify({
+    type: 'positive',
+    message: mensaje,
+    position: 'bottom-right',
+  });
+};
+
 const iniciar = async () => {
   try {
-    if (email.value === '') {
-      mostrarMensajeError('El campo de correo electrónico es obligatorio');
-      return;
-    }
-
-    if (passwordLogin.value === '') {
-      mostrarMensajeError('El campo de contraseña es obligatorio');
+    if (email.value === '' || passwordLogin.value === '') {
+      mostrarMensajeError('El correo electrónico y la contraseña son obligatorios');
       return;
     }
 
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     if (!emailRegex.test(email.value)) {
-      mostrarMensajeError('El formato del correo electrónico es incorrecto');
+      mostrarMensajeError('Correo electrónico o contraseña incorrectos');
       return;
     }
 
     const res = await UseUsuario.login(email.value, passwordLogin.value);
-    mostrarMensajeExito('Inicio de sesión exitoso');
-    router.push('/Home');
+    
+    if (res.data.token) {
+      mostrarMensajeExito('Inicio de sesión exitoso');
+      console.log(`Este es el token: ${UseUsuario.token}`);
+      router.push('/Home');
+    } else {
+      mostrarMensajeError('Correo electrónico o contraseña incorrectos');
+    }
   } catch (error) {
     if (error.response && error.response.data) {
       mostrarMensajeError(error.response.data.msg);
     } else {
-      // Manejar el caso cuando no hay respuesta del servidor
       mostrarMensajeError('Ha ocurrido un error en el servidor');
       console.log(error);
     }
@@ -99,13 +100,25 @@ const iniciar = async () => {
   font-family: "poppins" sans-serif;
 }
 
+.password-box {
+  position: relative;
+}
+
 .password-box ion-icon {
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  z-index: 999;
+  z-index: 2;
+}
+.password-box ion-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 2;
 }
 .body {
   display: flex;

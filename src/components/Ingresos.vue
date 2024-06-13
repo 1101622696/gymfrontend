@@ -16,7 +16,7 @@ function abrir(){
 
 idSede.value=""
 idCliente.value=""
-fecha.value=""
+// fecha.value=""
 }
 
 
@@ -27,7 +27,7 @@ if (await validar()){
   const todo={
     idSede:idSede.value,
     idCliente:idCliente.value,
-    fecha:fecha.value,
+    // fecha:fecha.value,
     }
 let nombrez= await useIngreso.postIngresos(todo)
 if(nombrez.status!=200){
@@ -46,7 +46,7 @@ function editar(info){
 informacion.value=info
 idSede.value=informacion.value
 idCliente.value=informacion.value
-fecha.value=informacion.value
+// fecha.value=informacion.value
 }
 
 async function editarpago(){
@@ -54,7 +54,7 @@ if (await validar()){
   const todo={
     idSede:idSede.value,
     idCliente:idCliente.value,
-    fecha:fecha.value,
+    // fecha:fecha.value,
 
     }
 let nombrez= await useIngreso.putIngresos(informacion._id, todo)
@@ -91,10 +91,10 @@ let columns =ref([
 async function validar() {
     let verificado = true;
 
-    if (fecha.value === "") {
-        mostrarMensajeError("ingrese una fecha");
-        verificado = false;
-    }
+    // if (fecha.value === "") {
+    //     mostrarMensajeError("ingrese una fecha");
+    //     verificado = false;
+    // }
     if (idSede.value === "") {
         mostrarMensajeError("seleccione una sede");
         verificado = false;
@@ -154,11 +154,46 @@ async function listarIngresos() {
   }
 }
 
+// const organizarSedes = computed(() => {
+//   nombreCodigoS.value = sedesTodo.value.map((element) => ({
+//     label: `${element.nombre}`,
+//     valor: `${element._id}`,
+//     nombre: `${element.nombre}`,
+//   }));
+//   return nombreCodigoS.value;
+// });
+
+// async function listarSedes() {
+//   try {
+//     const res = await useSedes.listarSede();
+//     sedesTodo.value = res.data.sede;
+//   } catch (error) {
+//     console.error("Error al listar sedes:", error);
+//   }
+// }
+
+// const organizarClientes = computed(() => {
+//   nombreCodigoC.value = clientesTodo.value.map((element) => ({
+//     label: `${element.documento}`,
+//     valor: `${element._id}`,
+//     nombre: `${element.nombre}`,
+//   }));
+//   return nombreCodigoC.value;
+// });
+
+// async function listarClientes() {
+//   try {
+//     const res = await useCliente.listarCliente();
+//     clientesTodo.value = res.data.cliente;
+//   } catch (error) {
+//     console.error("Error al listar clientes:", error);
+//   }
+// }
+
 const organizarSedes = computed(() => {
   nombreCodigoS.value = sedesTodo.value.map((element) => ({
     label: `${element.nombre}`,
     valor: `${element._id}`,
-    nombre: `${element.nombre}`,
   }));
   return nombreCodigoS.value;
 });
@@ -168,7 +203,7 @@ async function listarSedes() {
     const res = await useSedes.listarSede();
     sedesTodo.value = res.data.sede;
   } catch (error) {
-    console.error("Error al listar sedes:", error);
+    console.error('Error al listar sedes:', error);
   }
 }
 
@@ -176,7 +211,6 @@ const organizarClientes = computed(() => {
   nombreCodigoC.value = clientesTodo.value.map((element) => ({
     label: `${element.documento}`,
     valor: `${element._id}`,
-    nombre: `${element.nombre}`,
   }));
   return nombreCodigoC.value;
 });
@@ -186,18 +220,19 @@ async function listarClientes() {
     const res = await useCliente.listarCliente();
     clientesTodo.value = res.data.cliente;
   } catch (error) {
-    console.error("Error al listar clientes:", error);
+    console.error('Error al listar clientes:', error);
   }
 }
 
-function getSedeDireccion(id) {
-  const sede = sedesTodo.value.find((sede) => sede._id === id);
-  return sede ? sede.direccion : "Dirección no encontrada";
-}
 
-function getClienteDocumento(id) {
+
+function getSedeNombre(id) {
+  const sede = sedesTodo.value.find((sede) => sede._id === id);
+  return sede ? sede.nombre : "Dirección no encontrada";
+}
+function getClienteNombre(id) {
   const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
-  return cliente ? cliente.documento : "Documento no encontrado";
+  return cliente ? cliente.nombre : "Documento no encontrado";
 }
 
 
@@ -206,6 +241,7 @@ function getClienteDocumento(id) {
       return new Date(dateStr).toLocaleDateString(undefined, options);
     };
 
+
 </script>
 
 <template>
@@ -213,12 +249,12 @@ function getClienteDocumento(id) {
     <q-table class="table" flat bordered title="Ingresos" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idSede="props">
         <q-td :props="props">
-          <p>{{ getSedeDireccion(props.row.idSede) }}</p>
+          <p>{{ getSedeNombre(props.row.idSede) }}</p>
         </q-td>
       </template>
       <template v-slot:body-cell-idCliente="props">
         <q-td :props="props">
-          <p>{{ getClienteDocumento(props.row.idCliente) }}</p>
+          <p>{{ getClienteNombre(props.row.idCliente) }}</p>
         </q-td>
       </template>
       <template v-slot:body-cell-fecha="props">
@@ -247,9 +283,28 @@ function getClienteDocumento(id) {
               {{ accion == 1 ? "Agregar Ingreso" : "Editar Ingreso" }}
             </div>
           </q-card-section>
-          <q-input outlined v-model="fecha" use-input hide-selected fill-input input-debounce="0" class="q-my-md q-mx-md" label="fecha del ingreso" type="date" />
-          <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede" style="background-color: #grey; margin-bottom: 20px" />
-          <q-select standout v-model="idCliente" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente" style="background-color: #grey; margin-bottom: 20px" />
+          <!-- esta no se descomenta <q-input outlined v-model="fecha" use-input hide-selected fill-input input-debounce="0" class="q-my-md q-mx-md" label="fecha del ingreso" type="date" /> -->
+          <!-- <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede" style="background-color: #grey; margin-bottom: 20px" />
+          <q-select standout v-model="idCliente" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente" style="background-color: #grey; margin-bottom: 20px" /> -->
+          <q-select
+      standout
+      v-model="idSede"
+      :options="organizarSedes"
+      option-value="valor"
+      option-label="label"
+      label="Sede"
+      style="background-color: grey; margin-bottom: 20px"
+    />
+    <q-select
+      standout
+      v-model="idCliente"
+      :options="organizarClientes"
+      option-value="valor"
+      option-label="label"
+      label="Cliente"
+      style="background-color: grey; margin-bottom: 20px"
+    />
+
           <q-card-actions align="right">
             <q-btn @click="guardar()" v-if="accion === 1" color="red" class="text-white" :loading="useIngreso.loading">Agregar
               <template v-slot:loading>
