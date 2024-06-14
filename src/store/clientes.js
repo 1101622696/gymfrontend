@@ -20,40 +20,17 @@ export const useStoreClientes = defineStore(
         const response = await axios.get(ruta, {
           headers: {
             "x-token": useUsuario.token,
-            // "x-token": `Bearer ${useUsuario.token}`,
           },
         });
+        //    clientes.value = response.data;
         return response;
       } catch (error) {
         console.error("NO se pudo obtener la lista de clientes", error);
-        console.log(`${useUsuario.token} es el token`);
         throw error;
       } finally {
         loading.value = false;
       }
     };
-
-  //   const listarCliente = async (payload) => {
-  //     try {
-  //         const token = localStorage.getItem('token');
-  //         if (!token) {
-  //             throw new Error('Token no disponible');
-  //         }
-  
-  //         const ruta = payload == null ? 'api/clientes/listar' : `api/clientes/listar?busqueda=${payload}`;
-  //         const response = await axios.get(ruta, {
-  //             headers: {
-  //                 'x-token': token,
-  //             },
-  //         });
-  
-  //         return response;
-  //     } catch (error) {
-  //         console.error('No se pudo obtener la lista de clientes', error);
-  //         throw error;
-  //     }
-  // };
-
 
 
     const listaractivados = async () => {
@@ -94,6 +71,42 @@ export const useStoreClientes = defineStore(
       }
     };
 
+    const listarClientesporPlan = async (id) => {
+      try {
+        loading.value = true;
+        console.log(useUsuario.token);
+        const response = await axios.get(`api/clientes/porplan/${id}`, {
+          headers: {
+            "x-token": useUsuario.token,
+          },
+        });
+        //    clientes.value = response.data;
+        return response;
+      } catch (error) {
+        console.error("NO se pudo obtener la lista de clientes", error);
+        throw error;
+      } finally {
+        loading.value = false;
+      }
+    };
+    const listarClientesporCumpleanos = async (dia, mes) => {
+      try {
+          loading.value = true;
+          const response = await axios.get(`/api/clientes/cumpleanos?dia=${dia}&mes=${mes}`, {
+              headers: {
+                  "x-token": useUsuario.token,
+              },
+          });
+          return response.data;
+      } catch (error) {
+          console.error("No se pudo obtener la lista de clientes", error);
+          throw error;
+      } finally {
+          loading.value = false;
+      }
+  };
+
+
     // const postCliente = async (data) => {
     //   try {
     //     loading.value = true;
@@ -123,7 +136,7 @@ export const useStoreClientes = defineStore(
         console.log(r);
         return r;
       } catch (error) {
-        console.log("paila", error);
+        console.log(error);
         return error;
       } finally {
         loading.value = false;
@@ -217,6 +230,8 @@ export const useStoreClientes = defineStore(
       listarCliente,
       listaractivados,
       listardesactivados,
+      listarClientesporPlan,
+      listarClientesporCumpleanos,
       postCliente,
       putCliente,
       putActivarCliente,

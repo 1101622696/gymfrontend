@@ -16,19 +16,20 @@ let botoneditar=ref(false)
 let mostrarFoto = ref(false)
 
 
-function llamaragregarCliente(){
-  botoneditar.value=true
-    agregar.value = true;
+function llamaragregarCliente() {
+  botoneditar.value = false; 
+  agregar.value = true;
 
-nombre.value=""
-documento.value=""
-direccion.value=""
-fechaNacimiento.value=""
-telefono.value=""
-idPlan.value=""
-foto.value=""
-seguimiento.value=""
+  nombre.value = "";
+  documento.value = "";
+  direccion.value = "";
+  fechaNacimiento.value = "";
+  telefono.value = "";
+  idPlan.value = "";
+  foto.value = "";
+  seguimientos.value = [{ fecha: '', peso: '', imc: '', brazo: '', pierna: '', edad: '' }];
 }
+
 
 async function guardar() {
 
@@ -44,6 +45,7 @@ async function guardar() {
       foto: foto.value,
       seguimientos:seguimientos.value,
 
+
     };
 console.log(seguimientos.value);
 console.log('este son seguimientos arriba');
@@ -52,10 +54,6 @@ console.log(direccion.value);
 console.log(fechaNacimiento.value);
 console.log(telefono.value);
 console.log(idPlan.value);
-console.log(seguimiento.value);
-console.log('este es seguimiento');
-
-
     let nombrez = await useCliente.postCliente(todo);
 
     if (nombrez.status === 200) {
@@ -69,53 +67,45 @@ console.log('este es seguimiento');
     }
   }
 }
-
 function editar(info){
     agregar.value = true;
     botoneditar.value = false;
 
 informacion.value=info
 
-nombre.value=informacion.value
-documento.value=informacion.value
-direccion.value=informacion.value
-fechaNacimiento.value=informacion.value
-telefono.value=informacion.value
-idPlan.value=informacion.value
-foto.value=informacion.value
-seguimientos.value=informacion.value
-// seguimientos.value=informacion.value
-
-
+nombre.value.valor=informacion.value
+documento.value.valor=informacion.value
+direccion.value.valor=informacion.value
+fechaNacimiento.value.valor=informacion.value
+telefono.value.valor=informacion.value
+idPlan.value.valor=informacion.value
+foto.value.valor=informacion.value
 
 }
 
-async function editarcliente(){
-if (await validar()){
-  const todo={
-    nombre:nombre.value,
-    documento:documento.value,
-    direccion:direccion.value,
-    fechaNacimiento:fechaNacimiento.value,
-    telefono:telefono.value,
-    idPlan:idPlan.value,
-    foto:foto.value,
-    seguimientos:seguimiento.value,
-    // seguimientos:seguimientos.value
 
+async function editarcliente() {
+  if (await validar()) {
+    const todo = {
+      nombre: nombre.value.valor,
+      documento: documento.value.valor,
+      direccion: direccion.value.valor,
+      fechaNacimiento: fechaNacimiento.value.valor,
+      telefono: telefono.value.valor,
+      idPlan: idPlan.value.valor,
+      foto: foto.value.valor,
+    };
 
-
-
+    let nombrez = await useCliente.putCliente(informacion.value._id, todo);
+    if (nombrez.status === 200) {
+      mostrarMensajeExito("Cliente actualizado exitosamente");
+      listarClientes();
+      listarPlanes();
+    } else {
+      mostrarMensajeError("No se pudo actualizar el cliente");
     }
-let nombrez= await useCliente.putCliente(informacion._id, todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-listarClientes(), listarPlanes()}
+  }
 }
-}
-
 async function editarestado(info){
   console.log("holaa", info);
 if(info.estado == 1){
@@ -317,6 +307,40 @@ async function buscarClientesPorNombre() {
   }
 };
 
+const planSeleccionado = ref("");
+
+async function buscarClientesporPlan() {
+  try {
+    const res = await useCliente.listarClientesporPlan(planSeleccionado.value);
+    rows.value = res.data.clientes.map(cliente => ({
+      ...cliente,
+      idPlan: cliente.idPlan, 
+    }));
+    console.log(res);
+  } catch (error) {
+    console.error("Error al buscar clientes por plan:", error);
+    console.log(planSeleccionado.value,"sjdbfkjsdbf")
+  }
+};
+
+let diacumple = ref(""); //
+let mescumple = ref("");
+
+async function buscarClientesporCumpleanos() {
+  try {
+    const res = await useCliente.listarClientesporCumpleanos(diacumple.value, mescumple.value);
+    rows.value = res.clientes.map(cliente => ({
+      ...cliente,
+      idPlan: cliente.idPlan, 
+    }));
+  } catch (error) {
+    console.error("Error al buscar clientes por cumpleaños:", error);
+  }
+};
+function ejecutarlistcumple() {
+  buscarClientesporCumpleanos()
+}
+
 
 function getPlanCodigo(id) {
   const plan = planesTodo.value.find(plan => plan._id === id);
@@ -384,91 +408,103 @@ function cerrar() {
     }
 
     const ordenar= ref("Todos")
-    let listNoPlan= ref("");
-    let listFechaNacimiento = ref("");
     let listNombre = ref("")
     let listP= ref(false);
     let listF= ref(false);
     let listN= ref(false);
 
-   function ejecutarFiltro() {
+function ejecutarFiltro() {
 
-      if (ordenar.value == 'Todos') {
-        listarClientes();
-      } else if (ordenar.value == 'Activos') {
-        listaractivados();
-      } else if (ordenar.value == 'Inactivos') {
-        listardesactivados();
-      }
-      else if (ordenar.value == 'Plan') {
-        listP.value=true
-      }
-      else if (ordenar.value == 'Fecha') {
-        listF.value=true
-      }
-      else if (ordenar.value == 'Nombre') {
-        listN.value=true
-      }
+if (ordenar.value == 'Todos') {
+  listarClientes();
+  listP.value=false
+  listF.value=false
+  listN.value=false
+} else if (ordenar.value == 'Activos') {
+  listaractivados();
+  listP.value=false
+  listF.value=false
+  listN.value=false
+} else if (ordenar.value == 'Inactivos') {
+  listardesactivados();
+  listP.value=false
+  listF.value=false
+  listN.value=false
+}
+else if (ordenar.value == 'Plan') {
+  listP.value=true
+  listF.value=false
+  listN.value=false
+}
+else if (ordenar.value == 'Fecha') {
+  listF.value=true
+  listP.value=false
+  listN.value=false
+}
+else if (ordenar.value == 'Nombre') {
+  listN.value=true
+  listP.value=false
+  listF.value=false
+}};
 
-    };
-
-    function ejecutarlistnombre(){
-      buscarClientesPorNombre()
-      listN.value=false
-      console.log(listNombre.value);
-    }
+function ejecutarlistnombre(){
+buscarClientesPorNombre()
+console.log(listNombre.value);
+}
 
 
 
     const toggleSegui = () => {
-      segui.value = !segui.value;
+      segui.value = true;
     };
 
 function validarSeguimiento(seguimiento) {
-
-      for (let i = 0; i < seguimientos.length; i++) {
-    const seguimiento = seguimientos[i];
-console.log(seguimientos.value);
- if (seguimiento.fecha === "") {
+let verificado=true
+for (let i = 0; i < seguimientos.value.length; i++) {
+    const seguimiento = seguimientos.value[i];
+    if (seguimiento.fecha === "") {
       mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
       verificado = false;
     }
-
-    if ((seguimiento.peso) || seguimiento.peso < 0) {
+    if (isNaN(seguimiento.peso) || seguimiento.peso <= 0) {
       mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if ((seguimiento.imc) || seguimiento.imc < 0) {
+    if (isNaN(seguimiento.imc) || seguimiento.imc <= 0) {
       mostrarMensajeError(`El imc del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if ((seguimiento.brazo) || seguimiento.brazo < 0) {
+    if (isNaN(seguimiento.brazo) || seguimiento.brazo <= 0) {
       mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if ((seguimiento.pierna) || seguimiento.pierna < 0) {
-      mostrarMensajeError(`El pierna del seguimiento ${i + 1} debe ser un número válido`);
+    if (isNaN(seguimiento.pierna) || seguimiento.pierna <= 0) {
+      mostrarMensajeError(`La pierna del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-        if ((seguimiento.edad) || seguimiento.edad < 0) {
-      mostrarMensajeError(`El edad del seguimiento ${i + 1} debe ser un número válido`);
+    if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
+      mostrarMensajeError(`La edad del seguimiento ${i + 1} debe ser un número válido`);
       verificado = false;
     }
-      }
-return (
-    seguimiento.fecha &&
-    seguimiento.peso &&
-    seguimiento.imc &&
-    seguimiento.brazo &&
-    seguimiento.pierna &&
-    seguimiento.edad
-  );
+  }
+// return (
+//     seguimiento.fecha &&
+//     seguimiento.peso &&
+//     seguimiento.imc &&
+//     seguimiento.brazo &&
+//     seguimiento.pierna &&
+//     seguimiento.edad
+//   );
+    if (verificado) {
+    mostrarMensajeExito("El formulario se envió correctamente");
+  }
+
+  return verificado;
 }
 
 async function actualizarSegui(row) {
   try {
     const seguimientosValidos = seguimientos.value.filter(validarSeguimiento);
-
     if (seguimientosValidos.length === seguimientos.value.length) {
       const res = await useCliente.actualizarSeguimiento(row.id, seguimientosValidos); 
       clienteTodo.value = res.data.cliente;
@@ -482,21 +518,35 @@ async function actualizarSegui(row) {
 
 </script>
 <template>
+
   <div class="container">
-    <!-- Input Fields for Filtering -->
-    <div class="inputlistar" v-if="listP">
-      <input class="input" type="text" placeholder="Digite no. Plan" v-model.trim="listNoPlan" />
-    </div>
-    <div class="inputlistar" v-if="listF">
-      <input class="input" type="date" placeholder="Digite no. Plan" v-model.trim="listFechaNacimiento" />
-    </div>
-    <div class="inputlistar" v-if="listN">
+
+   <div class="inputlistar" v-if="listN">
       <input class="input" type="text" placeholder="Digite nombre" v-model.trim="listNombre" />
       <button class="button" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
     </div>
 
     <!-- Filter Dropdown -->
     <div class="tablaselect">
+      <div class="inputlistar" v-if="listP">
+      <select v-model="planSeleccionado" @change="buscarClientesporPlan" class="custom-select2">
+        <option disabled value="">Seleccione una opción</option>
+        <option v-for="plan in planesTodo" :key="plan.id" :value="plan._id">{{ plan.descripcion }}</option>
+      </select>
+    </div>
+
+   
+    <div class="inputlistarcumple" v-if="listF">
+    <div class="inputlistarcumple2">
+      <input class="inputc" type="number" placeholder="Digite día" v-model.trim="diacumple" min="1" max="31" required />
+      <input class="inputc" type="number" placeholder="Digite mes" v-model.trim="mescumple" min="1" max="12" required />
+    
+    <button class="button" id="buttonf" @click="ejecutarlistcumple()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+  </div>
+  <hr>
+    </div>
+
+  
       <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
         <option value="Todos">Todos</option>
         <option value="Activos">Activos</option>
@@ -507,7 +557,6 @@ async function actualizarSegui(row) {
       </select>
     </div>
 
-    <!-- Table of Clients -->
     <q-table class="table" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idPlan="props">
         <q-td :props="props">
@@ -563,10 +612,8 @@ async function actualizarSegui(row) {
       </template>
     </q-table>
 
-    <!-- Add Client Button -->
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
 
-    <!-- Seguimiento Modal -->
     <q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
         <q-card-section>
@@ -599,7 +646,6 @@ async function actualizarSegui(row) {
       </q-card>
     </q-dialog>
 
-    <!-- Seguimiento Form -->
 <div v-if="segui" class="segui-modal">
   <div class="segui-modal-contenedor">
     <div v-for="(seguimiento, index) in seguimientos" :key="index">
@@ -621,7 +667,6 @@ async function actualizarSegui(row) {
 </div>
 
 
-    <!-- Create Client Form -->
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">
         <h3>Ingresar Clientes</h3>
@@ -635,7 +680,7 @@ async function actualizarSegui(row) {
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
         <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan" style="background-color: #grey; margin-bottom: 20px" />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
-        <div v-for="(seguimiento, index) in seguimientos" :key="index">
+        <!-- <div v-for="(seguimiento, index) in seguimientos" :key="index">
           <h4>Seguimiento {{ index + 1 }}</h4>
           <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model.trim="seguimiento.fecha" />
           <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
@@ -643,7 +688,7 @@ async function actualizarSegui(row) {
           <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
           <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
           <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
-        </div>
+        </div> -->
       </div>
       <button v-if="botoneditar" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
       <button v-else class="button" @click="editarcliente()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
@@ -881,6 +926,57 @@ margin-left: auto;
   justify-content: flex-end;
   width: 100%;
 }
+
+.custom-select2 {
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 15%;
+  top:3%;
+  z-index: 1;
+}
+
+.inputlistarcumple{
+  position:absolute;
+  width: 15vmax;
+  height: 4vmin;
+  background-color: rgba(16, 16, 16, 0);
+  right: 15%;
+  top:3%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.inputlistarcumple2{
+  display: flex;
+  flex-direction: row;
+  gap:1vmin;
+}
+
+.inputc{
+  width: 6vmax;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+#buttonf{
+  padding: 0px;
+  width: 7vmin;
+}
+
+hr{
+  height: 5vmax;
+  width: 15vmax;
+  color: black;
+  background-color: black;
+/* borrar esa mierda y colocarle un border interno al div  */
+}
+
 
 
 </style>

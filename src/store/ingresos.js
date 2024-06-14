@@ -39,7 +39,7 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
                 loading.value =true
                 const r = await axios.post("api/ingresos/escribir", data,{
                     headers:{
-                        "x-token":useUsuario.token
+                        "x-token": useUsuario.token
                     }
                 })
                 console.log(r);
@@ -71,6 +71,8 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
                 loading.value = false
             }
         }
+
+          
     
         return{ listarIngreso, postIngresos, putIngresos, loading, ingresos, useUsuario}
     
