@@ -14,7 +14,7 @@ function agregarInventario(){
   botoneditar.value=true
     agregar.value = true;
 
-codigo.value=""
+// codigo.value=""
 descripcion.value=""
 valor.value=""
 cantidad.value=""
@@ -24,10 +24,10 @@ cantidad.value=""
 
 async function guardar(){
 
-agregar.value = true;
+agregar.value = false;
 if (await validar()){
   const todo={
-    codigo:codigo.value,
+    // codigo:codigo.value,
     descripcion:descripcion.value,
     valor:valor.value,
     cantidad:cantidad.value
@@ -37,7 +37,7 @@ let nombrez= await useInventario.postInventario(todo)
 if(nombrez.status!=200){
   mostrarMensajeError("no se pudo enviar")
 }else{
-  mostrarMensajeExito("muy bien")
+  mostrarMensajeExito("Producto agregado")
   listarInventario()
 }
 }
@@ -48,7 +48,7 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-codigo.value=informacion.value
+// codigo.value=informacion.value
 descripcion.value=informacion.value
 valor.value=informacion.value
 cantidad.value=informacion.value
@@ -58,7 +58,7 @@ cantidad.value=informacion.value
 async function editarinventario(){
 if (await validar()){
   const todo={
-    codigo:codigo.value,
+    // codigo:codigo.value,
     descripcion:descripcion.value,
     valor:valor.value,
     cantidad:cantidad.value
@@ -80,7 +80,7 @@ function cerrar() {
 } 
 
 let informacion=ref("")
-let codigo = ref("");
+// let codigo = ref("");
 let descripcion = ref("");
 let valor = ref("");
 let cantidad = ref("");
@@ -117,10 +117,10 @@ onMounted(()=>{
 async function validar() {
     let verificado = true;
 
-    if (codigo.value === "") {
-        mostrarMensajeError("El codigo está vacío");
-        verificado = false;
-    }
+    // if (codigo.value === "") {
+    //     mostrarMensajeError("El codigo está vacío");
+    //     verificado = false;
+    // }
     if (descripcion.value === "") {
         mostrarMensajeError("la descripcion está vacío");
         verificado = false;
@@ -234,10 +234,10 @@ async function listardesactivados() {
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
+        <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
         <input class="input" type="text" placeholder="Descripcion" v-model.trim="descripcion" />
         <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
-        <input class="input" type="date" placeholder="Cantidad" v-model.trim="cantidad" />
+        <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

@@ -19,8 +19,7 @@ function agregarventa(){
     agregar.value = true;
 
 id.value=""
-codigo.value=""
-fecha.value=""
+// codigo.value=""
 valorUnitario.value=""
 cantidad.value=""
 
@@ -29,12 +28,11 @@ cantidad.value=""
 
 async function guardar(){
 
-agregar.value = true;
+agregar.value = false;
 if (await validar()){
   const todo={
-    id:id.value,
-    codigo:codigo.value,
-    fecha:fecha.value,
+    id:id.value.valor,
+    // codigo:codigo.value,
     valorUnitario:valorUnitario.value,
     cantidad:cantidad.value
     }
@@ -53,20 +51,20 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-id.value=informacion.value
-codigo.value=informacion.value
-fecha.value=informacion.value
-valorUnitario.value=informacion.value
-cantidad.value=informacion.value
+id.value.valor=informacion.value
+// codigo.value.valor=informacion.value
+// fecha.value.valor=informacion.value
+valorUnitario.value.valor=informacion.value
+cantidad.value.valor=informacion.value
 }
 
 async function editarventa(){
 if (await validar()){
   const todo={
     id:id.value,
-    codigo:codigo.value,
-    fecha:fecha.value,
-    valorUnitario:valorUnitario.value,
+    // codigo:codigo.value,
+    // fecha:fecha.value,
+    valorUnitario:valorUnitario.value.valor,
     cantidad:cantidad.value
 
     }
@@ -90,8 +88,8 @@ onMounted(()=>{
 
 let informacion=ref("")
 let id = ref("");
-let codigo = ref("");
-let fecha = ref("");
+// let codigo = ref("");
+// let fecha = ref("");
 let valorUnitario = ref("");
 let cantidad = ref("");
 let total = ref("");
@@ -101,7 +99,7 @@ let nombreCodigo = ref([]);
 let rows=ref([])
 let columns =ref([
     {name:"id", label:"Inventario", field:"id", align:"center"},
-    {name:"fecha", label:"fecha", field:"fecha", align:"center"},
+    {name:"fecha", label:"fecha de venta", field:"fecha", align:"center"},
     {name:"codigo", label:"Código", field:"codigo", align:"center"},
     {name:"valorUnitario", label:"Valor por unidad", field:"valorUnitario", align:"center"},
     {name:"cantidad", label:"Cantidad a vender", field:"cantidad", align:"center"},
@@ -117,18 +115,18 @@ async function validar() {
         mostrarMensajeError("seleccione un inventario");
         verificado = false;
     }
-    if (fecha.value === "") {
-        mostrarMensajeError("la fecha de la venta está vacía");
-        verificado = false;
-    }
-    if (codigo.value === "") {
-        mostrarMensajeError("el codigo está vacío");
-        verificado = false;
-    } 
-    if (valorUnitario.value == "") {
-        mostrarMensajeError("Digite un valor Unitario");
-        verificado = false;
-    } 
+    // if (fecha.value === "") {
+    //     mostrarMensajeError("la fecha de la venta está vacía");
+    //     verificado = false;
+    // }
+    // if (codigo.value === "") {
+    //     mostrarMensajeError("el codigo está vacío");
+    //     verificado = false;
+    // } 
+    // if (valorUnitario.value == "") {
+    //     mostrarMensajeError("Digite un valor Unitario");
+    //     verificado = false;
+    // } 
     if (cantidad.value === "") {
         mostrarMensajeError("Ingrese la cantidad");
         verificado = false;
@@ -239,9 +237,9 @@ function getInventarioCodigo(id) {
     <div class="inputs">
  <q-select standout v-model="id" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
       />
-        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
-        <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" />
-        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valor" />
+        <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
+        <!-- <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" /> -->
+        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario" />
         <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     

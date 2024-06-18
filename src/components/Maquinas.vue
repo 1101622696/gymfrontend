@@ -14,24 +14,24 @@ function agregarmaquina(){
   agregar.value = true;
 
 idSede.value=""
-codigo.value=""
+// codigo.value=""
 descripcion.value=""
-fechaIngreso.value=""
-fechaUltmantenimiento.value=""
+// fechaIngreso.value=""
+// fechaUltmantenimiento.value=""
 
 }
 
 
 async function guardar(){
 
-agregar.value = true;
+agregar.value = false;
 if (await validar()){
   const todo={
-    idSede:idSede.value,
-    codigo:codigo.value,
+    idSede:idSede.value.valor,
+    // codigo:codigo.value,
     descripcion:descripcion.value,
-    fechaIngreso:fechaIngreso.value,
-    fechaUltmantenimiento:fechaUltmantenimiento.value
+    // fechaIngreso:fechaIngreso.value,
+    // fechaUltmantenimiento:fechaUltmantenimiento.value
     }
 let nombrez= await useMaquina.postMaquina(todo)
 if(nombrez.status!=200){
@@ -48,20 +48,20 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-idSede.value=informacion.value
-codigo.value=informacion.value
-descripcion.value=informacion.value
-fechaIngreso.value=informacion.value
-fechaUltmantenimiento.value=informacion.value
+idSede.value.valor=informacion
+// codigo.value.valor=informacion.value
+descripcion.value.valor=informacion.value
+// fechaIngreso.value.valor=informacion.value
+fechaUltmantenimiento.value.valor=informacion.value
 }
 
 async function editarmaquina(){
 if (await validar()){
   const todo={
-    idSede:idSede.value,
-    codigo:codigo.value,
+    idSede:idSede.value.valor,
+    // codigo:codigo.value,
     descripcion:descripcion.value,
-    fechaIngreso:fechaIngreso.value,
+    // fechaIngreso:fechaIngreso.value,
     fechaUltmantenimiento:fechaUltmantenimiento.value
 
 
@@ -91,9 +91,9 @@ function cerrar(){
 
 let informacion=ref("")
 let idSede = ref("");
-let codigo = ref("");
+// let codigo = ref("");
 let descripcion = ref("");
-let fechaIngreso = ref("");
+// let fechaIngreso = ref("");
 let fechaUltmantenimiento = ref("");
 let sedesTodo = ref([]);
 let nombreCodigo = ref([]);
@@ -117,22 +117,22 @@ async function validar() {
         mostrarMensajeError("seleccione una sede");
         verificado = false;
     }
-    if (codigo.value === "") {
-        mostrarMensajeError("El codigo está vacío");
-        verificado = false;
-    }
+    // if (codigo.value === "") {
+    //     mostrarMensajeError("El codigo está vacío");
+    //     verificado = false;
+    // }
     if (descripcion.value === "") {
         mostrarMensajeError("La descripcion está vacía");
         verificado = false;
     }
-    if (fechaIngreso.value === "") {
-        mostrarMensajeError("digite la fecha de ingreso");
-        verificado = false;
-    } 
-    if (fechaUltmantenimiento.value === "") {
-        mostrarMensajeError("fecha ultimo de mantenimiento");
-        verificado = false;
-    }
+    // if (fechaIngreso.value === "") {
+    //     mostrarMensajeError("digite la fecha de ingreso");
+    //     verificado = false;
+    // } 
+    // if (fechaUltmantenimiento.value === "") {
+    //     mostrarMensajeError("fecha ultimo de mantenimiento");
+    //     verificado = false;
+    // }
 
     return verificado;
 }
@@ -294,10 +294,10 @@ async function listardesactivadas() {
     <div class="inputs">
        <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
       />
-        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
+        <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
-        <input class="input" type="date" placeholder="fecha de ingreso" v-model.trim="fechaIngreso" />
-        <input class="input" type="date" placeholder="Última fecha de mantenimiento " v-model.trim="fechaUltmantenimiento" />
+        <!-- <input class="input" type="date" placeholder="fecha de ingreso" v-model.trim="fechaIngreso" /> -->
+        <!-- <input class="input" type="date" placeholder="Última fecha de mantenimiento " v-model.trim="fechaUltmantenimiento" /> -->
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>

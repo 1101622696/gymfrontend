@@ -23,7 +23,7 @@ valor.value=""
 
 async function guardar(){
 
-agregar.value = true;
+agregar.value = false;
 if (await validar()){
   const todo={
     codigo:codigo.value,
@@ -101,7 +101,7 @@ let columns =ref([
     {name:"descripcion", label:"descripcion", field:"descripcion", align:"center"},
     {name:"valor", label:"Valor", field:"valor", align:"center"},
     {name:"dias", label:"Dias del plan", field:"dias", align:"center"},
-    {name:"total", label:"Total", field:"total", align:"center"},
+    // {name:"total", label:"Total", field:"total", align:"center"},
     {name:"estado", label:"Estado del plan", field:"estado", align:"center"},
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
@@ -126,10 +126,10 @@ async function validar() {
         mostrarMensajeError("Escriba cuantos dias va a durar ese plan");
         verificado = false;
     } 
-    if (total.value === "") {
-        mostrarMensajeError("El total está vacío");
-        verificado = false;
-    } 
+    // if (total.value === "") {
+    //     mostrarMensajeError("El total está vacío");
+    //     verificado = false;
+    // } 
     if (verificado) {
         mostrarMensajeExito("El formulario se envió correctamente");
     }
@@ -239,7 +239,7 @@ async function listardesactivados() {
     </div>
     <div class="inputs">
         <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
-        <input class="input" type="text" placeholder="Descripción" v-model.trim="Descripcion" />
+        <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
         <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
         <input class="input" type="text" placeholder="Dias" v-model.trim="dias" />
     </div>

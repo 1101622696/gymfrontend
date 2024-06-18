@@ -20,6 +20,8 @@ idCliente.value=""
 
 
 async function guardar() {
+  alert.value = false;
+
       if (await validar()) {
         const todo = {
           idSede: idSede.value.valor,

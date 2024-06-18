@@ -18,27 +18,27 @@ function agregarmantenimiento(){
 idMantenimiento.value=""
 descripcion.value=""
 responsable.value=""
-fecha.value=""
+// fecha.value=""
 valor.value=""
 }
 
 
 async function guardar(){
 
-agregar.value = true;
+agregar.value = false;
 if (await validar()){
   const todo={
-    idMantenimiento:idMantenimiento.value,
+    idMantenimiento:idMantenimiento.value.valor,
     descripcion:descripcion.value,
     responsable:responsable.value,
-    fecha:fecha.value,
+    // fecha:fecha.value,
     valor:valor.value
     }
 let nombrez= await useMantenimiento.postMantenimiento(todo)
 if(nombrez.status!=200){
   mostrarMensajeError("no se pudo enviar")
 }else{
-  mostrarMensajeExito("muy bien")
+  mostrarMensajeExito("mantenimiento agregado")
   listarMaquina(), listarMantenimiento();
 }
 }
@@ -49,11 +49,11 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-idMantenimiento.value=informacion.value
-descripcion.value=informacion.value
-responsable.value=informacion.value
-fecha.value=informacion.value
-valor.value=informacion.value
+idMantenimiento.value.valor=informacion.value
+descripcion.value.valor=informacion.value
+responsable.value.valor=informacion.value
+// fecha.value.valor=informacion.value
+valor.value.valor=informacion.value
 }
 
 async function editarmantenimiento(){
@@ -62,7 +62,7 @@ if (await validar()){
     idMantenimiento:idMantenimiento.value,
     descripcion:descripcion.value,
     responsable:responsable.value,
-    fecha:fecha.value,
+    // fecha:fecha.value,
     valor:valor.value
 
     }
@@ -85,7 +85,7 @@ let informacion=ref("")
 let idMantenimiento = ref("");
 let descripcion = ref("");
 let responsable = ref("");
-let fecha = ref("");
+// let fecha = ref("");
 let valor = ref("");
 let maquinaTodo = ref([]);
 let nombreCodigo = ref([]);
@@ -108,10 +108,10 @@ async function validar() {
         mostrarMensajeError("Seleccione una máquina");
         verificado = false;
     }
-    if (fecha.value === "") {
-        mostrarMensajeError("Ingrese una fecha");
-        verificado = false;
-    }
+    // if (fecha.value === "") {
+    //     mostrarMensajeError("Ingrese una fecha");
+    //     verificado = false;
+    // }
     if (descripcion.value === "") {
         mostrarMensajeError("La descripcion está vacía");
         verificado = false;
@@ -222,9 +222,9 @@ function getMaquinaCodigo(id) {
     <div class="inputs">
         <q-select standout v-model="idMantenimiento" :options="organizarMaquinas" option-value="valor" option-label="label" label="Máquina" style="background-color: #grey; margin-bottom: 20px"
       />
-        <input class="input" type="text" placeholder="Fecha" v-model.trim="fecha" />
+        <!-- <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" /> -->
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
-        <input class="input" type="date" placeholder="Responsable" v-model.trim="responsable" />
+        <input class="input" type="text" placeholder="Responsable" v-model.trim="responsable" />
         <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
     </div>
     

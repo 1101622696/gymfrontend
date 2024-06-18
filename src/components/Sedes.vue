@@ -16,44 +16,89 @@ nombre.value=""
 direccion.value=""
 telefono.value=""
 ciudad.value=""
-codigo.value=""
+// codigo.value=""
 horario.value=""
 }
 
 
-async function guardar(){
+// async function guardar(){
 
-alert.value = true;
-if (await validar()){
-  const todo={
-    nombre:nombre.value,
-    direccion:direccion.value,
-    telefono:telefono.value,
-    ciudad:ciudad.value,
-    codigo:codigo.value,
-    horario:horario.value
-    }
-let nombrez= await useSedes.postSede(todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarSedes();
-}
-}
-}
+// alert.value = false;
+// if (await validar()){
+//   const todo={
+//     nombre:nombre.value,
+//     direccion:direccion.value,
+//     telefono:telefono.value,
+//     ciudad:ciudad.value,
+//     // codigo:codigo.value,
+//     horario:horario.value
+//     }
+//     console.log(nombre.value);
+// console.log(direccion.value);
+// console.log(telefono.value);
+// console.log(ciudad.value);
+// console.log(horario.value);
+// let nombrez= await useSedes.postSede(todo)
+// if(nombrez.status === 200){
+//       mostrarMensajeExito("Sede agregado exitosamente");
+//   listarSedes();
+
+// }else{
+//       mostrarMensajeError("No se pudo agregar la Sede");
+// }
+// }
+// }
+    const loading = ref(false);
+
+    const guardar = async () => {
+alert.value = false;
+
+      informacion.value = '';
+      if (await validar()) {
+        const todo = {
+          nombre: nombre.value,
+          direccion: direccion.value,
+          telefono: telefono.value,
+          ciudad: ciudad.value,
+          horario: horario.value
+        };
+
+        console.log(nombre.value);
+        console.log(direccion.value);
+        console.log(telefono.value);
+        console.log(ciudad.value);
+        console.log(horario.value);
+
+        try {
+          loading.value = true;
+          const response = await useSedes.postSede(todo);
+          if (response.status === 200) {
+            mostrarMensajeExito("Sede agregada exitosamente");
+            listarSedes();
+          } else {
+            mostrarMensajeError("No se pudo agregar la Sede");
+          }
+        } catch (error) {
+          mostrarMensajeError("Error al enviar la solicitud: " + error.message);
+        } 
+        finally {
+          loading.value = false;
+        }
+      }
+    };
 
 function editar(info){
     alert.value = true;
     accion.value !=1;
 
 informacion.value=info
-nombre.value=informacion.value
-direccion.value=informacion.value
-telefono.value=informacion.value
-ciudad.value=informacion.value
-codigo.value=informacion.value
-horario.value=informacion.value
+
+nombre.value.valor=informacion.value
+direccion.value.valor=informacion.value
+telefono.value.valor=informacion.value
+ciudad.value.valor=informacion.value
+// codigo.value=informacion.value
+horario.value.valor=informacion.value
 }
 
 async function editarsede(){
@@ -63,7 +108,7 @@ if (await validar()){
     direccion:direccion.value,
     telefono:telefono.value,
     ciudad:ciudad.value,
-    codigo:codigo.value,
+    // codigo:codigo.value,
     horario:horario.value
 
     }
@@ -92,7 +137,7 @@ let nombre = ref("");
 let direccion = ref("");
 let telefono = ref("");
 let ciudad = ref("");
-let codigo = ref("");
+// let codigo = ref("");
 let horario = ref("");
 
 let rows=ref([])
@@ -101,7 +146,7 @@ let columns =ref([
     {name:"direccion", label:"Dirección", field:"direccion", align:"center"},
     {name:"telefono", label:"Telefono de sede", field:"telefono", align:"center"},
     {name:"ciudad", label:"Ciudad", field:"ciudad", align:"center"},
-    {name:"codigo", sortable:true, label:"Código", field:"codigo", align:"center",},
+    // {name:"codigo", sortable:true, label:"Código", field:"codigo", align:"center",},
     {name:"horario", label:"Horario de la Sede", field:"horario", align:"center"},
     {name:"estado", label:"Estado de Sede", field:"estado", align:"center"},
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
@@ -123,10 +168,10 @@ async function validar() {
         mostrarMensajeError("La dirección está vacía");
         verificado = false;
     } 
-    if (codigo.value === "") {
-        mostrarMensajeError("Ingrese un código");
-        verificado = false;
-    } 
+    // if (codigo.value === "") {
+    //     mostrarMensajeError("Ingrese un código");
+    //     verificado = false;
+    // } 
     if (horario.value === "") {
         mostrarMensajeError("escriba el horario de la sede");
         verificado = false;
@@ -264,8 +309,8 @@ async function listardesactivadas() {
                         class="q-my-md q-mx-md" label="Teléfono" type="text" />   
   <q-input outlined v-model="ciudad" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Ciudad" type="text" />  
-      <q-input outlined v-model="codigo" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Codigo" type="text" />                     
+      <!-- <q-input outlined v-model="codigo" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Codigo" type="text" />                      -->
   <q-input outlined v-model="horario" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Horario" type="text" /> 
 
@@ -305,5 +350,14 @@ async function listardesactivadas() {
 </template>
 
 <style scoped>
-
+.custom-select {
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 1%;
+  margin-top:1.5vmin;
+  z-index: 1;
+}
 </style>

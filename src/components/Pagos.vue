@@ -19,26 +19,26 @@ function agregarpago(){
 
 id.value=""
 plan.value=""
-fecha.value=""
+// fecha.value=""
 valor.value=""
 }
 
 
 async function guardar(){
 
-agregar.value = true;
+agregar.value = false;
 if (await validar()){
   const todo={
-    id:id.value,
+    id:id.value.valor,
     plan:plan.value,
-    fecha:fecha.value,
+    // fecha:fecha.value,
     valor:valor.value
     }
 let nombrez= await usePagos.postPago(todo)
 if(nombrez.status!=200){
   mostrarMensajeError("no se pudo enviar")
 }else{
-  mostrarMensajeExito("muy bien")
+  mostrarMensajeExito("Pago agregado exitosamente")
   listarPagos(), listarClientes()
 }
 }
@@ -49,18 +49,18 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-id.value=informacion.value
-plan.value=informacion.value
-fecha.value=informacion.value
-valor.value=informacion.value
+id.value.valor=informacion.value
+plan.value.valor=informacion.value
+// fecha.value=informacion.value
+valor.value.valor=informacion.value
 }
 
 async function editarpago(){
 if (await validar()){
   const todo={
-    id:id.value,
+    id:id.value.valor,
     plan:plan.value,
-    fecha:fecha.value,
+    // fecha:fecha.value,
     valor:valor.value
 
     }
@@ -91,7 +91,7 @@ function cerrar(){
 let informacion=ref("")
 let id = ref("");
 let plan = ref("");
-let fecha = ref("");
+// let fecha = ref("");
 let valor = ref("");
 let clientesTodo = ref([]);
 let nombreCodigo = ref([]);
@@ -244,7 +244,7 @@ function getClienteDocumento(id) {
                <q-select standout v-model="id" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente"         style="background-color: #grey; margin-bottom: 20px"
       />
         <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
-        <input class="input" type="date" placeholder="Fecha de pago" v-model.trim="fechaPago" />
+        <!-- <input class="input" type="date" placeholder="Fecha de pago" v-model.trim="fechaPago" /> -->
         <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
     </div>
     

@@ -68,24 +68,41 @@ export const useStoreSedes = defineStore("Sedes", () => {
             }}
 
     
-        const postSede= async(data) =>{
+        // const postSede= async(data) =>{
+        //     try {
+        //         loading.value =true
+        //         const r = await axios.post("api/sedes/escribir", data,{
+        //             headers:{
+        //                 "x-token":useUsuario.token
+        //             }
+        //         })
+        //         console.log(r);
+        //         return r
+        //     } catch (error) {
+        //         loading.value =true
+        //         console.log(error);
+        //         return error;
+        //     }finally{
+        //         loading.value = false
+        //     }
+        // }
+        const postSede = async (data) => {
+            const loading = ref(true);
             try {
-                loading.value =true
-                const r = await axios.post("api/sedes/escribir", data,{
-                    headers:{
-                        "x-token":useUsuario.token
-                    }
-                })
-                console.log(r);
-                return r
+              const response = await axios.post("api/sedes/escribir", data, {
+                headers: {
+                  "x-token": useUsuario.token
+                }
+              });
+              console.log(response);
+              return response;
             } catch (error) {
-                loading.value =true
-                console.log(error);
-                return error;
-            }finally{
-                loading.value = false
+              console.log(error);
+              throw new Error(error.response ? error.response.data.error : error.message);
+            } finally {
+              loading.value = false;
             }
-        }
+          };
     
         const putSedes= async(id, data) =>{
             try {

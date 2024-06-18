@@ -21,6 +21,7 @@ id.value=""
 nombre.value=""
 email.value=""
 telefono.value=""
+password.value=""
 rol.value=""
 
 }
@@ -28,16 +29,17 @@ rol.value=""
 
 async function guardar(){
 
-alert.value = true;
+alert.value = false;
 if (await validar()){
   const todo={
-    id:id.value,
+    id:id.value.valor,
     nombre:nombre.value,
     email:email.value,
     telefono:telefono.value,
+    password:password.value,
     rol:rol.value
     }
-let nombrez= await useSedes.postUsuario(todo)
+let nombrez= await useUsuarios.postUsuario(todo)
 if(nombrez.status!=200){
   mostrarMensajeError("no se pudo enviar")
 }else{
@@ -52,11 +54,12 @@ function editar(info){
     accion.value !=1;
 
 informacion.value=info
-id.value=informacion.value
-nombre.value=informacion.value
-email.value=informacion.value
-telefono.value=informacion.value
-rol.value=informacion.value
+id.value.valor=informacion.value
+nombre.value.valor=informacion.value
+email.value.valor=informacion.value
+telefono.value.valor=informacion.value
+password.value.valor=informacion.value
+// rol.value=informacion.value
 }
 
 async function editarusuario(){
@@ -66,9 +69,11 @@ if (await validar()){
     nombre:nombre.value,
     email:email.value,
     telefono:telefono.value,
+    password:password.value,
+
 
     }
-let nombrez= await useSedes.putUsuarios(informacion._id, todo)
+let nombrez= await useUsuarios.putUsuarios(informacion._id, todo)
 if(nombrez.status!=200){
   mostrarMensajeError("no se pudo enviar")
 }else{
@@ -98,6 +103,7 @@ let id = ref("");
 let nombre = ref("");
 let email = ref("");
 let telefono = ref("");
+let password = ref("");
 let rol = ref("");
 let sedesTodo = ref([]);
 let nombreCodigo = ref([]);
@@ -327,8 +333,8 @@ async function listardesactivados() {
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
         </div>
         <div style="margin-left: 5%; text-align: end; margin-right: 5%">
-<q-select standout v-model="listar" :options="opcioneslistar" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px"
-      />
+<!-- <q-select standout v-model="listar" :options="opcioneslistar" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px" -->
+      <!-- /> -->
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
@@ -347,7 +353,8 @@ async function listardesactivados() {
                         class="q-my-md q-mx-md" label="Correo" type="text" />
 <q-input outlined v-model="telefono" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Teléfono" type="text" />
-
+<q-input outlined v-model="password" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="Contraseña" type="text" />
  <q-select standout v-model="rol" :options="options" label="Rol" style="background-color: #grey; margin-bottom: 20px"
       />
 
@@ -387,5 +394,16 @@ async function listardesactivados() {
 </template>
 
 <style scoped>
+
+.custom-select {
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 1%;
+  margin-top:1.5vmin;
+  z-index: 1;
+}
 
 </style>
