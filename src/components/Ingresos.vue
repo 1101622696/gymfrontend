@@ -198,7 +198,7 @@ function getSedeNombre(id) {
 }
 function getClienteNombre(id) {
   const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
-  return cliente ? cliente.nombre : "Documento no encontrado";
+  return cliente ? `${cliente.documento} - ${cliente.nombre}` : "Documento no encontrado";
 }
 
 
@@ -232,6 +232,7 @@ function getClienteNombre(id) {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
             </q-btn>
           </q-td>
         </template>

@@ -49,9 +49,9 @@ function editar(info){
 
 informacion.value=info
 // codigo.value=informacion.value
-descripcion.value=informacion.value
-valor.value=informacion.value
-cantidad.value=informacion.value
+descripcion.value.valor=informacion.value
+valor.value.valor=informacion.value
+cantidad.value.valor=informacion.value
 
 }
 
@@ -59,9 +59,9 @@ async function editarinventario(){
 if (await validar()){
   const todo={
     // codigo:codigo.value,
-    descripcion:descripcion.value,
-    valor:valor.value,
-    cantidad:cantidad.value
+    descripcion:descripcion.value.valor,
+    valor:valor.value.valor,
+    cantidad:cantidad.value.valor
 
     }
 let nombrez= await useInventario.putInventario(informacion._id, todo)
@@ -206,12 +206,18 @@ async function listardesactivados() {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
+                          <q-tooltip v-model="showing">Desactiva</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
+                          <q-tooltip v-model="showing">Activa</q-tooltip>
+
             </q-btn>
           </q-td>
         </template>
@@ -240,8 +246,8 @@ async function listardesactivados() {
         <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
-    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarinventario()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useInventario.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarinventario()" :loading="useInventario.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
       </div>
     </div>

@@ -2,10 +2,12 @@
 import { ref, onMounted, computed } from "vue";
 import { useStorePagos } from "../store/pagos.js";
 import { useStoreClientes } from "../store/clientes.js";
+import { useStorePlanes } from "../store/planes.js";
+
 import { useQuasar } from 'quasar'
 const $q = useQuasar();
 
-
+const usePlan = useStorePlanes();
 const usePagos = useStorePagos();
 const useCliente = useStoreClientes();
 
@@ -17,10 +19,11 @@ function agregarpago(){
   botoneditar.value=true
     agregar.value = true;
 
-id.value=""
-plan.value=""
-// fecha.value=""
-valor.value=""
+// id.value=""
+  idPlan.value = "";
+  idCliente.value = "";
+
+// valor.value=""
 }
 
 
@@ -29,16 +32,17 @@ async function guardar(){
 agregar.value = false;
 if (await validar()){
   const todo={
-    id:id.value.valor,
-    plan:plan.value,
-    // fecha:fecha.value,
-    valor:valor.value
+    // id:id.value.valor,
+      idPlan: idPlan.value.valor,
+      idCliente: idCliente.value.valor,
+    // valor:valor.value
     }
 let nombrez= await usePagos.postPago(todo)
 if(nombrez.status!=200){
   mostrarMensajeError("no se pudo enviar")
 }else{
   mostrarMensajeExito("Pago agregado exitosamente")
+      listarPlanes(),
   listarPagos(), listarClientes()
 }
 }
@@ -49,19 +53,17 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-id.value.valor=informacion.value
-plan.value.valor=informacion.value
-// fecha.value=informacion.value
-valor.value.valor=informacion.value
+idPlan.value.valor=informacion.value
+idCliente.value.valor=informacion.value
+// valor.value.valor=informacion.value
 }
 
 async function editarpago(){
 if (await validar()){
   const todo={
-    id:id.value.valor,
-    plan:plan.value,
-    // fecha:fecha.value,
-    valor:valor.value
+      idPlan: idPlan.value.valor,
+      idCliente: idCliente.value.valor,
+    // valor:valor.value
 
     }
 let nombrez= await usePagos.putPago(informacion._id, todo)
@@ -69,6 +71,7 @@ if(nombrez.status!=200){
   mostrarMensajeError("no se pudo eniar")
 }else{
   mostrarMensajeExito("muy bien")
+      listarPlanes(),
   listarPagos(), listarClientes()
 }
 }
@@ -83,22 +86,21 @@ let activado= await usePagos.putPagosActivar(info._id)
 listarPagos()
 }
 
-
-
 function cerrar(){
     agregar.value = false;
 }
 let informacion=ref("")
-let id = ref("");
-let plan = ref("");
-// let fecha = ref("");
-let valor = ref("");
+let idPlan = ref("");
+let idCliente = ref("");
+// let valor = ref("");
+let planesTodo = ref([]);
+let nombreCodigoP = ref([])
 let clientesTodo = ref([]);
 let nombreCodigo = ref([]);
 let rows = ref([]);
 let columns = ref([
-      { name: "id", label: "Cliente", field: "id", align: "center" },
-      { name: "plan", sortable: true, label: "Plan", field: "plan", align: "center" },
+  {name:"idPlan", label:"Plan", field:"idPlan", align:"center"},
+      { name: "idCliente", sortable: true, label: "Cliente", field: "idCliente", align: "center" },
       { name: "fecha", label: "Fecha del pago", field: "fecha", align: "center" },
       { name: "valor", label: "Valor", field: "valor", align: "center" },
       { name: "estado", label: "Estado del pago", field: "estado", align: "center" },
@@ -108,22 +110,18 @@ let columns = ref([
 async function validar() {
     let verificado = true;
 
-    if (id.value === "") {
+        if (idCliente.value === "") {
         mostrarMensajeError("Seleccione un cliente");
         verificado = false;
     }
-    if (plan.value === "") {
-        mostrarMensajeError("escriba el plan");
-        verificado = false;
-    }
-    // if (fecha.value === "") {
-    //     mostrarMensajeError("La fecha está vacía");
-    //     verificado = false;
-    // } 
-    if (valor.value === "") {
-        mostrarMensajeError("El valor está vacío");
-        verificado = false;
-    } 
+      if (idPlan.value === "") {
+    mostrarMensajeError("El plan está vacío");
+    verificado = false;
+  } 
+  //  if (valor.value === "") {
+  //       mostrarMensajeError("El valor está vacío");
+  //       verificado = false;
+  //   }
 
     return verificado;
 }
@@ -146,26 +144,25 @@ function mostrarMensajeExito(mensaje) {
 
 
 async function listarPagos() {
-      try {
-        const res = await usePagos.listarPago();
-        console.log("Pagos:", res.data);
-        rows.value = res.data.pago.map((pago) => ({
-          ...pago,
-          clienteDocumento: getClienteDocumento(pago.id),
-        }));
-      } catch (error) {
-        console.error("Error al listar pagos:", error);
-      }
-    }
+    try {
+    const res = await usePagos.listarPago()
+ console.log("Pagos:", res.data);
+    rows.value = res.data.pago;
+  } catch (error) {
+    console.error("Error al listar Pagos:", error);
+  }
+}
 
     onMounted(async () => {
       await listarClientes();
       await listarPagos();
+      await listarPlanes();
+
     });
 
 const organizarClientes = computed(() => {
   nombreCodigo.value = clientesTodo.value.map((element) => ({
-    label: `${element.documento}`,
+    label: `${element.documento} - ${element.nombre}`,
     valor: `${element._id}`,
     nombre: `${element.nombre}`,
   }));
@@ -182,12 +179,34 @@ async function listarClientes() {
 }
 
 function getClienteDocumento(id) {
-  const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
-  console.log(id);
-  console.log(clientesTodo.value);
-
-  return cliente ? cliente.documento : "Documento no encontrado";
+  const cliente = clientesTodo.value.find(cliente => cliente._id === id);
+  return cliente ? `${cliente.documento} - ${cliente.nombre}` : 'Cliente no encontrado';
 }
+
+function getPlanCodigo(id) {
+  const plan = planesTodo.value.find(plan => plan._id === id);
+  return plan ? `${plan.codigo} - ${plan.descripcion}` : 'plan no encontrado';
+}
+
+const organizarPlanes = computed(() => {
+    nombreCodigoP.value = planesTodo.value.map((element) => ({
+        label: `${element.codigo} - ${element.descripcion}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+    return nombreCodigoP.value;
+});
+
+
+async function listarPlanes() {
+    try {
+    const res = await usePlan.listarPlan()
+       planesTodo.value = res.data.plan;
+    } catch (error) {
+        console.error("Error al listar planes:", error);
+    }
+}
+
 
     function formatDate(dateStr) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -200,9 +219,14 @@ function getClienteDocumento(id) {
     <div class="container">
   
       <q-table class="table" flat bordered title="Pagos" :rows="rows" :columns="columns" row-key="id">
-<template v-slot:body-cell-id="props">
+              <template v-slot:body-cell-idPlan="props">
+        <q-td :props="props">
+          <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
+        </q-td>
+      </template>
+    <template v-slot:body-cell-idCliente="props">
       <q-td :props="props">
-          <p>{{ getClienteDocumento(props.row.id) }}</p>
+          <p>{{ getClienteDocumento(props.row.idCliente) }}</p>
       </q-td>
     </template>
         <template v-slot:body-cell-fecha="props">
@@ -241,11 +265,15 @@ function getClienteDocumento(id) {
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-               <q-select standout v-model="id" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente"         style="background-color: #grey; margin-bottom: 20px"
+               <!-- <q-select standout v-model="id" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente"         style="background-color: #grey; margin-bottom: 20px"
+      /> -->
+                     <q-select standout v-model="idCliente" :options="organizarClientes" option-value="valor" option-label="label" label="Cliente"         style="background-color: #grey; margin-bottom: 20px"
       />
-        <input class="input" type="text" placeholder="Plan" v-model.trim="plan" />
+        <!-- <input class="input" type="text" placeholder="Plan" v-model.trim="plan" /> -->
+                <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan" style="background-color: #grey; margin-bottom: 20px" />
+
         <!-- <input class="input" type="date" placeholder="Fecha de pago" v-model.trim="fechaPago" /> -->
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
+       <!-- <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />-->
     </div>
     
     
@@ -413,76 +441,3 @@ margin-left: auto;
 }
 
 </style>
-
-
-<!--import mongoose from "mongoose"; const pagosSchema=new mongoose.Schema({ id:{type:mongoose.Schema.Types.ObjectId,ref:'Cliente',required:true}, plan:{type:String,required:true}, fecha:{type:Date,default:Date.now()}, valor:{ type: Number, require: true }, estado:{type:Number,default:1}, }) export default mongoose.model("Pago",pagosSchema) import mongoose from "mongoose"; const clientesSchema = new mongoose.Schema({ nombre: { type: String, require: true }, fechaIngreso: { type: Date, default: Date.now()}, documento: { type: String, required: true, unique: true }, direccion: { type: String, required: true }, fechaNacimiento: { type: Date, required: true }, telefono: { type: String, required: true}, estado: { type: Number, default: 1 }, idPlan:{type:mongoose.Schema.Types.ObjectId,ref:'Plan',required:true}, fechavencimiento: { type: Date, default:"" }, foto: { type: String, required: true }, seguimiento: [ { fecha: { type: Date, required: true }, peso: { type: Number, require: true }, imc: { type: Number, require: true }, brazo: { type: Number, require: true }, pierna: { type: Number, require: true }, edad: { type: Number, require: true }, }, ], }); export default mongoose.model("Cliente",clientesSchema); y estos son los modelos de pago y clientesD{ "pago": [ { "_id": "66393c34ffdb17b805327eb6", "id": "6633f7590eb25b349327248e", "plan": "2", "fecha": "2001-05-12T05:00:00.000Z", "valor": 2000, "estado": 1, "__v": 0 } ] } al momento de listar pagos en postman me salen estos datos, { "cliente": [ { "_id": "6639445ef23880b5ca0345ae", "nombre": "giselleDaniela", "fechaIngreso": "2024-05-06T20:57:24.786Z", "documento": "267667677676", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "9090909090", "estado": 1, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "fotoG", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "6639445ef23880b5ca0345af" } ], "__v": 0 }, { "_id": "663d1be7b093f46f12b4970c", "nombre": "Meghan", "fechaIngreso": "2024-05-09T18:46:58.575Z", "documento": "0777777777", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "9090909090", "estado": 1, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "fotoG", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "663d1be7b093f46f12b4970d" } ], "__v": 0 }, { "_id": "663d1d70e621e965b65987b6", "nombre": "Haylie", "fechaIngreso": "2024-05-09T19:01:00.398Z", "documento": "0777777770", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "337-697-4243", "estado": 0, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "http://loyal.com", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "663d1d70e621e965b65987b7" } ], "__v": 0 }, { "_id": "663d1dc3e621e965b65987bf", "nombre": "Cathrine", "fechaIngreso": "2024-05-09T19:01:00.398Z", "documento": "0777777707", "direccion": "carrera 8#15-10", "fechaNacimiento": "2001-05-12T05:00:00.000Z", "telefono": "434-672-4197", "estado": 1, "idPlan": "6633f5b89f21cef1c58e4994", "fechavencimiento": null, "foto": "http://rita.org", "seguimiento": [ { "fecha": "2020-08-08T05:00:00.000Z", "peso": 40, "imc": 30, "brazo": 30, "pierna": 40, "edad": 30, "_id": "663d1dc3e621e965b65987c0" } ], "__v": 0 } ] } y estos son los clientes<template>
-  <template v-slot:body-cell-id="props">
-    <q-td :props="props">
-      <p>{{ getClienteDocumento(props.row.id) }}</p>
-    </q-td>
-  </template>
-</template>let id = ref("");
-let plan = ref("");
-let fecha = ref("");
-let valor = ref("");
-let clientesTodo = ref([]);
-let nombreCodigo = ref([]);
-let rows = ref([]);
-let columns = ref([
-  { name: "id", label: "Cliente", field: "id", align: "center" },
-  { name: "plan", sortable: true, label: "Plan", field: "plan", align: "center" },
-  { name: "fecha", label: "Fecha del pago", field: "fecha", align: "center" },
-  { name: "valor", label: "Valor", field: "valor", align: "center" },
-  { name: "estado", label: "Estado del pago", field: "estado", align: "center" },
-  { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
-]);
-
-async function listarPagos() {
-  try {
-    const res = await usePagos.listarPago();
-    console.log("Pagos:", res.data);
-    rows.value = res.data.pago;
-  } catch (error) {
-    console.error("Error al listar pagos:", error);
-  }
-}
-
-onMounted(async () => {
-  await listarClientes();
-  await listarPagos();
-  // Mapping rows after ensuring clients are loaded
-  rows.value = rows.value.map((pago) => ({
-    ...pago,
-    clienteDocumento: getClienteDocumento(pago.id),
-  }));
-});
-
-const organizarClientes = computed(() => {
-  nombreCodigo.value = clientesTodo.value.map((element) => ({
-    label: `${element.documento}`,
-    valor: `${element._id}`,
-    nombre: `${element.nombre}`,
-  }));
-  return nombreCodigo.value;
-});
-
-async function listarClientes() {
-  try {
-    const res = await useCliente.listarCliente();
-    console.log("Clientes:", res.data);
-    clientesTodo.value = res.data.cliente;
-  } catch (error) {
-    console.error("Error al listar clientes:", error);
-  }
-}
-
-function getClienteDocumento(id) {
-  console.log("buscando cliente con ID:", id);
-  const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
-  if (cliente) {
-    console.log("cliente encontrado:", cliente);
-  } else {
-    console.log("cliente no encontrado para el ID:", id);
-  }
-  return cliente ? cliente.documento : "Documento no encontrado";
-}-->

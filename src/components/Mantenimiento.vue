@@ -160,7 +160,7 @@ const useMaquina = useStoreMaquina();
 
 const organizarMaquinas = computed(() => {
     nombreCodigo.value = maquinaTodo.value.map((element) => ({
-        label: `${element.codigo}`,
+        label: `${element.codigo} - ${element.descripcion}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
     }));
@@ -179,7 +179,7 @@ async function listarMaquina() {
       
 function getMaquinaCodigo(id) {
   const mantenimiento = maquinaTodo.value.find((mantenimiento) => mantenimiento._id === id);
-  return mantenimiento ? mantenimiento.codigo : "mantenimiento no encontrado";
+  return mantenimiento ? `${mantenimiento.codigo} - ${mantenimiento.descripcion}` : "mantenimiento no encontrado";
 }
 
    const formatDate = (dateStr) => {
@@ -207,6 +207,7 @@ function getMaquinaCodigo(id) {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
             </q-btn>
           </q-td>
         </template>
@@ -228,8 +229,8 @@ function getMaquinaCodigo(id) {
         <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
     </div>
     
-    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarmantenimiento()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarmantenimiento()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

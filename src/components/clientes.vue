@@ -15,7 +15,6 @@ let agregar = ref(false);
 let botoneditar=ref(false)
 let mostrarFoto = ref(false)
 
-
 function llamaragregarCliente() {
   botoneditar.value = true; 
   agregar.value = true;
@@ -25,6 +24,7 @@ function llamaragregarCliente() {
   direccion.value = "";
   fechaNacimiento.value = "";
   telefono.value = "";
+  observaciones.value = "";
   idPlan.value = "";
   foto.value = "";
   // seguimientos.value = [{ fecha: '', peso: '', imc: '', brazo: '', pierna: '', edad: '' }];
@@ -41,6 +41,7 @@ agregar.value = false;
       direccion: direccion.value,
       fechaNacimiento: fechaNacimiento.value,
       telefono: telefono.value,
+      observaciones: observaciones.value,
       idPlan: idPlan.value.valor,
       foto: foto.value,
       // seguimientos:seguimientos.value,
@@ -74,6 +75,7 @@ documento.value.valor=informacion.value
 direccion.value.valor=informacion.value
 fechaNacimiento.value.valor=informacion.value
 telefono.value.valor=informacion.value
+observaciones.value.valor=informacion.value
 idPlan.value.valor=informacion.value
 foto.value.valor=informacion.value
 
@@ -88,6 +90,7 @@ async function editarcliente() {
       direccion: direccion.value,
       fechaNacimiento: fechaNacimiento.value,
       telefono: telefono.value,
+      observaciones: observaciones.value,
       idPlan: idPlan.value.valor,
       foto: foto.value,
     };
@@ -121,6 +124,7 @@ let documento = ref("");
 let direccion = ref("");
 let fechaNacimiento = ref("");
 let telefono = ref("");
+let observaciones = ref("");
 let idPlan = ref("");
 let foto = ref("");
 let seguimiento = ref("");
@@ -139,6 +143,7 @@ let columns = ref([
   { name: "documento", label: "Documento", field: "documento", align: "center" },
   { name: "fechaNacimiento", label: "fecha de Nacimiento", field: "fechaNacimiento", align: "center" },
   { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
+  { name: "observaciones", label: "Observaciones del Cliente", field: "observaciones", align: "center" },
   { name: "foto", label: "Foto", field: "foto", align: "center" },
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
   { name: "estado", label: "Estado", field: "estado", align: "center" },
@@ -183,6 +188,10 @@ async function validar() {
   }
   if (idPlan.value === "") {
     mostrarMensajeError("El plan está vacío");
+    verificado = false;
+  }
+    if (observaciones.value === "") {
+    mostrarMensajeError("digite las observaciones");
     verificado = false;
   }
   if (foto.value === "") {
@@ -340,7 +349,7 @@ if (mescumple.value < 1 || mescumple.value >12){
 
 function getPlanCodigo(id) {
   const plan = planesTodo.value.find(plan => plan._id === id);
-  return plan ? plan.codigo : '';
+  return plan ? `${plan.codigo} - ${plan.descripcion}` : '';
 }
 
   onMounted(()=>{
@@ -349,7 +358,7 @@ function getPlanCodigo(id) {
 
 const organizarPlanes = computed(() => {
     nombreCodigo.value = planesTodo.value.map((element) => ({
-        label: `${element.codigo}`,
+        label: `${element.codigo} - ${element.descripcion}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
     }));
@@ -523,8 +532,30 @@ console.log(listNombre.value);
     };
   
 
+      const tooltipContent = ref('');
+ const showTooltip = (text) => {
+      tooltipContent.value = text;
+      const tooltip = this.$refs.tooltip;
+      tooltip && tooltip.show();
+    };
+
+    const hideTooltip = () => {
+      const tooltip = this.$refs.tooltip;
+      tooltip && tooltip.hide();
+    };
+
+
 </script>
 <template>
+
+<!-- esto es un tooltip -->
+    <!-- <div
+      style="width: 200px; height: 70px;"
+      class="bg-purple text-white rounded-borders row flex-center q-mt-md"
+    >
+      Hover here or click buttons
+      <q-tooltip v-model="showing">Tooltip text</q-tooltip>
+    </div> -->
 
   <div class="container">
 
@@ -577,6 +608,18 @@ console.log(listNombre.value);
           <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
+
+    <template v-slot:body-cell-observaciones="props">
+      <q-td :props="props">
+        <span class="truncated-text">
+          {{ props.row.observaciones }}
+          <q-tooltip anchor="bottom middle" self="top middle" :content="props.row.observaciones" transition-show="scale" transition-hide="scale">
+            <span class="truncated-text">{{ props.row.observaciones }}</span>
+          </q-tooltip>
+        </span>
+      </q-td>
+    </template>
+
       <template v-slot:body-cell-foto="props">
         <q-td :props="props">
           <div class="photo-container">
@@ -596,9 +639,12 @@ console.log(listNombre.value);
   <q-td :props="props">
     <q-btn class="option-button" @click="editar(props.row)">
       ✏️
+            <q-tooltip v-model="showing">Edita</q-tooltip>
     </q-btn>
     <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button" >
       ❌
+            <q-tooltip v-model="showing">Desactivar</q-tooltip>
+
     </q-btn>
     <q-btn @click="editarestado(props.row)" v-else class="option-button">
       ✅
@@ -610,6 +656,8 @@ console.log(listNombre.value);
       <q-td :props="props">
         <q-btn class="segui" @click="openSeguimientoModal(props.row)">
           Seguimiento
+            <q-tooltip v-model="showing">mira el seguimiento</q-tooltip>
+
         </q-btn>
       </q-td>
     </template>
@@ -741,6 +789,8 @@ console.log(listNombre.value);
         <input class="input" type="text" placeholder="Nombre" v-model.trim="nombre" />
         <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
         <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
+        <!-- <input class="input" type="textarea" placeholder="Observaciones" v-model.trim="observaciones" /> -->
+            <textarea class="input textarea" placeholder="Observaciones" v-model.trim="observaciones"></textarea>
         <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
         <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan" style="background-color: #grey; margin-bottom: 20px" />
@@ -755,8 +805,8 @@ console.log(listNombre.value);
           <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
         </div> -->
       </div>
-       <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarcliente()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+       <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarcliente()" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
     </div>
   </div>
 </template>
@@ -1063,6 +1113,28 @@ align-items: center;
 }
 
 
-
-
+/* estilos pa observaciones */
+.truncated-text {
+  display: inline-block;
+  max-width: 150px;
+  overflow: scroll;
+  scrollbar-width: none;
+  text-overflow:initial;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.q-tooltip {
+  max-width: 300px;
+  white-space: normal;
+  word-break: break-word;
+}
+.textarea {
+  width: 100%;
+  height: 200px; 
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
 </style>

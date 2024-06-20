@@ -309,12 +309,18 @@ async function listardesactivados() {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
+                          <q-tooltip v-model="showing">Desactiva</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
+                          <q-tooltip v-model="showing">Activa</q-tooltip>
+
             </q-btn>
           </q-td>
         </template>

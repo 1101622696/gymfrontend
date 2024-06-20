@@ -164,7 +164,7 @@ async function listarVentas(){
 
 const organizarInventario = computed(() => {
     nombreCodigo.value = inventarioTodo.value.map((element) => ({
-        label: `${element.codigo}`,
+        label: `${element.descripcion} - ${element.codigo}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
     }));
@@ -181,9 +181,9 @@ async function listarInventarios() {
         console.error("Error al listar inventario:", error);
     }
 }
-function getInventarioCodigo(id) {
+function getInventarioDescripcion(id) {
   const inventario = inventarioTodo.value.find(inventario => inventario._id === id);
-  return inventario ? inventario.codigo : '';
+  return inventario ? `${inventario.descripcion} - ${inventario.codigo}`: "";
 }
 
     function formatDate(dateStr) {
@@ -200,7 +200,7 @@ function getInventarioCodigo(id) {
       <q-table class="table" flat bordered title="Ventas" :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-id="props">
         <q-td :props="props">
-          <p>{{ getInventarioCodigo(props.row.id) }}</p>
+          <p>{{ getInventarioDescripcion(props.row.id) }}</p>
         </q-td>
       </template>
        <template v-slot:body-cell-fecha="props">
@@ -212,17 +212,9 @@ function getInventarioCodigo(id) {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
+
             </q-btn>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
-            <q-btn v-if="props.row.estado == 1"
-            @click="editarestado(props.row)"
-             style="color:green">Activo</q-btn>
-            <q-btn v-else 
-               @click="editarestado(props.row)"
-               style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
@@ -243,8 +235,8 @@ function getInventarioCodigo(id) {
         <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
-    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarventa()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarventa()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

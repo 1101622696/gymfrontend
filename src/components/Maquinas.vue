@@ -263,12 +263,17 @@ async function listardesactivadas() {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
+                          <q-tooltip v-model="showing">Desactiva</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
+                          <q-tooltip v-model="showing">Activa</q-tooltip>
+
             </q-btn>
           </q-td>
         </template>
@@ -300,8 +305,8 @@ async function listardesactivadas() {
         <!-- <input class="input" type="date" placeholder="Última fecha de mantenimiento " v-model.trim="fechaUltmantenimiento" /> -->
     </div>
     
-    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarmaquina()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useMaquina.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarmaquina()" :loading="useMaquina.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

@@ -22,7 +22,7 @@ axios.interceptors.request.use((request) => {
 
 if (requestsPending == 1) {
   Swal.fire({
-    title: 'Espere, por que si recarga, se peta esta weva...',
+    // title: 'Espere, por que si recarga, se peta esta weva...',
     didOpen: () => {
       Swal.showLoading();
     },

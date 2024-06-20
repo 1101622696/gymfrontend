@@ -14,7 +14,7 @@ function agregarPlan(){
   botoneditar.value=true
     agregar.value = true;
 
-codigo.value=""
+// codigo.value=""
 descripcion.value=""
 dias.value=""
 valor.value=""
@@ -26,7 +26,7 @@ async function guardar(){
 agregar.value = false;
 if (await validar()){
   const todo={
-    codigo:codigo.value,
+    // codigo:codigo.value,
     descripcion:descripcion.value,
     dias:dias.value,
     valor:valor.value
@@ -46,19 +46,19 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-codigo.value=informacion.value
-descripcion.value=informacion.value
-dias.value=informacion.value
-valor.value=informacion.value
+// codigo.value=informacion.value
+descripcion.value.valor=informacion.value
+dias.value.valor=informacion.value
+valor.value.valor=informacion.value
 }
 
 async function editarpago(){
 if (await validar()){
   const todo={
-    codigo:codigo.value,
-    descripcion:descripcion.value,
-    dias:dias.value,
-    valor:valor.value
+    // codigo:codigo.value,
+    descripcion:descripcion.value.valor,
+    dias:dias.value.valor,
+    valor:valor.value.valor
 
     }
 let nombrez= await usePlan.putPlan(informacion._id, todo)
@@ -90,7 +90,7 @@ onMounted(()=>{
 })
 
 let informacion=ref("")
-let codigo = ref("");
+// let codigo = ref("");
 let descripcion = ref("");
 let dias = ref("");
 let valor = ref("");
@@ -110,10 +110,10 @@ let columns =ref([
 async function validar() {
     let verificado = true;
 
-    if (codigo.value === "") {
-        mostrarMensajeError("El codigo está vacío");
-        verificado = false;
-    }
+    // if (codigo.value === "") {
+    //     mostrarMensajeError("El codigo está vacío");
+    //     verificado = false;
+    // }
     if (valor.value === "") {
         mostrarMensajeError("El valor está vacío");
         verificado = false;
@@ -210,12 +210,18 @@ async function listardesactivados() {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
+                          <q-tooltip v-model="showing">Desactiva</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
+                          <q-tooltip v-model="showing">Activa</q-tooltip>
+
             </q-btn>
           </q-td>
         </template>
@@ -238,14 +244,14 @@ async function listardesactivados() {
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Código" v-model.trim="codigo" />
+        <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
         <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
         <input class="input" type="text" placeholder="Dias" v-model.trim="dias" />
     </div>
     
-    <button v-if="botoneditar ==true" class="button" @click="guardar()" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="usePlan.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarpago()" :loading="usePlan.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>

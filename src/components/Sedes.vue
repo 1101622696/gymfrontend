@@ -20,34 +20,6 @@ ciudad.value=""
 horario.value=""
 }
 
-
-// async function guardar(){
-
-// alert.value = false;
-// if (await validar()){
-//   const todo={
-//     nombre:nombre.value,
-//     direccion:direccion.value,
-//     telefono:telefono.value,
-//     ciudad:ciudad.value,
-//     // codigo:codigo.value,
-//     horario:horario.value
-//     }
-//     console.log(nombre.value);
-// console.log(direccion.value);
-// console.log(telefono.value);
-// console.log(ciudad.value);
-// console.log(horario.value);
-// let nombrez= await useSedes.postSede(todo)
-// if(nombrez.status === 200){
-//       mostrarMensajeExito("Sede agregado exitosamente");
-//   listarSedes();
-
-// }else{
-//       mostrarMensajeError("No se pudo agregar la Sede");
-// }
-// }
-// }
     const loading = ref(false);
 
     const guardar = async () => {
@@ -104,12 +76,12 @@ horario.value.valor=informacion.value
 async function editarsede(){
 if (await validar()){
   const todo={
-    nombre:nombre.value,
-    direccion:direccion.value,
-    telefono:telefono.value,
-    ciudad:ciudad.value,
+    nombre:nombre.value.valor,
+    direccion:direccion.value.valor,
+    telefono:telefono.value.valor,
+    ciudad:ciudad.value.valor,
     // codigo:codigo.value,
-    horario:horario.value
+    horario:horario.value.valor
 
     }
 let nombrez= await useSedes.putSedes(informacion._id, todo)
@@ -268,12 +240,18 @@ async function listardesactivadas() {
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
+                          <q-tooltip v-model="showing">Edita</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button">
               ❌
+                          <q-tooltip v-model="showing">Desactiva</q-tooltip>
+
             </q-btn>
             <q-btn @click="editarestado(props.row)" v-else class="option-button">
               ✅
+                          <q-tooltip v-model="showing">Activa</q-tooltip>
+
             </q-btn>
           </q-td>
         </template>
