@@ -27,7 +27,7 @@ function llamaragregarCliente() {
   observaciones.value = "";
   idPlan.value = "";
   foto.value = "";
-  // seguimientos.value = [{ fecha: '', peso: '', imc: '', brazo: '', pierna: '', edad: '' }];
+  // seguimientos.value = [{ fecha: '', peso: '', imc: '', brazo: '', altura: '', edad: '' }];
 }
 
 
@@ -217,8 +217,8 @@ async function validar() {
   //     mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
   //     verificado = false;
   //   }
-  //   if (isNaN(seguimiento.pierna) || seguimiento.pierna <= 0) {
-  //     mostrarMensajeError(`La pierna del seguimiento ${i + 1} debe ser un número válido`);
+  //   if (isNaN(seguimiento.altura) || seguimiento.altura <= 0) {
+  //     mostrarMensajeError(`La altura del seguimiento ${i + 1} debe ser un número válido`);
   //     verificado = false;
   //   }
   //   if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
@@ -469,9 +469,9 @@ console.log(listNombre.value);
       let seguimientos = ref([{
             fecha: '',
             peso: '',
-            imc: '',
+            // imc: '',
             brazo: '',
-            pierna: '',
+            altura: '',
             edad: ''
           }])
           
@@ -480,7 +480,7 @@ console.log(listNombre.value);
       { name: 'peso', label: 'Peso', field: 'peso', align: 'center' },
       { name: 'imc', label: 'IMC', field: 'imc', align: 'center' },
       { name: 'brazo', label: 'Brazo', field: 'brazo', align: 'center' },
-      { name: 'pierna', label: 'Pierna', field: 'pierna', align: 'center' },
+      { name: 'altura', label: 'altura', field: 'altura', align: 'center' },
       { name: 'edad', label: 'Edad', field: 'edad', align: 'center' }
     ]);
 
@@ -520,8 +520,8 @@ console.log(listNombre.value);
         mostrarMensajeError("El brazo del seguimiento debe ser un número válido");
         verificado = false;
       }
-      if (isNaN(seguimiento.pierna) || seguimiento.pierna <= 0) {
-        mostrarMensajeError("La pierna del seguimiento debe ser un número válido");
+      if (isNaN(seguimiento.altura) || seguimiento.altura <= 0) {
+        mostrarMensajeError("La altura del seguimiento debe ser un número válido");
         verificado = false;
       }
       if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
@@ -657,7 +657,6 @@ console.log(listNombre.value);
         <q-btn class="segui" @click="openSeguimientoModal(props.row)">
           Seguimiento
             <q-tooltip v-model="showing">mira el seguimiento</q-tooltip>
-
         </q-btn>
       </q-td>
     </template>
@@ -671,7 +670,7 @@ console.log(listNombre.value);
 
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
 
-    <!-- <q-dialog v-model="seguimientoModalOpen" persistent>
+    <q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
         <q-card-section>
           <div class="text-h6">{{ selectedCliente?.nombre }}</div>
@@ -701,9 +700,9 @@ console.log(listNombre.value);
           </div>
         </q-card-actions>
       </q-card>
-    </q-dialog> -->
+    </q-dialog>
 
-<q-dialog v-model="seguimientoModalOpen" persistent>
+<!-- <q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
         <q-card-section>
           <div class="text-h6">{{ selectedCliente?.nombre }}</div>
@@ -729,20 +728,18 @@ console.log(listNombre.value);
         <q-card-actions align="right">
           <q-btn flat label="Cerrar" color="primary" @click="closeModal" />
           <div class="agregarseguimiento">
-            <!-- <q-btn class="agregaedita" @click="toggleSegui">✏️</q-btn> -->
+            <q-btn class="agregaedita" @click="toggleSegui">✏️</q-btn>
           </div>
-        </q-card-actions>
+        </q-card-actions> -->
 
         <div v-if="segui" class="segui-modal">
           <div class="segui-modal-contenedor">
             <div v-for="(seguimiento, index) in seguimientos" :key="index">
-              <!-- <h4>Seguimiento {{ index + 1 }}</h4> -->
               <h4>Seguimiento</h4>
               <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
               <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
-              <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
               <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-              <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+              <input class="input" type="number" placeholder="altura (cm)" v-model.number="seguimiento.altura" />
               <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
             </div>
             <q-btn class="agregaedita" @click="actualizarSegui">
@@ -768,7 +765,7 @@ console.log(listNombre.value);
           <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
           <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
           <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-          <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+          <input class="input" type="number" placeholder="altura" v-model.number="seguimiento.altura" />
           <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
         </div>
         <q-btn class="agregaedita" @click="actualizarSegui">
@@ -801,7 +798,7 @@ console.log(listNombre.value);
           <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
           <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
           <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-          <input class="input" type="number" placeholder="Pierna" v-model.number="seguimiento.pierna" />
+          <input class="input" type="number" placeholder="altura" v-model.number="seguimiento.altura" />
           <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
         </div> -->
       </div>

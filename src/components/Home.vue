@@ -1,8 +1,8 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header reveal elevated class="bg-grey-8 text-white">
+    <q-header class="bg-grey-8 text-white">
       <q-toolbar>
-        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
+        <q-btn icon="menu" round flat dense @click="toggleLeftDrawer" />
         <q-toolbar-title>
           <q-avatar>
             <img src="https://img.freepik.com/vector-premium/logotipo-fitness-levantamiento-pesas_609277-112.jpg" alt="Gimnasio Logo">
@@ -12,92 +12,27 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered class="bg-grey-8" >
+    <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered class="bg-grey-8">
       <q-list>
-
-        <q-item to="/" clickable>
+        <q-item v-for="link in filteredLinks" :key="link.to" :to="link.to" clickable>
           <q-item-section avatar>
-        <q-icon name="login" class="text-white" />
-      </q-item-section>
-      <q-item-section class="text-white text-body1">Cerrar sesión</q-item-section>
-    </q-item>
-
-
-        <q-item to="/Home/clientes" clickable>
-          <q-item-section avatar>
-            <q-icon name="people" class="text-white" />
+            <q-icon :name="link.icon" class="text-white" />
           </q-item-section>
-          <q-item-section class="text-white text-body1">Clientes</q-item-section>
-        </q-item>
-        <q-item to="/Home/ingresos" clickable>
-          <q-item-section avatar>
-            <q-icon name="attach_money" class="text-white" />
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Ingresos</q-item-section>
-        </q-item>
-        <q-item to="/Home/inventario" clickable>
-          <q-item-section avatar>
-            <q-icon name="inventory"  class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Inventario</q-item-section>
-        </q-item>
-        <q-item to="/Home/mantenimiento" clickable>
-          <q-item-section avatar>
-            <q-icon name="build" class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Mantenimiento</q-item-section>
-        </q-item>
-        <q-item to="/Home/maquinas" clickable>
-          <q-item-section avatar>
-            <q-icon name="fitness_center" class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Máquinas</q-item-section>
-        </q-item>
-        <q-item to="/Home/pagos" clickable>
-          <q-item-section avatar>
-            <q-icon name="credit_card" class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Pagos</q-item-section>
-        </q-item>
-        <q-item to="/Home/planes" clickable>
-          <q-item-section avatar>
-            <q-icon name="event_note" class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Planes</q-item-section>
-        </q-item>
-        <q-item to="/Home/sedes" clickable>
-          <q-item-section avatar>
-            <q-icon name="location_on" class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Sedes</q-item-section>
-        </q-item>
-        <q-item to="/Home/usuarios" clickable>
-          <q-item-section avatar>
-            <q-icon name="person" class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Usuarios</q-item-section>
-        </q-item>
-        <q-item to="/Home/ventas" clickable>
-          <q-item-section avatar>
-            <q-icon name="shopping_cart" class="text-white"/>
-          </q-item-section>
-          <q-item-section class="text-white text-body1">Ventas</q-item-section>
+          <q-item-section class="text-white text-body1">{{ link.label }}</q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
-    <q-page-container @click="closeDrawer">
-      
-       <router-view @click="closeDrawer()"> </router-view>
-      <div class="casita"  v-if="$route.path === '/Home'">
-        <q-page class="pagina" style="background-image: url('https://wallpapers.com/images/hd/gym-motivation-poster-os5s90il3i3rxu85.jpg');">
 
+    <q-page-container @click="closeDrawer">
+      <router-view @click="closeDrawer()" />
+      <div class="casita" v-if="$route.path === '/Home'">
+        <q-page class="pagina" style="background-image: url('https://wallpapers.com/images/hd/gym-motivation-poster-os5s90il3i3rxu85.jpg');">
           <div class="texto">
             <q-card class="cards">
               <q-card-section>
                 <div class="text-h5 text-center text-white q-mb-none">"Una sonrisa y una buena actitud pueden cambiar el día de alguien."</div>
               </q-card-section>
             </q-card>
-      
             <q-card class="cards">
               <q-card-section>
                 <div class="text-h5 text-center text-white q-mb-none">"Recuerda que el éxito del equipo depende de cada uno de nosotros."</div>
@@ -105,14 +40,12 @@
             </q-card>
           </div>
           <div class="texto">
-      
             <q-card class="cards">
               <q-card-section>
                 <div class="text-h5 text-center text-white q-mb-none">Nuestra Misión</div>
                 <div class="text-subtitle1 text-center text-white q-mt-xs">"Ofrecer un ambiente inclusivo y motivador donde todos nuestros clientes puedan alcanzar sus objetivos de salud y fitness."</div>
               </q-card-section>
             </q-card>
-      
             <q-card class="cards">
               <q-card-section>
                 <div class="text-h5 text-center text-white q-mb-none">Nuestra Visión</div>
@@ -121,35 +54,45 @@
             </q-card>
           </div>
         </q-page>
-
       </div>
     </q-page-container>
   </q-layout>
 </template>
 
-<script>
-import { ref,} from 'vue';
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useStoreUsuarios } from '../store/usuarios';
 
-export default {
-  
-  setup() {
-    const leftDrawerOpen = ref(false);
+const leftDrawerOpen = ref(false);
+const { role } = useStoreUsuarios()
 
-    const toggleLeftDrawer = () => {
-      leftDrawerOpen.value = !leftDrawerOpen.value;
-    };
 
-    const closeDrawer = () => {
-      leftDrawerOpen.value = false;
-    };
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
 
-  
-    return {
-      leftDrawerOpen,
-      toggleLeftDrawer,
-      closeDrawer
-    };
-  },
+
+const links = [
+  { to: '/', label: 'Cerrar sesión', icon: 'login', roles: ['Administrador', 'Recepcionista', 'Entrenador'] },
+  { to: '/Home/clientes', label: 'Clientes', icon: 'people', roles: ['Administrador', 'Recepcionista', 'Entrenador'] },
+  { to: '/Home/ingresos', label: 'Ingresos', icon: 'attach_money', roles: ['Administrador'] },
+  { to: '/Home/inventario', label: 'Inventario', icon: 'inventory', roles: ['Administrador'] },
+  { to: '/Home/mantenimiento', label: 'Mantenimiento', icon: 'build', roles: ['Administrador', 'Recepcionista'] },
+  { to: '/Home/maquinas', label: 'Máquinas', icon: 'fitness_center', roles: ['Administrador'] },
+  { to: '/Home/pagos', label: 'Pagos', icon: 'credit_card', roles: ['Administrador', 'Recepcionista'] },
+  { to: '/Home/planes', label: 'Planes', icon: 'event_note', roles: ['Administrador'] },
+  { to: '/Home/sedes', label: 'Sedes', icon: 'location_on', roles: ['Administrador'] },
+  { to: '/Home/usuarios', label: 'Usuarios', icon: 'group', roles: ['Administrador'] },
+  { to: '/Home/ventas', label: 'Ventas', icon: 'shopping_cart', roles: ['Administrador', 'Recepcionista'] }
+];
+
+
+const filteredLinks = computed(() => {
+    return links.filter(link => link.roles.includes(role));
+});
+
+const closeDrawer = () => {
+  leftDrawerOpen.value = false;
 };
 </script>
 
@@ -157,11 +100,9 @@ export default {
 .bg-primary {
   background-color: bisque;
 }
-
 .text-white {
   color: white;
 }
-
 .bg-cover {
   background-size: cover;
   background-position: center;
@@ -170,17 +111,14 @@ export default {
   flex-direction: column;
   justify-content: center;
 }
-
 .cards {
   width: 45%;
   margin: 0 auto;
   height: 15vmax;
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-margin-top: 53%;
-
+  margin-top: 53%;
 }
-
 .card-image {
   border-radius: 50%;
   object-fit: cover;
@@ -189,24 +127,17 @@ margin-top: 53%;
   width: 150px;
   margin: 0 auto;
 }
-
 .q-mx-md {
   margin-left: 1em;
   margin-right: 1em;
 }
-
-.text-white {
-  color: white;
-}
-
 .q-mb-none {
   margin-bottom: 0;
 }
-
 .q-mt-xs {
   margin-top: 0.5em;
 }
-.pagina{
+.pagina {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   justify-content: space-between;
@@ -214,11 +145,8 @@ margin-top: 53%;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
-
-.texto{
+.texto {
   display: flex;
-  justify-content:space-around;
+  justify-content: space-around;
 }
-
 </style>
-
