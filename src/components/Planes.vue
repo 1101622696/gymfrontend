@@ -20,23 +20,75 @@ valor.value=""
 }
 
 
-async function guardar(){
+// async function guardar(){
 
-agregar.value = false;
-if (await validar()){
-  const todo={
-    descripcion:descripcion.value,
-    dias:dias.value,
-    valor:valor.value
+// agregar.value = false;
+// if (await validar()){
+//   const todo={
+//     descripcion:descripcion.value,
+//     dias:dias.value,
+//     valor:valor.value
+//     }
+// let nombrez= await usePlan.postPlan(todo)
+// if(nombrez.status!=200){
+//   mostrarMensajeError("no se pudo enviar")
+// }else{
+//   mostrarMensajeExito("muy bien")
+//   listarPlanes();
+// }
+// }
+// }
+function guardarUltimoPlan(id) {
+  localStorage.setItem('ultimoPlan', id);
+}
+
+function obtenerUltimoPlan() {
+  return localStorage.getItem('ultimoPlan');
+}
+async function guardar() {
+  agregar.value = false;
+
+  if (await validar()) {
+    const todo = {
+      descripcion: descripcion.value,
+      dias: dias.value,
+      valor: valor.value,
+    };
+
+    try {
+      let response = await usePlan.postPlan(todo);
+      console.log('Respuesta del servidor:', response);
+
+      if (response.status === 200) {
+        const nuevoPlan = {
+          _id: response.data.plan._id, // Asumiendo que el backend devuelve un _id
+          descripcion: response.data.plan.descripcion,
+          dias: response.data.plan.dias,
+          valor: response.data.plan.valor,
+          // ... otros campos que puedas necesitar
+        };
+
+        console.log('Nuevo plan agregado:', nuevoPlan);
+
+        // Guardar el ID del nuevo plan en localStorage
+        guardarUltimoPlan(nuevoPlan._id);
+
+        // Añadir el nuevo registro al principio del array
+        rows.value.unshift(nuevoPlan);
+
+        console.log('Planes actualizados:', rows.value);
+
+        mostrarMensajeExito("Plan agregado exitosamente");
+        listarPlanes(); // Actualizar la lista de planes
+      } else {
+        console.error('Respuesta inesperada del servidor:', response);
+        mostrarMensajeError("No se pudo agregar el plan");
+      }
+    } catch (error) {
+      console.error("Error al guardar el plan:", error);
+      mostrarMensajeError("Ocurrió un error al guardar el plan");
     }
-let nombrez= await usePlan.postPlan(todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarPlanes();
-}
-}
+  }
 }
 
 function editar(info) {
@@ -163,12 +215,35 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
-async function listarPlanes(){
-    const res = await usePlan.listarPlan()
-    console.log(res.data);
-    rows.value=res.data.plan
-}
+// async function listarPlanes(){
+//     const res = await usePlan.listarPlan()
+//     console.log(res.data);
+//     rows.value=res.data.plan
+// }
       
+async function listarPlanes() {
+  try {
+    const res = await usePlan.listarPlan();
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.plan) {
+      const ultimoPlanId = obtenerUltimoPlan();
+
+      // Ordenar los planes por el plan más reciente primero
+      rows.value = res.data.plan.sort((a, b) => {
+        if (a._id === ultimoPlanId) return -1;
+        if (b._id === ultimoPlanId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra el último plan
+      });
+
+      console.log("Planes ordenados:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar planes:", error);
+  }
+}
 
 async function listaractivados() {
   try {
@@ -201,11 +276,20 @@ async function listardesactivados() {
       }
     };
 
+function formatCurrency(value) {
+  return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+      
+      function formatCurrencyInput(value) {
+  value = value.replace(/\D/g, ''); // Remove all non-digit characters
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add dots
+}
 
 </script>
 
 <template>
     <div class="container">
+      <button class="button" @click="agregarPlan()">Agregar Plan</button>
 
       <div class="tablaselect">
       <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
@@ -215,7 +299,12 @@ async function listardesactivados() {
       </select>
   
       <q-table class="table" flat bordered title="Planes" :rows="rows" :columns="columns" row-key="id">
-         <template v-slot:body-cell-opciones="props">
+         <template v-slot:body-cell-valor="props">
+        <q-td :props="props">
+          <p>{{ formatCurrency(props.row.valor) }}</p>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
@@ -245,7 +334,6 @@ async function listardesactivados() {
       </q-table>
     </div>
   <div>
-      <button class="button" @click="agregarPlan()">Agregar Plan</button>
   
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
@@ -255,7 +343,7 @@ async function listardesactivados() {
     <div class="inputs">
         <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" @input="valor = formatCurrencyInput($event.target.value)" />
         <input class="input" type="text" placeholder="Dias" v-model.trim="dias" />
     </div>
     
@@ -285,9 +373,8 @@ async function listardesactivados() {
   margin-bottom: 20px;
 }
 
-/* Estilos para los botones */
 .button {
-  background-color: #070707; /* Color verde */
+  background-color: #45a049; 
   border: none;
   color: white;
   padding: 10px 20px;
@@ -298,7 +385,14 @@ async function listardesactivados() {
   margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 5px 4px 8px black;
   border-radius: 8px;
+}
+
+.button:hover {
+  background-color: #69bb6d; 
+  box-shadow: 3px 2px 10px black;
 }
 
 .buttonX {
@@ -317,12 +411,6 @@ async function listardesactivados() {
   color: #000000; 
 }
 
-
-
-
-.button:hover {
-  background-color: #45a049; 
-}
 
 /* Estilos para los inputs */
 .input {
@@ -378,6 +466,10 @@ async function listardesactivados() {
 width: 50vmax;
 margin-left: auto;
   margin-right: auto;
+      position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
 
 .encabezadoCrear{

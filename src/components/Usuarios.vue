@@ -27,26 +27,77 @@ rol.value=""
 }
 
 
-async function guardar(){
+// async function guardar(){
 
-alert.value = false;
-if (await validar()){
-  const todo={
-    idSede:idSede.value.valor,
-    nombre:nombre.value,
-    email:email.value,
-    telefono:telefono.value,
-    password:password.value,
-    rol:rol.value
+// alert.value = false;
+// if (await validar()){
+//   const todo={
+//     idSede:idSede.value.valor,
+//     nombre:nombre.value,
+//     email:email.value,
+//     telefono:telefono.value,
+//     password:password.value,
+//     rol:rol.value
+//     }
+// let nombrez= await useUsuarios.postUsuario(todo)
+// if(nombrez.status!=200){
+//   mostrarMensajeError("no se pudo enviar")
+// }else{
+//   mostrarMensajeExito("muy bien")
+//   listarUsuarios(), listarSedes();
+// }
+// }
+// }
+function guardarUltimoUsuario(id) {
+  localStorage.setItem('ultimoUsuario', id);
+}
+
+function obtenerUltimoUsuario() {
+  return localStorage.getItem('ultimoUsuario');
+}
+async function guardar() {
+  alert.value = false;
+
+  if (await validar()) {
+    const todo = {
+      idSede: idSede.value.valor,
+      nombre: nombre.value,
+      email: email.value,
+      telefono: telefono.value,
+      password: password.value,
+      rol: rol.value
+    };
+
+    try {
+      let nombrez = await useUsuarios.postUsuario(todo);
+
+      if (nombrez.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        const nuevoUsuario = {
+          _id: nombrez.data.usuario._id, // Asumiendo que el backend devuelve un _id
+          idSede: nombrez.data.usuario.idSede,
+          nombre: nombrez.data.usuario.nombre,
+          email: nombrez.data.usuario.email,
+          telefono: nombrez.data.usuario.telefono,
+          rol: nombrez.data.usuario.rol,
+          // ... otros campos que puedas necesitar
+        };
+
+        // Guardar el ID del nuevo usuario en localStorage
+        guardarUltimoUsuario(nuevoUsuario._id);
+
+        // Añadir el nuevo usuario al principio del array
+        rows.value.unshift(nuevoUsuario);
+
+        mostrarMensajeExito("Usuario agregado exitosamente");
+        listarUsuarios();
+        listarSedes();
+      }
+    } catch (error) {
+      mostrarMensajeError("Error al enviar la solicitud: " + error.message);
     }
-let nombrez= await useUsuarios.postUsuario(todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarUsuarios(), listarSedes();
-}
-}
+  }
 }
 
 function editar(info) {
@@ -190,15 +241,41 @@ alert.value = false;
       ];
 
 
+// async function listarUsuarios() {
+//   try {
+//     const res = await useUsuarios.listarUsuario();
+//     rows.value = res.data.usuario.map(usuario => {
+//       return {
+//         ...usuario,
+//         sede: usuario.id, 
+//       };
+//     });
+//   } catch (error) {
+//     console.error("Error al listar usuarios:", error);
+//   }
+// }
 async function listarUsuarios() {
   try {
     const res = await useUsuarios.listarUsuario();
-    rows.value = res.data.usuario.map(usuario => {
-      return {
+    const ultimoUsuarioId = obtenerUltimoUsuario();
+
+    if (res && res.data && res.data.usuario) {
+      rows.value = res.data.usuario.map(usuario => ({
         ...usuario,
         sede: usuario.id, 
-      };
-    });
+      }));
+
+      // Ordenar los usuarios poniendo el último usuario agregado primero
+      rows.value.sort((a, b) => {
+        if (a._id === ultimoUsuarioId) return -1;
+        if (b._id === ultimoUsuarioId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra el último usuario
+      });
+
+      console.log("Usuarios ordenados:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
   } catch (error) {
     console.error("Error al listar usuarios:", error);
   }
@@ -307,8 +384,12 @@ async function listardesactivados() {
 
 
 <template>
-
+<div> 
+<div style="margin-left: 5%; text-align: end; margin-right: 5%">
+            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
+        </div>
 <div class="tablaselect">
+
   <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
     <option value="Todos">Todos</option>
     <option value="Activos">Activos</option>
@@ -351,9 +432,7 @@ async function listardesactivados() {
     </q-table>
     </div>
       
-<div style="margin-left: 5%; text-align: end; margin-right: 5%">
-            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
-        </div>
+
         <div style="margin-left: 5%; text-align: end; margin-right: 5%">
 <!-- <q-select standout v-model="listar" :options="opcioneslistar" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px" -->
       <!-- /> -->
@@ -412,6 +491,7 @@ async function listardesactivados() {
     </div>
 
 
+    </div>
     </div>
 </template>
 

@@ -31,9 +31,51 @@ function llamaragregarCliente() {
 }
 
 
-async function guardar() {
+// async function guardar() {
 
-agregar.value = false;
+// agregar.value = false;
+//   if (await validar()) {
+//     const todo = {
+//       nombre: nombre.value,
+//       documento: documento.value,
+//       direccion: direccion.value,
+//       fechaNacimiento: fechaNacimiento.value,
+//       telefono: telefono.value,
+//       observaciones: observaciones.value,
+//       idPlan: idPlan.value.valor,
+//       foto: foto.value,
+//       // seguimientos:seguimientos.value,
+//     };
+// // console.log(seguimientos.value);
+// // console.log('este son seguimientos arriba');
+// console.log(nombre.value);
+// console.log(direccion.value);
+// console.log(fechaNacimiento.value);
+// console.log(telefono.value);
+// console.log(idPlan.value);
+//     let nombrez = await useCliente.postCliente(todo);
+
+//     if (nombrez.status === 200) {
+//       mostrarMensajeExito("Cliente agregado exitosamente");
+//       listarClientes();
+//       listarPlanes();
+//     } else {
+//       mostrarMensajeError("No se pudo agregar el cliente");
+//     }
+//   }
+// }
+
+function guardarClienteReciente(id) {
+  localStorage.setItem('clienteReciente', id);
+}
+
+function obtenerClienteReciente() {
+  return localStorage.getItem('clienteReciente');
+}
+
+// Función guardar modificada
+async function guardar() {
+  agregar.value = false;
   if (await validar()) {
     const todo = {
       nombre: nombre.value,
@@ -44,26 +86,48 @@ agregar.value = false;
       observaciones: observaciones.value,
       idPlan: idPlan.value.valor,
       foto: foto.value,
-      // seguimientos:seguimientos.value,
     };
-// console.log(seguimientos.value);
-// console.log('este son seguimientos arriba');
-console.log(nombre.value);
-console.log(direccion.value);
-console.log(fechaNacimiento.value);
-console.log(telefono.value);
-console.log(idPlan.value);
-    let nombrez = await useCliente.postCliente(todo);
 
-    if (nombrez.status === 200) {
-      mostrarMensajeExito("Cliente agregado exitosamente");
-      listarClientes();
-      listarPlanes();
-    } else {
-      mostrarMensajeError("No se pudo agregar el cliente");
+    console.log(nombre.value);
+    console.log(direccion.value);
+    console.log(fechaNacimiento.value);
+    console.log(telefono.value);
+    console.log(idPlan.value);
+
+    try {
+      let response = await useCliente.postCliente(todo);
+      console.log('Respuesta del servidor:', response);
+
+      if (response.status === 200 && response.data && response.data.cliente) {
+        const nuevoCliente = response.data.cliente;
+
+        console.log('Nuevo cliente a añadir:', nuevoCliente);
+
+        // Guardar el ID del nuevo cliente en localStorage
+        guardarClienteReciente(nuevoCliente._id);
+
+        // Añadir el nuevo registro al principio del array
+        rows.value.unshift(nuevoCliente);
+
+        console.log('Filas actualizadas:', rows.value);
+
+        mostrarMensajeExito("Cliente agregado exitosamente");
+        
+        // Actualizar listas relacionadas
+        await listarClientes();
+        await listarPlanes();
+      } else {
+        console.error('Respuesta inesperada del servidor:', response);
+        mostrarMensajeError("No se pudo agregar el cliente");
+      }
+    } catch (error) {
+      console.error("Error al guardar el cliente:", error);
+      mostrarMensajeError("Ocurrió un error al guardar el cliente");
     }
   }
 }
+
+
 function editar(info){
     agregar.value = true;
     botoneditar.value = false;
@@ -257,13 +321,41 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
+// async function listarClientes() {
+//   try {
+//     const res = await useCliente.listarCliente();
+//     rows.value = res.data.cliente.map(cliente => ({
+//       ...cliente,
+//       idPlan: cliente.idPlan, 
+//     }));
+//   } catch (error) {
+//     console.error("Error al listar clientes:", error);
+//   }
+// }
+
+
 async function listarClientes() {
   try {
     const res = await useCliente.listarCliente();
-    rows.value = res.data.cliente.map(cliente => ({
-      ...cliente,
-      idPlan: cliente.idPlan, 
-    }));
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.cliente) {
+      const clienteRecienteId = obtenerClienteReciente();
+      
+      // Ordenar los clientes
+      rows.value = res.data.cliente.map(cliente => ({
+        ...cliente,
+        idPlan: cliente.idPlan,
+      })).sort((a, b) => {
+        if (a._id === clienteRecienteId) return -1;
+        if (b._id === clienteRecienteId) return 1;
+        return new Date(b.fechaNacimiento) - new Date(a.fechaNacimiento);
+      });
+
+      console.log("Filas ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
   } catch (error) {
     console.error("Error al listar clientes:", error);
   }
@@ -574,7 +666,9 @@ const seguimientoColumns = ref([
 
   <div class="container">
 
-  
+<div> 
+    <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
+  </div>
 
     <div class="tablaselect">
 
@@ -683,40 +777,6 @@ const seguimientoColumns = ref([
       </template>
     </q-table>
 
-    <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
-
-    <!-- <q-dialog v-model="seguimientoModalOpen" persistent>
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">{{ selectedCliente?.nombre }}</div>
-        </q-card-section>
-        <q-card-section>
-          <q-avatar size="150px">
-            <img :src="selectedCliente?.foto" />
-          </q-avatar>
-          <q-table
-            flat
-            bordered
-            :rows="selectedCliente?.seguimiento || []"
-            :columns="seguimientoColumns"
-            row-key="fecha"
-          >
-            <template v-slot:body-cell-fecha="props">
-              <q-td :props="props">
-                {{ formatDate(props.row.fecha) }}
-              </q-td>
-            </template>
-          </q-table>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" v-close-popup />
-          <div class="agregarseguimiento">
-            <q-btn class="agregaedita" @click="toggleSegui">✏️</q-btn>
-          </div>
-        </q-card-actions>
-      </q-card>
-    </q-dialog> -->
-
 <q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
         <q-card-section>
@@ -803,7 +863,11 @@ const seguimientoColumns = ref([
         <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
         <!-- <input class="input" type="textarea" placeholder="Observaciones" v-model.trim="observaciones" /> -->
             <textarea class="input textarea" placeholder="Observaciones" v-model.trim="observaciones"></textarea>
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
+        <!-- <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" /> -->
+                <div class="input-container">
+          <label for="fechaNacimiento">Fecha de Nacimiento</label>
+          <input class="fechaNacimiento" type="date" v-model.trim="fechaNacimiento" />
+        </div>
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
         <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan" style="background-color: #grey; margin-bottom: 20px" />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
@@ -832,6 +896,7 @@ const seguimientoColumns = ref([
   min-height: 100vh;
   width: 99.1vw;
 background-color: rgb(185, 185, 185);
+
 }
 
 
@@ -883,20 +948,7 @@ background-color: rgb(185, 185, 185);
 }
 /**/
 /* Estilos para los botones */
-.button {
-  background-color: #070707; /* Color verde */
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-  border-radius: 8px;
-}
+
 
 .buttonX {
   background-color: #ffffff00; 
@@ -915,10 +967,26 @@ background-color: rgb(185, 185, 185);
 }
 
 
-
+.button {
+  background-color: #45a049; 
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 5px 4px 8px black;
+  border-radius: 8px;
+}
 
 .button:hover {
-  background-color: #45a049; 
+  background-color: #77c57b; 
+  box-shadow: 3px 2px 10px black;
 }
 
 /* Estilos para los inputs */
@@ -973,8 +1041,15 @@ background-color: rgb(185, 185, 185);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 width: 50vmax;
+height: 90vh;
+overflow: scroll;
+border-color: green;
 margin-left: auto;
-  margin-right: auto;
+margin-right: auto;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
 }
 
 .encabezadoCrear{

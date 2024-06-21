@@ -25,24 +25,71 @@ cantidad.value=""
 }
 
 
-async function guardar(){
+// async function guardar(){
 
-agregar.value = false;
-if (await validar()){
-  const todo={
-    idInventario:idInventario.value.valor,
-    valorUnitario:valorUnitario.value,
-    cantidad:cantidad.value
+// agregar.value = false;
+// if (await validar()){
+//   const todo={
+//     idInventario:idInventario.value.valor,
+//     valorUnitario:valorUnitario.value,
+//     cantidad:cantidad.value
+//     }
+// let nombrez= await useSales.postVenta(todo)
+// if(nombrez.status!=200){
+//   mostrarMensajeError("no se pudo enviar")
+// }else{
+//   mostrarMensajeExito("muy bien")
+//   listarVentas(), listarInventarios();
+// }
+// }
+// }
+function guardarUltimaVenta(id) {
+  localStorage.setItem('ultimaVenta', id);
+}
+
+function obtenerUltimaVenta() {
+  return localStorage.getItem('ultimaVenta');
+}
+async function guardar() {
+  agregar.value = false;
+
+  if (await validar()) {
+    const todo = {
+      idInventario: idInventario.value.valor,
+      valorUnitario: valorUnitario.value,
+      cantidad: cantidad.value
+    };
+
+    try {
+      let nombrez = await useSales.postVenta(todo);
+
+      if (nombrez.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        const nuevaVenta = {
+          _id: nombrez.data.venta._id, // Asumiendo que el backend devuelve un _id
+          idInventario: nombrez.data.venta.idInventario,
+          valorUnitario: nombrez.data.venta.valorUnitario,
+          cantidad: nombrez.data.venta.cantidad,
+          // ... otros campos que puedas necesitar
+        };
+
+        // Guardar el ID de la nueva venta en localStorage
+        guardarUltimaVenta(nuevaVenta._id);
+
+        // Añadir la nueva venta al principio del array
+        rows.value.unshift(nuevaVenta);
+
+        mostrarMensajeExito("Venta agregada exitosamente");
+        listarVentas();
+        listarInventarios();
+      }
+    } catch (error) {
+      mostrarMensajeError("Error al enviar la solicitud: " + error.message);
     }
-let nombrez= await useSales.postVenta(todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarVentas(), listarInventarios();
+  }
 }
-}
-}
+
 
 function editar(info) {
   agregar.value = true;
@@ -111,7 +158,6 @@ let columns =ref([
     {name:"cantidad", label:"Cantidad a vender", field:"cantidad", align:"center"},
     {name:"total", label:"Total de la venta", field:"total", align:"center"},
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
-
 ])
 
 async function validar() {
@@ -162,11 +208,36 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
-async function listarVentas(){
-    const res = await useSales.listarVenta()
-    console.log(res.data);
-    rows.value=res.data.venta
+// async function listarVentas(){
+//     const res = await useSales.listarVenta()
+//     console.log(res.data);
+//     rows.value=res.data.venta
+// }
+
+async function listarVentas() {
+  try {
+    const res = await useSales.listarVenta();
+    const ultimaVentaId = obtenerUltimaVenta();
+
+    if (res && res.data && res.data.venta) {
+      rows.value = res.data.venta;
+
+      // Ordenar las ventas poniendo la última venta agregada primero
+      rows.value.sort((a, b) => {
+        if (a._id === ultimaVentaId) return -1;
+        if (b._id === ultimaVentaId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra la última venta
+      });
+
+      console.log("Ventas ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar ventas:", error);
+  }
 }
+
 
 const organizarInventario = computed(() => {
     nombreCodigo.value = inventarioTodo.value.map((element) => ({
@@ -196,12 +267,20 @@ function getInventarioDescripcion(id) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateStr).toLocaleDateString(undefined, options);
     }
-
+function formatCurrency(value) {
+  return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
       
+      function formatCurrencyInput(value) {
+  value = value.replace(/\D/g, ''); // Remove all non-digit characters
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add dots
+}
+
 </script>
 
 <template>
     <div class="container">
+      <button class="button" @click="agregarventa()">Agregar Venta</button>
   
       <q-table class="table" flat bordered title="Ventas" :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idInventario="props">
@@ -214,6 +293,16 @@ function getInventarioDescripcion(id) {
         <p>{{ formatDate(props.row.fecha) }}</p>
       </q-td>
     </template>
+      <template v-slot:body-cell-valorUnitario="props">
+        <q-td :props="props">
+          <p>{{ formatCurrency(props.row.valorUnitario) }}</p>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-total="props">
+        <q-td :props="props">
+          <p>{{ formatCurrency(props.row.total) }}</p>
+        </q-td>
+      </template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -225,7 +314,6 @@ function getInventarioDescripcion(id) {
         </template>
       </q-table>
   
-      <button class="button" @click="agregarventa()">Agregar Venta</button>
   
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
@@ -235,9 +323,7 @@ function getInventarioDescripcion(id) {
     <div class="inputs">
  <q-select standout v-model="idInventario" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
       />
-        <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
-        <!-- <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" /> -->
-        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario" />
+        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario" @input="valorUnitario = formatCurrencyInput($event.target.value)" />
         <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
@@ -266,9 +352,8 @@ function getInventarioDescripcion(id) {
   margin-bottom: 20px;
 }
 
-/* Estilos para los botones */
 .button {
-  background-color: #070707; /* Color verde */
+  background-color: #45a049; 
   border: none;
   color: white;
   padding: 10px 20px;
@@ -279,9 +364,15 @@ function getInventarioDescripcion(id) {
   margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 5px 4px 8px black;
   border-radius: 8px;
 }
 
+.button:hover {
+  background-color: #77c57b; 
+  box-shadow: 3px 2px 10px black;
+}
 .buttonX {
   background-color: #ffffff00; 
   border: 0 solid #cccccc00; 
@@ -296,13 +387,6 @@ function getInventarioDescripcion(id) {
     font-size: 25px; 
   transform: scale(1.2);
   color: #000000; 
-}
-
-
-
-
-.button:hover {
-  background-color: #45a049; 
 }
 
 /* Estilos para los inputs */
@@ -333,7 +417,7 @@ function getInventarioDescripcion(id) {
 
 /* Estilos para las opciones de la tabla */
 .option-button {
-  background-color: #008CBA; /* Color azul */
+  background-color: #008CBA;
   border: none;
   color: white;
   padding: 5px 10px;
@@ -359,6 +443,10 @@ function getInventarioDescripcion(id) {
 width: 50vmax;
 margin-left: auto;
   margin-right: auto;
+    position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
 
 .encabezadoCrear{
@@ -402,5 +490,6 @@ margin-left: auto;
 .crearcliente input[type="submit"]:hover {
   background-color: #45a049;
 }
+
 
 </style>

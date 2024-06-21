@@ -24,24 +24,79 @@ function agregarpago(){
 }
 
 
-async function guardar(){
+// async function guardar(){
 
-agregar.value = false;
-if (await validar()){
-  const todo={
+// agregar.value = false;
+// if (await validar()){
+//   const todo={
+//       idPlan: idPlan.value.valor,
+//       idCliente: idCliente.value.valor,
+//     }
+// let nombrez= await usePagos.postPago(todo)
+// if(nombrez.status!=200){
+//   mostrarMensajeError("no se pudo enviar")
+// }else{
+//   mostrarMensajeExito("Pago agregado exitosamente")
+//       listarPlanes(),
+//   listarPagos(), listarClientes()
+// }
+// }
+// }
+
+function guardarUltimoPago(id) {
+  localStorage.setItem('ultimoPago', id);
+}
+
+function obtenerUltimoPago() {
+  return localStorage.getItem('ultimoPago');
+}
+
+async function guardar() {
+  agregar.value = false;
+
+  if (await validar()) {
+    const todo = {
       idPlan: idPlan.value.valor,
       idCliente: idCliente.value.valor,
+    };
+
+    try {
+      let response = await usePagos.postPago(todo);
+      console.log('Respuesta del servidor:', response);
+
+      if (response.status === 200) {
+        const nuevoPago = {
+          _id: response.data.pago._id, // Asumiendo que el backend devuelve un _id
+          idPlan: response.data.pago.idPlan,
+          idCliente: response.data.pago.idCliente,
+          // ... otros campos que puedas necesitar
+        };
+
+        console.log('Nuevo pago agregado:', nuevoPago);
+
+        // Guardar el ID del nuevo pago en localStorage
+        guardarUltimoPago(nuevoPago._id);
+
+        // Añadir el nuevo registro al principio del array
+        rows.value.unshift(nuevoPago);
+
+        console.log('Pagos actualizados:', rows.value);
+
+        mostrarMensajeExito("Pago agregado exitosamente");
+        listarPlanes(); // Actualizar la lista de planes
+        listarPagos(); // Actualizar la lista de pagos
+        listarClientes(); // Actualizar la lista de clientes
+      } else {
+        console.error('Respuesta inesperada del servidor:', response);
+        mostrarMensajeError("No se pudo agregar el pago");
+      }
+    } catch (error) {
+      console.error("Error al guardar el pago:", error);
+      mostrarMensajeError("Ocurrió un error al guardar el pago");
     }
-let nombrez= await usePagos.postPago(todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("Pago agregado exitosamente")
-      listarPlanes(),
-  listarPagos(), listarClientes()
+  }
 }
-}
-}
+
 
 function editar(info) {
   agregar.value = true;
@@ -151,13 +206,36 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
+// async function listarPagos() {
+//     try {
+//     const res = await usePagos.listarPago()
+//  console.log("Pagos:", res.data);
+//     rows.value = res.data.pago;
+//   } catch (error) {
+//     console.error("Error al listar Pagos:", error);
+//   }
+// }
 async function listarPagos() {
-    try {
-    const res = await usePagos.listarPago()
- console.log("Pagos:", res.data);
-    rows.value = res.data.pago;
+  try {
+    const res = await usePagos.listarPago();
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.pago) {
+      const ultimoPagoId = obtenerUltimoPago();
+
+      // Ordenar los pagos por el pago más reciente primero
+      rows.value = res.data.pago.sort((a, b) => {
+        if (a._id === ultimoPagoId) return -1;
+        if (b._id === ultimoPagoId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra el último pago
+      });
+
+      console.log("Pagos ordenados:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
   } catch (error) {
-    console.error("Error al listar Pagos:", error);
+    console.error("Error al listar pagos:", error);
   }
 }
 
@@ -220,11 +298,14 @@ async function listarPlanes() {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateStr).toLocaleDateString(undefined, options);
     }
-
+function formatCurrency(value) {
+  return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
 </script>
 
 <template>
     <div class="container">
+      <button class="button" @click="agregarpago()">Agregar Pago</button>
   
       <q-table class="table" flat bordered title="Pagos" :rows="rows" :columns="columns" row-key="id">
               <template v-slot:body-cell-idPlan="props">
@@ -242,6 +323,11 @@ async function listarPlanes() {
         <p>{{ formatDate(props.row.fecha) }}</p>
       </q-td>
     </template>
+          <template v-slot:body-cell-valor="props">
+        <q-td :props="props">
+          <p>{{ formatCurrency(props.row.valor) }}</p>
+        </q-td>
+      </template>
            <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -265,7 +351,6 @@ async function listarPlanes() {
         </template>
       </q-table>
     
-      <button class="button" @click="agregarpago()">Agregar Pago</button>
   
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
@@ -311,9 +396,8 @@ async function listarPlanes() {
   margin-bottom: 20px;
 }
 
-/* Estilos para los botones */
 .button {
-  background-color: #070707; /* Color verde */
+  background-color: #45a049; 
   border: none;
   color: white;
   padding: 10px 20px;
@@ -324,9 +408,15 @@ async function listarPlanes() {
   margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 5px 4px 8px black;
   border-radius: 8px;
 }
 
+.button:hover {
+  background-color: #69bb6d; 
+  box-shadow: 3px 2px 10px black;
+}
 .buttonX {
   background-color: #ffffff00; 
   border: 0 solid #cccccc00; 
@@ -343,12 +433,6 @@ async function listarPlanes() {
   color: #000000; 
 }
 
-
-
-
-.button:hover {
-  background-color: #45a049; 
-}
 
 /* Estilos para los inputs */
 .input {
@@ -404,6 +488,10 @@ async function listarPlanes() {
 width: 50vmax;
 margin-left: auto;
   margin-right: auto;
+      position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
 
 .encabezadoCrear{

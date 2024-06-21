@@ -19,39 +19,100 @@ idCliente.value=""
 }
 
 
+// async function guardar() {
+//   alert.value = false;
+
+//       if (await validar()) {
+//         const todo = {
+//           idSede: idSede.value.valor,
+//           idCliente: idCliente.value.valor,
+//       };
+//       console.log(`${idCliente.value.valor} es el id de cliente`);
+//       console.log(`${idSede.value.valor} es el id de sede`);
+//       console.log(`${nombreCodigoC.value} es el  de cliente`);
+//       console.log(`${nombreCodigoS.value} es el  de sede`);
+
+
+
+//         let nombrez = await useIngreso.postIngresos(todo);
+//         if (nombrez.status !== 200) {
+//           mostrarMensajeError("No se pudo enviar");
+//         } else {
+//           mostrarMensajeExito("Muy bien");
+//           listarIngresos();
+//           listarClientes();
+//           listarSedes();
+//         }
+//       }
+      
+//     }
+
+function guardarIngresoReciente(id) {
+  localStorage.setItem('ingresoReciente', id);
+}
+
+function obtenerIngresoReciente() {
+  return localStorage.getItem('ingresoReciente');
+}
+
 async function guardar() {
   alert.value = false;
 
-      if (await validar()) {
-        const todo = {
-          idSede: idSede.value.valor,
-          idCliente: idCliente.value.valor,
-      };
-      console.log(`${idCliente.value.valor} es el id de cliente`);
-      console.log(`${idSede.value.valor} es el id de sede`);
-      console.log(`${nombreCodigoC.value} es el  de cliente`);
-      console.log(`${nombreCodigoS.value} es el  de sede`);
+  if (await validar()) {
+    const todo = {
+      idSede: idSede.value.valor,
+      idCliente: idCliente.value.valor,
+    };
 
+    console.log(`${idCliente.value.valor} es el id de cliente`);
+    console.log(`${idSede.value.valor} es el id de sede`);
 
+    try {
+      let response = await useIngreso.postIngresos(todo);
+      console.log('Respuesta del servidor:', response);
 
-        let nombrez = await useIngreso.postIngresos(todo);
-        if (nombrez.status !== 200) {
-          mostrarMensajeError("No se pudo enviar");
-        } else {
-          mostrarMensajeExito("Muy bien");
-          listarIngresos();
-          listarClientes();
-          listarSedes();
-        }
+      if (response.status === 200 && response.data && response.data.ingreso) {
+        const nuevoIngreso = {
+          _id: response.data.ingreso._id,
+          idSede: response.data.ingreso.idSede,
+          idCliente: response.data.ingreso.idCliente,
+          fecha: response.data.ingreso.fecha,
+        };
+
+        console.log('Nuevo ingreso a añadir:', nuevoIngreso);
+
+        // Guardar el ID del nuevo ingreso en localStorage
+        guardarIngresoReciente(nuevoIngreso._id);
+
+        // Añadir el nuevo registro al principio del array
+        rows.value.unshift(nuevoIngreso);
+
+        console.log('Filas actualizadas:', rows.value);
+
+        mostrarMensajeExito("Ingreso agregado correctamente");
+        cerrar();
+
+        // Actualizar listas relacionadas
+        await listarClientes();
+        await listarSedes();
+      } else {
+        console.error('Respuesta inesperada del servidor:', response);
+        mostrarMensajeError("No se pudo enviar");
       }
+    } catch (error) {
+      console.error("Error al guardar el ingreso:", error);
+      mostrarMensajeError("Ocurrió un error al guardar el ingreso");
     }
+  }
+}
+
 
     function editar(info) {
           alert.value = true;
-    accion.value !=1;
+    accion.value =2;
       informacion.value = info;
-      idSede.value.valor = informacion.value;
-      idCliente.value.valor = informacion.value;
+      idSede.value.valor = info.idSede;
+      idCliente.value.valor = info.idCliente;
     }
 
     async function editaringreso() {
@@ -60,14 +121,19 @@ async function guardar() {
           idSede: idSede.value.valor,
           idCliente: idCliente.value.valor,
         };
-        let nombrez = await useIngreso.putIngresos(informacion.value._id, todo);
-        if (nombrez.status !== 200) {
+         try {
+      const response= await useIngreso.putIngresos(informacion.value._id, todo);
+        if (response.status !== 200) {
           mostrarMensajeError("No se pudo enviar");
         } else {
           mostrarMensajeExito("Muy bien");
           listarIngresos();
         }
-      }
+      }catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      mostrarMensajeError("No se pudo enviar");
+    }
+    }
     }
 let informacion=ref("")
 
@@ -93,10 +159,6 @@ let columns =ref([
 async function validar() {
     let verificado = true;
 
-    // if (fecha.value === "") {
-    //     mostrarMensajeError("ingrese una fecha");
-    //     verificado = false;
-    // }
     if (idSede.value === "") {
         mostrarMensajeError("seleccione una sede");
         verificado = false;
@@ -141,6 +203,8 @@ function cerrar() {
   listarIngresos(), listarClientes(), listarSedes();
 })
 
+
+
 import { useStoreSedes } from "../store/sedes.js";
 const useSedes = useStoreSedes();
 
@@ -148,18 +212,34 @@ const useSedes = useStoreSedes();
 import { useStoreClientes } from "../store/clientes.js";
 const useCliente = useStoreClientes();
 
+
 async function listarIngresos() {
   try {
     const res = await useIngreso.listarIngreso();
-    console.log("Ingresos:", res.data);
-    rows.value = res.data.ingreso;
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.ingreso) {
+      const ingresoRecienteId = obtenerIngresoReciente();
+      
+      // Ordenar los ingresos
+      rows.value = res.data.ingreso.sort((a, b) => {
+        if (a._id === ingresoRecienteId) return -1;
+        if (b._id === ingresoRecienteId) return 1;
+        return new Date(b.fecha) - new Date(a.fecha);
+      });
+
+      console.log("Filas ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
   } catch (error) {
     console.error("Error al listar ingresos:", error);
   }
 }
+
 const organizarClientes = computed(() => {
     nombreCodigoC.value = clientesTodo.value.map((element) => ({
-        label: `${element.nombre}`,
+        label: `${element.nombre} - ${element.documento}`,
         valor: `${element._id}`,
         nombre: `${element.nombre}`,
     }));
@@ -192,42 +272,53 @@ async function listarSedes() {
     }
 }
 
+
 function getSedeNombre(id) {
+  console.log('Buscando sede con id:', id);
+  console.log('Sedes disponibles:', sedesTodo.value);
   const sede = sedesTodo.value.find((sede) => sede._id === id);
   return sede ? sede.nombre : "Dirección no encontrada";
 }
+
 function getClienteNombre(id) {
+  console.log('Buscando cliente con id:', id);
+  console.log('Clientes disponibles:', clientesTodo.value);
   const cliente = clientesTodo.value.find((cliente) => cliente._id === id);
   return cliente ? `${cliente.documento} - ${cliente.nombre}` : "Documento no encontrado";
 }
 
-
-   const formatDate = (dateStr) => {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      return new Date(dateStr).toLocaleDateString(undefined, options);
-    };
-
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'Fecha no disponible';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return 'Fecha inválida';
+  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+  return date.toLocaleDateString(undefined, options);
+};
 
 </script>
 
 <template>
   <div>
-    <q-table class="table" flat bordered title="Ingresos" :rows="rows" :columns="columns" row-key="id">
+        <div style="margin-left: 5%; text-align: end; margin-right: 5%">
+      <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Ingreso</q-btn>
+    </div>
+    <q-table class="table" flat bordered title="Ingresos" :rows="rows" :columns="columns" row-key="_id">
+
       <template v-slot:body-cell-idSede="props">
-        <q-td :props="props">
-          <p>{{ getSedeNombre(props.row.idSede) }}</p>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-idCliente="props">
-        <q-td :props="props">
-          <p>{{ getClienteNombre(props.row.idCliente) }}</p>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-fecha="props">
-        <q-td :props="props">
-          <p>{{ formatDate(props.row.fecha) }}</p>
-        </q-td>
-      </template>
+  <q-td :props="props">
+    <p>{{ props.row.idSede ? getSedeNombre(props.row.idSede) : 'Sede no especificada' }}</p>
+  </q-td>
+</template>
+<template v-slot:body-cell-idCliente="props">
+  <q-td :props="props">
+    <p>{{ props.row.idCliente ? getClienteNombre(props.row.idCliente) : 'Cliente no especificado' }}</p>
+  </q-td>
+</template>
+<template v-slot:body-cell-fecha="props">
+  <q-td :props="props">
+    <p>{{ props.row.fecha ? formatDate(props.row.fecha) : 'Fecha no disponible' }}</p>
+  </q-td>
+</template>
         <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -238,9 +329,6 @@ function getClienteNombre(id) {
         </template>
     </q-table>
 
-    <div style="margin-left: 5%; text-align: end; margin-right: 5%">
-      <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Ingreso</q-btn>
-    </div>
 
     <div>
       <q-dialog v-model="alert" persistent>

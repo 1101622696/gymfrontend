@@ -22,42 +22,98 @@ horario.value=""
 
     const loading = ref(false);
 
-    const guardar = async () => {
-alert.value = false;
+//    async function  guardar () {
+// alert.value = false;
 
-      informacion.value = '';
-      if (await validar()) {
-        const todo = {
-          nombre: nombre.value,
-          direccion: direccion.value,
-          telefono: telefono.value,
-          ciudad: ciudad.value,
-          horario: horario.value
+//       informacion.value = '';
+//       if (await validar()) {
+//         const todo = {
+//           nombre: nombre.value,
+//           direccion: direccion.value,
+//           telefono: telefono.value,
+//           ciudad: ciudad.value,
+//           horario: horario.value
+//         };
+
+//         console.log(nombre.value);
+//         console.log(direccion.value);
+//         console.log(telefono.value);
+//         console.log(ciudad.value);
+//         console.log(horario.value);
+
+//         try {
+//           loading.value = true;
+//           const response = await useSedes.postSede(todo);
+//           if (response.status === 200) {
+//             mostrarMensajeExito("Sede agregada exitosamente");
+//             listarSedes();
+//           } else {
+//             mostrarMensajeError("No se pudo agregar la Sede");
+//           }
+//         } catch (error) {
+//           mostrarMensajeError("Error al enviar la solicitud: " + error.message);
+//         } 
+//         finally {
+//           loading.value = false;
+//         }
+//       }
+//     };
+
+function guardarUltimaSede(id) {
+  localStorage.setItem('ultimaSede', id);
+}
+
+function obtenerUltimaSede() {
+  return localStorage.getItem('ultimaSede');
+}
+async function guardar() {
+  alert.value = false;
+
+  informacion.value = '';
+
+  if (await validar()) {
+    const todo = {
+      nombre: nombre.value,
+      direccion: direccion.value,
+      telefono: telefono.value,
+      ciudad: ciudad.value,
+      horario: horario.value
+    };
+
+    try {
+      loading.value = true;
+      const response = await useSedes.postSede(todo);
+
+      if (response.status === 200) {
+        const nuevaSede = {
+          _id: response.data.sede._id, // Asumiendo que el backend devuelve un _id
+          nombre: response.data.sede.nombre,
+          direccion: response.data.sede.direccion,
+          telefono: response.data.sede.telefono,
+          ciudad: response.data.sede.ciudad,
+          horario: response.data.sede.horario,
+          // ... otros campos que puedas necesitar
         };
 
-        console.log(nombre.value);
-        console.log(direccion.value);
-        console.log(telefono.value);
-        console.log(ciudad.value);
-        console.log(horario.value);
+        // Guardar el ID de la nueva sede en localStorage
+        guardarUltimaSede(nuevaSede._id);
 
-        try {
-          loading.value = true;
-          const response = await useSedes.postSede(todo);
-          if (response.status === 200) {
-            mostrarMensajeExito("Sede agregada exitosamente");
-            listarSedes();
-          } else {
-            mostrarMensajeError("No se pudo agregar la Sede");
-          }
-        } catch (error) {
-          mostrarMensajeError("Error al enviar la solicitud: " + error.message);
-        } 
-        finally {
-          loading.value = false;
-        }
+        // Añadir la nueva sede al principio del array
+        rows.value.unshift(nuevaSede);
+
+        mostrarMensajeExito("Sede agregada exitosamente");
+        listarSedes(); // Actualizar la lista de sedes
+      } else {
+        mostrarMensajeError("No se pudo agregar la Sede");
       }
-    };
+    } catch (error) {
+      mostrarMensajeError("Error al enviar la solicitud: " + error.message);
+    } finally {
+      loading.value = false;
+    }
+  }
+}
+
 
 function editar(info) {
   alert.value = true;
@@ -187,12 +243,36 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
-async function listarSedes(){
-    const res = await useSedes.listarSede()
-    console.log(res.data);
-    rows.value=res.data.sede
-}
+// async function listarSedes(){
+//     const res = await useSedes.listarSede()
+//     console.log(res.data);
+//     rows.value=res.data.sede
+// }
       
+      async function listarSedes() {
+  try {
+    const res = await useSedes.listarSede();
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.sede) {
+      const ultimaSedeId = obtenerUltimaSede();
+
+      // Ordenar las sedes poniendo la última sede agregada primero
+      rows.value = res.data.sede.sort((a, b) => {
+        if (a._id === ultimaSedeId) return -1;
+        if (b._id === ultimaSedeId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra la última sede
+      });
+
+      console.log("Sedes ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar sedes:", error);
+  }
+}
+
 
 function cerrar() {
     alert.value = false;
@@ -237,7 +317,9 @@ async function listardesactivadas() {
 
 <template>
     <div>
-
+<div style="margin-left: 5%; text-align: end; margin-right: 5%">
+            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
+        </div>
       <div class="tablaselect">
         <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
           <option value="Todos">Todos</option>
@@ -276,9 +358,7 @@ async function listardesactivadas() {
       </q-table>
     </div>
 
-<div style="margin-left: 5%; text-align: end; margin-right: 5%">
-            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
-        </div>
+
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">

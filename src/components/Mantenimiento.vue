@@ -23,25 +23,83 @@ valor.value=""
 }
 
 
-async function guardar(){
+// async function guardar(){
 
-agregar.value = false;
-if (await validar()){
-  const todo={
-    idMantenimiento:idMantenimiento.value.valor,
-    descripcion:descripcion.value,
-    responsable:responsable.value,
-    // fecha:fecha.value,
-    valor:valor.value
+// agregar.value = false;
+// if (await validar()){
+//   const todo={
+//     idMantenimiento:idMantenimiento.value.valor,
+//     descripcion:descripcion.value,
+//     responsable:responsable.value,
+//     // fecha:fecha.value,
+//     valor:valor.value
+//     }
+// let nombrez= await useMantenimiento.postMantenimiento(todo)
+// if(nombrez.status!=200){
+//   mostrarMensajeError("no se pudo enviar")
+// }else{
+//   mostrarMensajeExito("mantenimiento agregado")
+//   listarMaquina(), listarMantenimiento();
+// }
+// }
+// }
+
+
+function guardarMantenimientoReciente(id) {
+  localStorage.setItem('mantenimientoReciente', id);
+}
+
+function obtenerMantenimientoReciente() {
+  return localStorage.getItem('mantenimientoReciente');
+}
+async function guardar() {
+  agregar.value = false;
+
+  if (await validar()) {
+    const todo = {
+      idMantenimiento: idMantenimiento.value.valor,
+      descripcion: descripcion.value,
+      responsable: responsable.value,
+      // fecha: fecha.value, // Asumiendo que la fecha no se usa actualmente
+      valor: valor.value
+    };
+
+    try {
+      let response = await useMantenimiento.postMantenimiento(todo);
+      console.log('Respuesta del servidor:', response);
+
+      if (response.status === 200) {
+        const nuevoMantenimiento = {
+          _id: response.data.mantenimiento._id, // Asumiendo que el backend devuelve un _id
+          idMantenimiento: response.data.mantenimiento.idMantenimiento,
+          descripcion: response.data.mantenimiento.descripcion,
+          responsable: response.data.mantenimiento.responsable,
+          valor: response.data.mantenimiento.valor,
+          // ... otros campos que puedas necesitar
+        };
+
+        console.log('Nuevo mantenimiento añadido:', nuevoMantenimiento);
+
+        // Guardar el ID del nuevo mantenimiento en localStorage
+        guardarMantenimientoReciente(nuevoMantenimiento._id);
+
+        // Añadir el nuevo registro al principio del array
+        rows.value.unshift(nuevoMantenimiento);
+
+        console.log('Mantenimientos actualizados:', rows.value);
+
+        mostrarMensajeExito("Mantenimiento agregado correctamente");
+        listarMaquina(); // Actualizar la lista de máquinas si es necesario
+        listarMantenimiento(); // Actualizar la lista de mantenimientos
+      } else {
+        console.error('Respuesta inesperada del servidor:', response);
+        mostrarMensajeError("No se pudo agregar el mantenimiento");
+      }
+    } catch (error) {
+      console.error("Error al guardar el mantenimiento:", error);
+      mostrarMensajeError("Ocurrió un error al guardar el mantenimiento");
     }
-let nombrez= await useMantenimiento.postMantenimiento(todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("mantenimiento agregado")
-  listarMaquina(), listarMantenimiento();
-}
-}
+  }
 }
 
 function editar(info){
@@ -49,33 +107,43 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-idMantenimiento.value.valor=informacion.value
-descripcion.value.valor=informacion.value
-responsable.value.valor=informacion.value
-// fecha.value.valor=informacion.value
-valor.value.valor=informacion.value
+idMantenimiento.value.valor=info.idMantenimiento
+descripcion.value=info.descripcion
+responsable.value=info.responsable
+// fecha.value=info.fecha
+valor.value=info.valor
 }
 
 async function editarmantenimiento(){
 if (await validar()){
   const todo={
-    idMantenimiento:idMantenimiento.value,
+    idMantenimiento:idMantenimiento.value.valor,
     descripcion:descripcion.value,
     responsable:responsable.value,
     // fecha:fecha.value,
     valor:valor.value
 
     }
-let nombrez= await useMantenimiento.putMantenimiento(informacion._id, todo)
-if(nombrez.status!=200){
+if (!informacion.value || !informacion.value._id) {
+      console.error("ID de información no definido:", informacion.value);
+      mostrarMensajeError("No se pudo enviar, ID no definido");
+      return;
+    }
+
+    try {
+      const response = await useMantenimiento.putMantenimiento(informacion.value._id, todo)
+if(response.status!==200){
   mostrarMensajeError("no se pudo enviar")
 }else{
   mostrarMensajeExito("muy bien")
   listarMantenimiento();
 }
+}catch (error) {
+      console.error("Error al actualizar el mantenimiento:", error);
+      mostrarMensajeError("No se pudo enviar");
+    }
 }
 }
-
 
 function cerrar(){
     agregar.value = false;
@@ -145,11 +213,36 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
-async function listarMantenimiento(){
-    const res = await useMantenimiento.listarMantenimiento()
-    console.log(res.data);
-    rows.value=res.data.mantenimiento
+// async function listarMantenimiento(){
+//     const res = await useMantenimiento.listarMantenimiento()
+//     console.log(res.data);
+//     rows.value=res.data.mantenimiento
+// }
+
+async function listarMantenimiento() {
+  try {
+    const res = await useMantenimiento.listarMantenimiento();
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.mantenimiento) {
+      const mantenimientoRecienteId = obtenerMantenimientoReciente();
+
+      // Ordenar los mantenimientos por el mantenimiento más reciente primero
+      rows.value = res.data.mantenimiento.sort((a, b) => {
+        if (a._id === mantenimientoRecienteId) return -1;
+        if (b._id === mantenimientoRecienteId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra el mantenimiento reciente
+      });
+
+      console.log("Mantenimientos ordenados:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar mantenimientos:", error);
+  }
 }
+
 
 onMounted(()=>{
   listarMaquina(), listarMantenimiento();
@@ -186,12 +279,23 @@ function getMaquinaCodigo(id) {
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
       return new Date(dateStr).toLocaleDateString(undefined, options);
     };
+    function formatCurrency(value) {
+  return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+      
+      function formatCurrencyInput(value) {
+  value = value.replace(/\D/g, ''); // Remove all non-digit characters
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add dots
+}
+
 
 </script>
 
 <template>
     <div class="container">
   
+      <button class="button" @click="agregarmantenimiento()">Agregar Mantenimiento</button>
+
       <q-table class="table" flat bordered title="mantenimiento" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-idMantenimiento="props">
     <q-td :props="props">
@@ -203,6 +307,11 @@ function getMaquinaCodigo(id) {
         <p>{{ formatDate(props.row.fecha) }}</p>
       </q-td>
     </template>
+             <template v-slot:body-cell-valor="props">
+        <q-td :props="props">
+          <p>{{ formatCurrency(props.row.valor) }}</p>
+        </q-td>
+      </template>
                <template v-slot:body-cell-opciones="props">
           <q-td :props="props">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -213,7 +322,6 @@ function getMaquinaCodigo(id) {
         </template>
       </q-table>
     
-      <button class="button" @click="agregarmantenimiento()">Agregar Mantenimiento</button>
   
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
@@ -226,7 +334,7 @@ function getMaquinaCodigo(id) {
         <!-- <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" /> -->
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
         <input class="input" type="text" placeholder="Responsable" v-model.trim="responsable" />
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" @input="valor = formatCurrencyInput($event.target.value)" />
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
@@ -254,9 +362,8 @@ function getMaquinaCodigo(id) {
   margin-bottom: 20px;
 }
 
-/* Estilos para los botones */
 .button {
-  background-color: #070707; /* Color verde */
+  background-color: #45a049; 
   border: none;
   color: white;
   padding: 10px 20px;
@@ -267,7 +374,14 @@ function getMaquinaCodigo(id) {
   margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 5px 4px 8px black;
   border-radius: 8px;
+}
+
+.button:hover {
+  background-color: #69bb6d; 
+  box-shadow: 3px 2px 10px black;
 }
 
 .buttonX {
@@ -286,12 +400,6 @@ function getMaquinaCodigo(id) {
   color: #000000; 
 }
 
-
-
-
-.button:hover {
-  background-color: #45a049; 
-}
 
 /* Estilos para los inputs */
 .input {
@@ -347,6 +455,10 @@ function getMaquinaCodigo(id) {
 width: 50vmax;
 margin-left: auto;
   margin-right: auto;
+      position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
 
 .encabezadoCrear{
