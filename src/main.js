@@ -3,7 +3,7 @@ import {createPinia} from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import { Quasar, Notify} from 'quasar'
-import {router}from "./routes/routes.js"
+import router from "./routes/routes.js"
 // Import icon libraries
 import '@quasar/extras/material-icons/material-icons.css'
 // Import Quasar css
@@ -11,8 +11,8 @@ import 'quasar/src/css/index.sass'
 import axios from "axios";
 import Swal from 'sweetalert2';
 
-axios.defaults.baseURL = "http://localhost:4000/";
-// axios.defaults.baseURL = "localhost:4000/";
+// axios.defaults.baseURL = "http://localhost:4000/";
+axios.defaults.baseURL = "mongodb+srv://laytonlozano:3gL4gfIMkPkCZiFD@bdgimnasio.n8aill5.mongodb.net/test?retryWrites=true&w=majority&appName=BDGimnasio";
 
 
 let requestsPending = 0;
@@ -50,7 +50,7 @@ if(requestsPending == 0) {
 }
 
 if (error.response.status == 401) {
-  router.push('/')
+ router .push('/')
 }
 
 return Promise.reject(error);

@@ -207,63 +207,28 @@ export const useStoreClientes = defineStore(
       }
     };
     
-    // const putClienteSeguimiento = async (id, seguimiento) => {
-    //   try {
-    //     console.log('Objeto seguimiento:', seguimiento); // Agrega este console.log
-    
-    //     const r = await axios.put(
-    //       `/api/clientes/modificar/seguimiento/${id}`,
-    //       { seguimiento }, // Enviar el objeto de seguimiento correctamente
-    //       {
-    //         headers: {
-    //           "x-token": useUsuario.token,
-    //         },
-    //       }
-    //     );
-    //     console.log("Respuesta del servidor:", r);
-    //     clienteTodo.value = r.data.cliente;
-    //   } catch (error) {
-    //     console.error("Error al actualizar seguimiento:", error);
-    //   }
-    // };
+
     const putClienteSeguimiento = async (id, seguimientos) => {
       try {
-        console.log('Objeto seguimiento:', seguimientos); // Agrega este console.log
-        const r = await axios.put(
+        console.log('Datos a enviar:', seguimientos); // Añade este console.log para verificar la estructura de datos
+    
+        const response = await axios.put(
           `/api/clientes/modificar/seguimiento/${id}`,
-          { seguimiento: seguimientos }, // Enviar el objeto seguimientos como seguimiento
+          { seguimiento: seguimientos.seguimiento }, // Envía directamente el array de seguimiento
           {
             headers: {
               "x-token": useUsuario.token,
             },
           }
         );
-        console.log("Respuesta del servidor:", r);
-        clienteTodo.value = r.data.cliente;
+    
+        console.log("Respuesta del servidor:", response.data);
+        
+
       } catch (error) {
         console.error("Error al actualizar seguimiento:", error);
       }
-    };
-  
-
-    // const putClienteSeguimiento = async (id) => {
-    //   try {
-    //     const r = await axios.put(
-    //       `api/clientes/modificar/seguimiento/${id}`,
-    //       {},
-    //       {
-    //         headers: {
-    //           "x-token": useUsuario.token,
-    //         },
-    //       }
-    //     );
-    //     console.log(r);
-    //     clienteTodo.value = r.data.cliente;
-    //   } catch (error) {
-    //     console.error("Error al actualizar seguimiento:", error);
-    //   }
-    // };
-    
+    }
     
     
     return {

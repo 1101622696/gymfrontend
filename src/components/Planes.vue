@@ -14,7 +14,6 @@ function agregarPlan(){
   botoneditar.value=true
     agregar.value = true;
 
-// codigo.value=""
 descripcion.value=""
 dias.value=""
 valor.value=""
@@ -26,7 +25,6 @@ async function guardar(){
 agregar.value = false;
 if (await validar()){
   const todo={
-    // codigo:codigo.value,
     descripcion:descripcion.value,
     dias:dias.value,
     valor:valor.value
@@ -41,35 +39,46 @@ if(nombrez.status!=200){
 }
 }
 
-function editar(info){
-    agregar.value = true;
-    botoneditar.value = false;
+function editar(info) {
+  agregar.value = true;
+  botoneditar.value = false;
 
-informacion.value=info
-// codigo.value=informacion.value
-descripcion.value.valor=informacion.value
-dias.value.valor=informacion.value
-valor.value.valor=informacion.value
+  informacion.value = info;
+  descripcion.value = info.descripcion;
+  dias.value = info.dias;
+  valor.value = info.valor;
 }
 
-async function editarpago(){
-if (await validar()){
-  const todo={
-    // codigo:codigo.value,
-    descripcion:descripcion.value.valor,
-    dias:dias.value.valor,
-    valor:valor.value.valor
 
+async function editarpago() {
+  if (await validar()) {
+    const todo = {
+      descripcion: descripcion.value,
+      dias: dias.value,
+      valor: valor.value
+    };
+
+    if (!informacion.value || !informacion.value._id) {
+      console.error("ID de información no definido:", informacion.value);
+      mostrarMensajeError("No se pudo enviar, ID no definido");
+      return;
     }
-let nombrez= await usePlan.putPlan(informacion._id, todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarPlanes();
+
+    try {
+      const response = await usePlan.putPlan(informacion.value._id, todo);
+      if (response.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        mostrarMensajeExito("Muy bien");
+        listarPlanes();
+      }
+    } catch (error) {
+      console.error("Error al actualizar el plan:", error);
+      mostrarMensajeError("No se pudo enviar");
+    }
+  }
 }
-}
-}
+
 
 async function editarestado(info){
 if(info.estado == 1){

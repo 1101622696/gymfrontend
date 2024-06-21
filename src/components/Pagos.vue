@@ -19,11 +19,8 @@ function agregarpago(){
   botoneditar.value=true
     agregar.value = true;
 
-// id.value=""
   idPlan.value = "";
   idCliente.value = "";
-
-// valor.value=""
 }
 
 
@@ -32,10 +29,8 @@ async function guardar(){
 agregar.value = false;
 if (await validar()){
   const todo={
-    // id:id.value.valor,
       idPlan: idPlan.value.valor,
       idCliente: idCliente.value.valor,
-    // valor:valor.value
     }
 let nombrez= await usePagos.postPago(todo)
 if(nombrez.status!=200){
@@ -48,34 +43,47 @@ if(nombrez.status!=200){
 }
 }
 
-function editar(info){
-    agregar.value = true;
-    botoneditar.value = false;
+function editar(info) {
+  agregar.value = true;
+  botoneditar.value = false;
 
-informacion.value=info
-idPlan.value.valor=informacion.value
-idCliente.value.valor=informacion.value
-// valor.value.valor=informacion.value
+  informacion.value = info;
+  idPlan.value.valor = info.idPlan; 
+  idCliente.value.valor = info.idCliente; 
 }
 
-async function editarpago(){
-if (await validar()){
-  const todo={
+
+async function editarpago() {
+  if (await validar()) {
+    const todo = {
       idPlan: idPlan.value.valor,
       idCliente: idCliente.value.valor,
-    // valor:valor.value
+    };
 
+    if (!informacion.value || !informacion.value._id) {
+      console.error("ID de información no definido:", informacion.value);
+      mostrarMensajeError("No se pudo enviar, ID no definido");
+      return;
     }
-let nombrez= await usePagos.putPago(informacion._id, todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo eniar")
-}else{
-  mostrarMensajeExito("muy bien")
-      listarPlanes(),
-  listarPagos(), listarClientes()
+
+    try {
+      const response = await usePagos.putPago(informacion.value._id, todo);
+      if (response.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        mostrarMensajeExito("Muy bien");
+        listarPlanes();
+        listarPagos();
+        listarClientes();
+      }
+    } catch (error) {
+      console.error("Error al actualizar el pago:", error);
+      mostrarMensajeError("No se pudo enviar");
+    }
+  }
 }
-}
-}
+
+
 
 async function editarestado(info){
 if(info.estado == 1){

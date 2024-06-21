@@ -70,14 +70,14 @@ function editar(info){
 
 informacion.value=info
 
-nombre.value.valor=informacion.value
-documento.value.valor=informacion.value
-direccion.value.valor=informacion.value
-fechaNacimiento.value.valor=informacion.value
-telefono.value.valor=informacion.value
-observaciones.value.valor=informacion.value
-idPlan.value.valor=informacion.value
-foto.value.valor=informacion.value
+nombre.value=info.nombre
+documento.value=info.documento
+direccion.value=info.direccion
+fechaNacimiento.value=info.fechaNacimiento
+telefono.value=info.telefono
+observaciones.value=info.observaciones
+idPlan.value.valor=info.idPlan
+foto.value=info.foto
 
 }
 
@@ -95,15 +95,20 @@ async function editarcliente() {
       foto: foto.value,
     };
 
-    let nombrez = await useCliente.putCliente(informacion.value._id, todo);
-    if (nombrez.status === 200) {
+    try {
+     const response = await useCliente.putCliente(informacion.value._id, todo);
+    if (response.status === 200) {
       mostrarMensajeExito("Cliente actualizado exitosamente");
       listarClientes();
       listarPlanes();
     } else {
       mostrarMensajeError("No se pudo actualizar el cliente");
     }
-  }
+  }catch (error) {
+      console.error("Error al actualizar el cliente:", error);
+      mostrarMensajeError("No se pudo enviar");
+    }
+}
 }
 async function editarestado(info){
   console.log("holaa", info);
@@ -456,81 +461,91 @@ console.log(listNombre.value);
 
     const closeModal = () => {
       seguimientoModalOpen.value = false;
-      segui.value = false; // Asegurarse de que el formulario esté oculto al cerrar el modal
+      segui.value = false; 
     };
 
     const openSeguimientoModal = (cliente) => {
-      console.log("Cliente seleccionado:", cliente); // Log para verificar el cliente seleccionado
+      console.log("Cliente seleccionado:", cliente);
       selectedCliente.value = cliente;
       seguimientoModalOpen.value = true;
-      segui.value = true; // Asegurarse de que el formulario esté oculto al abrir el modal
-    };
-
-      let seguimientos = ref([{
-            fecha: '',
-            peso: '',
-            // imc: '',
-            brazo: '',
-            altura: '',
-            edad: ''
-          }])
-          
-    const seguimientoColumns = ref([
-      { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
-      { name: 'peso', label: 'Peso', field: 'peso', align: 'center' },
-      { name: 'imc', label: 'IMC', field: 'imc', align: 'center' },
-      { name: 'brazo', label: 'Brazo', field: 'brazo', align: 'center' },
-      { name: 'altura', label: 'altura', field: 'altura', align: 'center' },
-      { name: 'edad', label: 'Edad', field: 'edad', align: 'center' }
-    ]);
-
-
-    const actualizarSegui = async () => {
-      console.log("Cliente seleccionado en actualizarSegui:", selectedCliente.value); 
-      if (await validarSeguimiento(seguimientos.value[0])) {
-        if (selectedCliente.value && selectedCliente.value._id) {
-          console.log("Actualizando seguimiento para el cliente con ID:", selectedCliente.value._id); 
-          await useCliente.putClienteSeguimiento(selectedCliente.value._id); 
-          mostrarMensajeExito("Seguimiento agregado exitosamente");
-          listarClientes();
-          toggleSegui(); 
-        } else {
-          console.error("Error: Cliente no seleccionado correctamente");
-          mostrarMensajeError("Cliente no seleccionado correctamente");
-        }
-      }
+      segui.value = true; 
     };
 
 
-    const validarSeguimiento = async (seguimiento) => {
-      let verificado = true;
-      if (!seguimiento.fecha) {
-        mostrarMensajeError("La fecha del seguimiento está vacía");
-        verificado = false;
-      }
-      if (isNaN(seguimiento.peso) || seguimiento.peso <= 0) {
-        mostrarMensajeError("El peso del seguimiento debe ser un número válido");
-        verificado = false;
-      }
-      if (isNaN(seguimiento.imc) || seguimiento.imc <= 0) {
-        mostrarMensajeError("El IMC del seguimiento debe ser un número válido");
-        verificado = false;
-      }
-      if (isNaN(seguimiento.brazo) || seguimiento.brazo <= 0) {
-        mostrarMensajeError("El brazo del seguimiento debe ser un número válido");
-        verificado = false;
-      }
-      if (isNaN(seguimiento.altura) || seguimiento.altura <= 0) {
-        mostrarMensajeError("La altura del seguimiento debe ser un número válido");
-        verificado = false;
-      }
-      if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
-        mostrarMensajeError("La edad del seguimiento debe ser un número válido");
-        verificado = false;
-      }
-      return verificado;
+const seguimientos = ref([{ fecha: '', peso: '', brazo: '', altura: '', edad: '' }]);
+
+async function actualizarSegui() {
+  if (await validarseguii()) {
+    const todoz = {
+      seguimiento: seguimientos.value 
     };
-  
+    console.log("Datos a enviar:", JSON.stringify(todoz, null, 2));
+
+    try {
+      let seguiz = await useCliente.putClienteSeguimiento(selectedCliente.value._id, todoz);
+
+      if (seguiz && seguiz.status === 200) {
+        mostrarMensajeExito("Seguimiento agregado exitosamente");
+        listarClientes();
+        listarPlanes();
+        closeModal();
+      } 
+      // else {
+      //   mostrarMensajeError("No se pudo agregar el seguimiento");
+      // }
+    } catch (error) {
+      console.error("Error al actualizar seguimiento:", error);
+      mostrarMensajeError("Error interno del servidor");
+    }
+  }
+}
+
+
+
+async function validarseguii() {
+  let verificado = true;
+
+  for (let i = 0; i < seguimientos.value.length; i++) {
+    const seguimiento = seguimientos.value[i];
+    if (seguimiento.fecha === "") {
+      mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
+      verificado = false;
+    }
+    if (isNaN(seguimiento.peso) || seguimiento.peso <= 0) {
+      mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+    if (isNaN(seguimiento.brazo) || seguimiento.brazo <= 0) {
+      mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+    if (isNaN(seguimiento.altura) || seguimiento.altura <= 0) {
+      mostrarMensajeError(`La altura del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+    if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
+      mostrarMensajeError(`La edad del seguimiento ${i + 1} debe ser un número válido`);
+      verificado = false;
+    }
+  }
+
+  if (verificado) {
+    mostrarMensajeExito("El Seguimiento se envió correctamente");
+  }
+
+  return verificado;
+}
+
+const seguimientoColumns = ref([
+  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
+  { name: 'peso', label: 'Peso', field: 'peso', align: 'center' },
+  { name: 'imc', label: 'IMC', field: 'imc', align: 'center' },
+  { name: 'brazo', label: 'Brazo', field: 'brazo', align: 'center' },
+  { name: 'altura', label: 'Altura', field: 'altura', align: 'center' },
+  { name: 'edad', label: 'Edad', field: 'edad', align: 'center' }
+]);
+
+
 
       const tooltipContent = ref('');
  const showTooltip = (text) => {
@@ -670,7 +685,7 @@ console.log(listNombre.value);
 
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
 
-    <q-dialog v-model="seguimientoModalOpen" persistent>
+    <!-- <q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
         <q-card-section>
           <div class="text-h6">{{ selectedCliente?.nombre }}</div>
@@ -700,9 +715,9 @@ console.log(listNombre.value);
           </div>
         </q-card-actions>
       </q-card>
-    </q-dialog>
+    </q-dialog> -->
 
-<!-- <q-dialog v-model="seguimientoModalOpen" persistent>
+<q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
         <q-card-section>
           <div class="text-h6">{{ selectedCliente?.nombre }}</div>
@@ -728,9 +743,9 @@ console.log(listNombre.value);
         <q-card-actions align="right">
           <q-btn flat label="Cerrar" color="primary" @click="closeModal" />
           <div class="agregarseguimiento">
-            <q-btn class="agregaedita" @click="toggleSegui">✏️</q-btn>
+            <!-- <q-btn class="agregaedita" @click="toggleSegui">✏️</q-btn> -->
           </div>
-        </q-card-actions> -->
+        </q-card-actions>
 
         <div v-if="segui" class="segui-modal">
           <div class="segui-modal-contenedor">

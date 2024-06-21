@@ -90,6 +90,7 @@ export const useStorePlanes = defineStore("Planes", () => {
         const putPlan= async(id, data) =>{
             try {
                 loading.value =true
+                
                 const r = await axios.put(`api/planes/modificar/${id}`, data,{
                     headers:{
                         "x-token": useUsuario.token

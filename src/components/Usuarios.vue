@@ -17,7 +17,7 @@ function abrir(){
   accion.value=1
   alert.value = true;
 
-id.value=""
+idSede.value=""
 nombre.value=""
 email.value=""
 telefono.value=""
@@ -32,7 +32,7 @@ async function guardar(){
 alert.value = false;
 if (await validar()){
   const todo={
-    id:id.value.valor,
+    idSede:idSede.value.valor,
     nombre:nombre.value,
     email:email.value,
     telefono:telefono.value,
@@ -49,38 +49,46 @@ if(nombrez.status!=200){
 }
 }
 
-function editar(info){
-    alert.value = true;
-    accion.value !=1;
+function editar(info) {
+  alert.value = true;
+  accion.value = 2;
 
-informacion.value=info
-id.value.valor=informacion.value
-nombre.value.valor=informacion.value
-email.value.valor=informacion.value
-telefono.value.valor=informacion.value
-password.value.valor=informacion.value
-// rol.value=informacion.value
+  informacion.value = info;
+  idSede.value = info.idSede; 
+  nombre.value = info.nombre;
+  email.value = info.email;
+  telefono.value = info.telefono;
+  password.value = info.password;
+  rol.value = info.rol; 
 }
 
-async function editarusuario(){
-if (await validar()){
-  const todo={
-    id:id.value,
-    nombre:nombre.value,
-    email:email.value,
-    telefono:telefono.value,
-    password:password.value,
 
 
+async function editarusuario() {
+  if (await validar()) {
+    const todo = {
+      idSede: idSede.value.valor,
+      nombre: nombre.value,
+      email: email.value,
+      telefono: telefono.value,
+      password: password.value,
+      rol: rol.value 
+    };
+
+    try {
+      const response = await useUsuarios.putUsuarios(informacion.value._id, todo);
+      if (response.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        mostrarMensajeExito("Muy bien");
+        listarUsuarios();
+        listarSedes();
+      }
+    } catch (error) {
+      console.error("Error al actualizar el usuario:", error);
+      mostrarMensajeError("No se pudo enviar");
     }
-let nombrez= await useUsuarios.putUsuarios(informacion._id, todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarUsuarios(), listarSedes();
-}
-}
+  }
 }
 
 async function editarestado(info){
@@ -99,7 +107,7 @@ onMounted(()=>{
 })
 
 let informacion=ref("")
-let id = ref("");
+let idSede = ref("");
 let nombre = ref("");
 let email = ref("");
 let telefono = ref("");
@@ -110,7 +118,7 @@ let nombreCodigo = ref([]);
 
 let rows=ref([])
 let columns =ref([
-      {name:"id", label:"Sede", field:"id", align:"center"},
+      {name:"idSede", label:"Sede", field:"idSede", align:"center"},
   {name:"nombre", label:"Nombre de Usuario", field:"nombre", align:"center"},
     {name:"email", label:"Correo electrónico", field:"email", align:"center"},
     {name:"telefono", label:"Telefono", field:"telefono", align:"center"},
@@ -130,7 +138,7 @@ async function validar() {
         mostrarMensajeError("El nombre está vacío");
         verificado = false;
     }
-    if (id.value === "") {
+    if (idSede.value === "") {
         mostrarMensajeError("Seleccione una sede");
         verificado = false;
     }
@@ -201,13 +209,21 @@ function getSedeNombre(id) {
   return sede ? sede.nombre : '';
 }
 
+// const organizarSedes = computed(() => {
+//     nombreCodigo.value = sedesTodo.value.map((element) => ({
+//         label: `${element.nombre}`,
+//         valor: `${element._id}`,
+//         nombre: `${element.nombre}`,
+//     }));
+//     return nombreCodigo.value;
+// });
 const organizarSedes = computed(() => {
-    nombreCodigo.value = sedesTodo.value.map((element) => ({
-        label: `${element.nombre}`,
-        valor: `${element._id}`,
-        nombre: `${element.nombre}`,
-    }));
-    return nombreCodigo.value;
+  nombreCodigo.value = sedesTodo.value.map((element) => ({
+    label: `${element.nombre}`,
+    valor: `${element._id}`,
+    nombre: `${element.nombre}`,
+  }));
+  return nombreCodigo.value;
 });
 
 
@@ -222,26 +238,26 @@ async function listarSedes() {
     }
 }
 
-const opcioneslistar = computed(() => {
-    nombreCodigo.value = sedesTodo.value.map((element) => ({
-        label: `${element.nombre}`,
-        valor: `${element._id}`,
-        nombre: `${element.nombre}`,
-    }));
-    return nombreCodigo.value;
-});
+// const opcioneslistar = computed(() => {
+//     nombreCodigo.value = sedesTodo.value.map((element) => ({
+//         label: `${element.nombre}`,
+//         valor: `${element._id}`,
+//         nombre: `${element.nombre}`,
+//     }));
+//     return nombreCodigo.value;
+// });
 
 
-async function listar() {
-    try {
-   const res = await useSedes.listarSede()
-    console.log(res.data);
-    sedesTodo.value=res.data.sede
+// async function listar() {
+//     try {
+//    const res = await useSedes.listarSede()
+//     console.log(res.data);
+//     sedesTodo.value=res.data.sede
 
-    } catch (error) {
-        console.error("Error al listar sedes:", error);
-    }
-}
+//     } catch (error) {
+//         console.error("Error al listar sedes:", error);
+//     }
+// }
 
 async function listaractivados() {
   try {
@@ -300,9 +316,9 @@ async function listardesactivados() {
   </select>  
     
       <q-table class="table" flat bordered title="Usuarios" :rows="rows" :columns="columns" row-key="id">
-      <template v-slot:body-cell-id="props">
+      <template v-slot:body-cell-idSede="props">
         <q-td :props="props">
-          <p>{{ getSedeNombre(props.row.id) }}</p>
+          <p>{{ getSedeNombre(props.row.idSede) }}</p>
         </q-td>
       </template>
           <template v-slot:body-cell-opciones="props">
@@ -351,7 +367,7 @@ async function listardesactivados() {
               {{ accion == 1 ? "Agregar Usuario" : "Editar Usuario" }}
             </div>
           </q-card-section>
-                 <q-select standout v-model="id" :options="organizarSedes" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px"
+                 <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px"
       />
 <q-input outlined v-model="nombre" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Nombre del Usuario" type="text" />
@@ -359,7 +375,7 @@ async function listardesactivados() {
                         class="q-my-md q-mx-md" label="Correo" type="text" />
 <q-input outlined v-model="telefono" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Teléfono" type="text" />
-<q-input outlined v-model="password" use-input hide-selected fill-input input-debounce="0"
+<q-input v-if="accion === 1" outlined v-model="password" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Contraseña" type="text" />
  <q-select standout v-model="rol" :options="options" label="Rol" style="background-color: #grey; margin-bottom: 20px"
       />

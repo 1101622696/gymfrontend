@@ -89,24 +89,33 @@ export const useStoreMaquina = defineStore("Maquina", () => {
             }
         }
     
-        const putMaquina= async(id, data) =>{
+        const putMaquina = async (id, data) => {
             try {
-                loading.value =true
-                const r = await axios.put(`api/maquinas/modificar/${id}`, data,{
-                    headers:{
-                        "x-token":useUsuario.token
-                    }
-                })
-                console.log(r);
-                return r
+              loading.value = true;
+          
+              // Verificar que el ID esté definido
+              if (!id) {
+                throw new Error("ID no definido");
+              }
+          
+              // Realizar la solicitud PUT a la API
+              const response = await axios.put(`api/maquinas/modificar/${id}`, data, {
+                headers: {
+                  "x-token": useUsuario.token // Asegúrate de tener el token correctamente configurado
+                }
+              });
+          
+              console.log(response.data); // Loguear la respuesta (opcional)
+          
+              return response; // Devolver la respuesta completa de Axios
             } catch (error) {
-                loading.value =true
-                console.log(error);
-                return error;
-            }finally{
-                loading.value = false
+              console.error('Error al actualizar la máquina:', error);
+              return error; // Devolver el error para manejarlo en el contexto donde se llama a esta función
+            } finally {
+              loading.value = false; // Asegurar que loading se restablezca a false sin importar el resultado
             }
-        }
+          };
+          
         const putActivarMaquina= async(id) =>{
             try {
                 loading.value =true

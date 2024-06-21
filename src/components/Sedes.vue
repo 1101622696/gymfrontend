@@ -59,39 +59,49 @@ alert.value = false;
       }
     };
 
-function editar(info){
-    alert.value = true;
-    accion.value !=1;
+function editar(info) {
+  alert.value = true;
+  accion.value = 2;
 
-informacion.value=info
+  informacion.value = info;
 
-nombre.value.valor=informacion.value
-direccion.value.valor=informacion.value
-telefono.value.valor=informacion.value
-ciudad.value.valor=informacion.value
-// codigo.value=informacion.value
-horario.value.valor=informacion.value
+  nombre.value = info.nombre;
+  direccion.value = info.direccion;
+  telefono.value = info.telefono;
+  ciudad.value = info.ciudad;
+  horario.value = info.horario;
 }
 
-async function editarsede(){
-if (await validar()){
-  const todo={
-    nombre:nombre.value.valor,
-    direccion:direccion.value.valor,
-    telefono:telefono.value.valor,
-    ciudad:ciudad.value.valor,
-    // codigo:codigo.value,
-    horario:horario.value.valor
 
+async function editarsede() {
+  if (await validar()) {
+    const todo = {
+      nombre: nombre.value,
+      direccion: direccion.value,
+      telefono: telefono.value,
+      ciudad: ciudad.value,
+      horario: horario.value
+    };
+
+    if (!informacion.value || !informacion.value._id) {
+      console.error("ID de información no definido:", informacion.value);
+      mostrarMensajeError("No se pudo enviar, ID no definido");
+      return;
     }
-let nombrez= await useSedes.putSedes(informacion._id, todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarSedes();
-}
-}
+
+    try {
+      const response = await useSedes.putSedes(informacion.value._id, todo);
+      if (response.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        mostrarMensajeExito("Muy bien");
+        listarSedes();
+      }
+    } catch (error) {
+      console.error("Error al actualizar la sede:", error);
+      mostrarMensajeError("No se pudo enviar");
+    }
+  }
 }
 
 async function editarestado(info){

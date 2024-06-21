@@ -104,24 +104,28 @@ export const useStoreSedes = defineStore("Sedes", () => {
             }
           };
     
-        const putSedes= async(id, data) =>{
+          const putSedes = async (id, data) => {
             try {
-                loading.value =true
-                const r = await axios.put(`api/sedes/modificar/${id}`, data,{
-                    headers:{
-                        "x-token":useUsuario.token
-                    }
-                })
-                console.log(r);
-                return r
+              loading.value = true;
+              if (!id) {
+                throw new Error("ID no definido");
+              }
+              const r = await axios.put(`api/sedes/modificar/${id}`, data, {
+                headers: {
+                  "x-token": useUsuario.token
+                }
+              });
+              console.log(r);
+              return r;
             } catch (error) {
-                loading.value =true
-                console.log(error);
-                return error;
-            }finally{
-                loading.value = false
+              loading.value = false;
+              console.log(error);
+              return error;
+            } finally {
+              loading.value = false;
             }
-        }
+          };
+          
     
         const putActivarSede= async(id) =>{
             try {

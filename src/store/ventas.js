@@ -51,24 +51,28 @@ export const useStoreVentas = defineStore("Ventas", () => {
             }
         }
     
-        const putVenta= async(id, data) =>{
-            try {
-                loading.value =true
-                const r = await axios.put(`api/ventas/modificar/${id}`, data,{
-                    headers:{
-                        "x-token":useUsuario.token
-                    }
-                })
-                console.log(r);
-                return r
-            } catch (error) {
-                loading.value =true
-                console.log(error);
-                return error;
-            }finally{
-                loading.value = false
-            }
-        }
+        const putVenta = async (id, data) => {
+  try {
+    loading.value = true;
+    if (!id) {
+      throw new Error("ID no definido");
+    }
+    const r = await axios.put(`api/ventas/modificar/${id}`, data, {
+      headers: {
+        "x-token": useUsuario.token
+      }
+    });
+    console.log(r);
+    return r;
+  } catch (error) {
+    loading.value = false;
+    console.log(error);
+    return error;
+  } finally {
+    loading.value = false;
+  }
+}
+
     
         return{ listarVenta, postVenta, putVenta, loading, ventas, useUsuario}
     

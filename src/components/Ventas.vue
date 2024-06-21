@@ -18,8 +18,7 @@ function agregarventa(){
   botoneditar.value=true
     agregar.value = true;
 
-id.value=""
-// codigo.value=""
+idInventario.value=""
 valorUnitario.value=""
 cantidad.value=""
 
@@ -31,8 +30,7 @@ async function guardar(){
 agregar.value = false;
 if (await validar()){
   const todo={
-    id:id.value.valor,
-    // codigo:codigo.value,
+    idInventario:idInventario.value.valor,
     valorUnitario:valorUnitario.value,
     cantidad:cantidad.value
     }
@@ -46,37 +44,47 @@ if(nombrez.status!=200){
 }
 }
 
-function editar(info){
-    agregar.value = true;
-    botoneditar.value = false;
+function editar(info) {
+  agregar.value = true;
+  botoneditar.value = false;
 
-informacion.value=info
-id.value.valor=informacion.value
-// codigo.value.valor=informacion.value
-// fecha.value.valor=informacion.value
-valorUnitario.value.valor=informacion.value
-cantidad.value.valor=informacion.value
+  informacion.value = info;
+  idInventario.value = info.idInventario;
+  valorUnitario.value = info.valorUnitario;
+  cantidad.value = info.cantidad;
 }
 
-async function editarventa(){
-if (await validar()){
-  const todo={
-    id:id.value,
-    // codigo:codigo.value,
-    // fecha:fecha.value,
-    valorUnitario:valorUnitario.value.valor,
-    cantidad:cantidad.value
 
+async function editarventa() {
+  if (await validar()) {
+    const todo = {
+      idInventario: idInventario.value.valor,
+      valorUnitario: valorUnitario.value,
+      cantidad: cantidad.value
+    };
+
+    if (!informacion.value || !informacion.value._id) {
+      console.error("ID de información no definido:", informacion.value);
+      mostrarMensajeError("No se pudo enviar, ID no definido");
+      return;
     }
-let nombrez= await useSales.putVenta(informacion._id, todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarVentas(), listarInventarios();
+
+    try {
+      const response = await useSales.putVenta(informacion.value._id, todo);
+      if (response.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        mostrarMensajeExito("Muy bien");
+        listarVentas();
+        listarInventarios();
+      }
+    } catch (error) {
+      console.error("Error al actualizar la venta:", error);
+      mostrarMensajeError("No se pudo enviar");
+    }
+  }
 }
-}
-}
+
 
 function cerrar(){
     agregar.value = false;
@@ -87,9 +95,7 @@ onMounted(()=>{
 })
 
 let informacion=ref("")
-let id = ref("");
-// let codigo = ref("");
-// let fecha = ref("");
+let idInventario = ref("");
 let valorUnitario = ref("");
 let cantidad = ref("");
 let total = ref("");
@@ -98,7 +104,7 @@ let nombreCodigo = ref([]);
 
 let rows=ref([])
 let columns =ref([
-    {name:"id", label:"Inventario", field:"id", align:"center"},
+    {name:"idInventario", label:"Inventario", field:"idInventario", align:"center"},
     {name:"fecha", label:"fecha de venta", field:"fecha", align:"center"},
     {name:"codigo", label:"Código", field:"codigo", align:"center"},
     {name:"valorUnitario", label:"Valor por unidad", field:"valorUnitario", align:"center"},
@@ -111,7 +117,7 @@ let columns =ref([
 async function validar() {
     let verificado = true;
 
-    if (id.value === "") {
+    if (idInventario.value === "") {
         mostrarMensajeError("seleccione un inventario");
         verificado = false;
     }
@@ -198,9 +204,9 @@ function getInventarioDescripcion(id) {
     <div class="container">
   
       <q-table class="table" flat bordered title="Ventas" :rows="rows" :columns="columns" row-key="id">
-            <template v-slot:body-cell-id="props">
+            <template v-slot:body-cell-idInventario="props">
         <q-td :props="props">
-          <p>{{ getInventarioDescripcion(props.row.id) }}</p>
+          <p>{{ getInventarioDescripcion(props.row.idInventario) }}</p>
         </q-td>
       </template>
        <template v-slot:body-cell-fecha="props">
@@ -227,7 +233,7 @@ function getInventarioDescripcion(id) {
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
- <q-select standout v-model="id" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
+ <q-select standout v-model="idInventario" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
       />
         <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
         <!-- <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" /> -->

@@ -51,24 +51,26 @@ export const useStorePagos = defineStore("Pagos", () => {
             }
         }
     
-        const putPago= async(id, data) =>{
+        const putPago = async (id, data) => {
             try {
-                loading.value =true
-                const r = await axios.put(`api/pagos/modificar/${id}`, data,{
-                    headers:{
-                        "x-token":useUsuario.token
-                    }
-                })
-                console.log(r);
-                return r
+              loading.value = true;
+              const r = await axios.put(`api/pagos/modificar/${id}`, data, {
+                headers: {
+                  "x-token": useUsuario.token
+                }
+              });
+              console.log(r);
+              return r;
             } catch (error) {
-                loading.value =true
-                console.log(error);
-                return error;
-            }finally{
-                loading.value = false
+              loading.value = false;
+              console.log(error);
+              return error;
+            } finally {
+              loading.value = false;
             }
-        }
+          };
+          
+          
         const putPagosActivar= async(id) =>{
             try {
                 loading.value =true

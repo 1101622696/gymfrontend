@@ -14,11 +14,7 @@ function agregarmaquina(){
   agregar.value = true;
 
 idSede.value=""
-// codigo.value=""
 descripcion.value=""
-// fechaIngreso.value=""
-// fechaUltmantenimiento.value=""
-
 }
 
 
@@ -28,10 +24,7 @@ agregar.value = false;
 if (await validar()){
   const todo={
     idSede:idSede.value.valor,
-    // codigo:codigo.value,
     descripcion:descripcion.value,
-    // fechaIngreso:fechaIngreso.value,
-    // fechaUltmantenimiento:fechaUltmantenimiento.value
     }
 let nombrez= await useMaquina.postMaquina(todo)
 if(nombrez.status!=200){
@@ -43,38 +36,77 @@ if(nombrez.status!=200){
 }
 }
 
-function editar(info){
-    agregar.value = true;
-    botoneditar.value = false;
+function editar(info) {
+  console.log("Información de la máquina seleccionada:", info);
+  console.log("ID de la máquina seleccionada:", info._id);
 
-informacion.value=info
-idSede.value.valor=informacion
-// codigo.value.valor=informacion.value
-descripcion.value.valor=informacion.value
-// fechaIngreso.value.valor=informacion.value
-fechaUltmantenimiento.value.valor=informacion.value
+  agregar.value = true;
+  botoneditar.value = false;
+
+  // Asegúrate de que informacion sea una ref
+  if (!informacion) {
+    informacion = ref({});
+  }
+
+  // Asigna una copia del objeto info
+  informacion.value = { ...info };
+
+  // Asigna los valores individuales
+  idSede.value.valor = info.idSede;
+  descripcion.value = info.descripcion;
+  fechaUltmantenimiento.value = info.fechaUltmantenimiento;
+
+  console.log("Información guardada:", informacion.value);
+
+  if (!informacion.value || !informacion.value._id) {
+    console.error("ID de información no definido:", informacion.value);
+    mostrarMensajeError("No se pudo enviar, ID no definido");
+    return;
+  }
 }
 
-async function editarmaquina(){
-if (await validar()){
-  const todo={
-    idSede:idSede.value.valor,
-    // codigo:codigo.value,
-    descripcion:descripcion.value,
-    // fechaIngreso:fechaIngreso.value,
-    fechaUltmantenimiento:fechaUltmantenimiento.value
 
+async function editarmaquina() {
+  console.log("Iniciando edición de máquina");
+  console.log("Información actual:", informacion.value);
 
+  if (!informacion.value || !informacion.value._id) {
+    console.error("ID de información no definido:", informacion.value);
+    mostrarMensajeError("No se pudo enviar, ID no definido");
+    return;
+  }
+
+  if (await validar()) {
+    const todo = {
+      idSede: idSede.value.valor,
+      descripcion: descripcion.value,
+      fechaUltmantenimiento: fechaUltmantenimiento.value
+    };
+
+    console.log("Datos a enviar:", todo);
+    console.log("ID de la máquina a editar:", informacion.value._id);
+
+    try {
+      const response = await useMaquina.putMaquina(informacion.value._id, todo);
+      if (response.status !== 200) {
+        mostrarMensajeError("No se pudo enviar");
+      } else {
+        mostrarMensajeExito("Muy bien");
+        listarMaquina();
+        listarSedes();
+      }
+    } catch (error) {
+      console.error("Error al editar la máquina:", error);
+      mostrarMensajeError("No se pudo enviar");
     }
-let nombrez= await useMaquina.putMaquina(informacion._id, todo)
-if(nombrez.status!=200){
-  mostrarMensajeError("no se pudo enviar")
-}else{
-  mostrarMensajeExito("muy bien")
-  listarMaquina(), listarSedes();
+  }
 }
-}
-}
+
+
+
+
+
+
 
 async function editarestado(info){
 if(info.estado == 1){
@@ -88,12 +120,12 @@ let activado= await useMaquina.putActivarMaquina(info._id)
 function cerrar(){
     agregar.value = false;
 }
+let informacion = ref({})
 
-let informacion=ref("")
+
+// let informacion=ref("")
 let idSede = ref("");
-// let codigo = ref("");
 let descripcion = ref("");
-// let fechaIngreso = ref("");
 let fechaUltmantenimiento = ref("");
 let sedesTodo = ref([]);
 let nombreCodigo = ref([]);
