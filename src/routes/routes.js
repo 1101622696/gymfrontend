@@ -14,12 +14,14 @@ import Planes from "../components/Planes.vue";
 import Sedes from "../components/Sedes.vue";
 import Usuarios from "../components/Usuarios.vue";
 import Ventas from "../components/Ventas.vue";
+import Rescontrasena from "../components/Rescontrasena.vue";
 import axios from "axios";
 
 
 
 const routes = [
   { path: "/", component: Login },
+  { path: "/Rescontrasena", component: Rescontrasena},
   { 
     path: "/Home", 
     component: Home,

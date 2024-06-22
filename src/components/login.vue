@@ -16,9 +16,22 @@
           </div>
           <button type="submit">Iniciar</button>
           <div class="register"></div>
+          <button class="btrecuperar" @click="activador()">¿Olvidaste la contraseña?</button>
         </form>
+        
       </section>
+      <div class="recuperarcontrasena" v-if="vifRecontrasena">
+        <div class="divbtx">
+        <button type="submit" class="btx"  @click="cerrar()">X</button>
+        </div>
+        <div class="inputbox">
+          <input type="email" required v-model="emailrecuperador" />
+          <label for="">Ingresar correo</label>
+        </div>
+        <button type="submit" @click="recuperar()">Recuperar contraseña</button>
+            </div>
     </div>
+
   </div>
 </template>
 
@@ -27,6 +40,7 @@ import { ref, computed } from 'vue';
 import { useStoreUsuarios } from '../store/usuarios';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
+import axios from 'axios';
 
 const router = useRouter();
 const UseUsuario = useStoreUsuarios();
@@ -34,6 +48,8 @@ const email = ref('');
 const passwordLogin = ref('');
 const passwordVisible = ref(false);
 const $q = useQuasar();
+const vifRecontrasena=ref(false);
+const emailrecuperador = ref('');
 
 const passwordFieldType = computed(() => (passwordVisible.value ? 'text' : 'password'));
 const eyeIcon = computed(() => (passwordVisible.value ? 'eye-off-outline' : 'eye-outline'));
@@ -72,10 +88,9 @@ const iniciar = async () => {
     }
 
     const res = await UseUsuario.login(email.value, passwordLogin.value);
-    
+
     if (res.data.token) {
       mostrarMensajeExito('Inicio de sesión exitoso');
-      console.log(`Este es el token: ${UseUsuario.token}`);
       router.push('/Home');
     } else {
       mostrarMensajeError('Correo electrónico o contraseña incorrectos');
@@ -89,7 +104,37 @@ const iniciar = async () => {
     }
   }
 };
+
+function activador() {
+  vifRecontrasena.value = true;
+}
+
+function cerrar() {
+  vifRecontrasena.value = false;
+}
+
+async function recuperar() {
+  try {
+    if (emailrecuperador.value === '') {
+      mostrarMensajeError('Ingrese correo electrónico');
+      return;
+    }
+
+    const res = await axios.post('api/usuarios/recuperar-password', { email: emailrecuperador.value });
+
+    if (res.status == 200) {
+      mostrarMensajeExito('Correo de recuperación enviado');
+      vifRecontrasena.value = false;
+    } else {
+      mostrarMensajeError('Correo no encontrado en ningún usuario');
+    }
+  } catch (error) {
+    mostrarMensajeError('Ha ocurrido un error en el servidor');
+    console.log(error);
+  }
+}
 </script>
+
 
 
 <style scoped>
@@ -242,4 +287,47 @@ button:hover {
 .register p a:hover {
   text-decoration: underline;
 }
+
+.btrecuperar{
+  background-color: rgba(0, 0, 0, 0);
+ font-size:medium;
+ color:rgb(255, 255, 255);
+ font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.btrecuperar:hover{
+background-color: #ffffff00;
+  color:black
+}
+.recuperarcontrasena{
+    position:absolute;
+    max-width: 405px;
+    background-color: transparent;
+    border: 2px solid rgb(255, 255, 255, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(55px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 3rem;
+height:38vmax;
+}
+.btx{
+  position: absolute;
+  font-size:medium;
+  color:rgb(255, 255, 255);
+background-color: #ffffff00;
+width: 3vmax;
+top:1%;
+right: 1%;
+}
+.btx:hover{
+  background-color: #ffffff00;
+    color:black
+  }
+
+  .divbtx{
+    display: flex;
+  justify-content: right;
+  }
 </style>

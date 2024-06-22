@@ -140,6 +140,33 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
       return error;
     }
   };
+  const validaremail = async (email) => {
+    try {
+      const res = await axios.get(`api/usuarios/email?email=${email}`);
+      token.value = res.data.token;
+      return res;
+    } catch (error) {
+      console.error("No se pudo obtener la informacion requerida", error);
+      return error;
+    }};
+
+    const putUsuariospassword = async (id, data) => {
+      try {
+        loading.value = true;
+        const response = await axios.put(`api/usuarios/password/${id}`, data, {
+          headers: {
+            "x-token": token.value
+          }
+        });
+        return response;
+      } catch (error) {
+        console.log("No se pudo actualizar el usuario", error);
+        return error;
+      } finally {
+        loading.value = false;
+      }
+    };
+    
 
   return {
     listarUsuario,
@@ -150,6 +177,8 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
     putActivarUsuario,
     putDesactivarUsuario,
     login,
+    validaremail,
+    putUsuariospassword,
     token,
     loading,
     usuarios,

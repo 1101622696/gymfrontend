@@ -11,8 +11,8 @@ import 'quasar/src/css/index.sass'
 import axios from "axios";
 import Swal from 'sweetalert2';
 
-axios.defaults.baseURL = "http://localhost:4000/";
-// axios.defaults.baseURL = "mongodb+srv://laytonlozano:3gL4gfIMkPkCZiFD@bdgimnasio.n8aill5.mongodb.net/test?retryWrites=true&w=majority&appName=BDGimnasio";
+// axios.defaults.baseURL = "http://localhost:4000/";
+axios.defaults.baseURL = "https://gimnasio-ij9r.onrender.com";
 
 
 let requestsPending = 0;
