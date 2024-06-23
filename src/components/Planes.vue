@@ -333,8 +333,9 @@ function formatCurrency(value) {
         </template>
       </q-table>
     </div>
-  <div>
   
+  
+  <div  class="filtro" v-if="agregar"> 
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Plan</h3>
@@ -343,7 +344,8 @@ function formatCurrency(value) {
     <div class="inputs">
         <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" @input="valor = formatCurrencyInput($event.target.value)" />
+        <!-- <input class="input" type="text" placeholder="Valor" v-model.trim="valor" @input="valor = formatCurrencyInput($event.target.value)" /> -->
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor"/>
         <input class="input" type="text" placeholder="Dias" v-model.trim="dias" />
     </div>
     
@@ -530,4 +532,14 @@ margin-left: auto;
   width: 90vmax;
 }
 
+
+.filtro{
+background-color: #0303039f;
+width: 100%;
+height:  100%;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
+}
 </style>

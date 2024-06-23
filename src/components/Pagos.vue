@@ -351,7 +351,7 @@ function formatCurrency(value) {
         </template>
       </q-table>
     
-  
+  <div  class="filtro" v-if="agregar"> 
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Pago</h3>
@@ -374,7 +374,7 @@ function formatCurrency(value) {
     <button v-else class="button" @click="editarpago()" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
       </div>
-
+</div>
 
     </div>
   </template>
@@ -534,6 +534,16 @@ margin-left: auto;
 
 .crearcliente input[type="submit"]:hover {
   background-color: #45a049;
+}
+
+.filtro{
+background-color: #0303039f;
+width: 100%;
+height:  100%;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
 }
 
 </style>

@@ -314,7 +314,7 @@ function formatCurrency(value) {
         </template>
       </q-table>
   
-  
+  <div  class="filtro" v-if="agregar"> 
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Venta</h3>
@@ -323,7 +323,9 @@ function formatCurrency(value) {
     <div class="inputs">
  <q-select standout v-model="idInventario" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
       />
-        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario" @input="valorUnitario = formatCurrencyInput($event.target.value)" />
+        <!-- <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario" @input="valorUnitario = formatCurrencyInput($event.target.value)" /> -->
+        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario"  />
+
         <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
     </div>
     
@@ -331,6 +333,7 @@ function formatCurrency(value) {
     <button v-else class="button" @click="editarventa()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
+      </div>
       </div>
     </div>
   </template>
@@ -491,5 +494,14 @@ margin-left: auto;
   background-color: #45a049;
 }
 
+.filtro{
+background-color: #0303039f;
+width: 100%;
+height:  100%;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
+}
 
 </style>

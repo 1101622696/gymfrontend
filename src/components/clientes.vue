@@ -214,6 +214,7 @@ let columns = ref([
   { name: "telefono", label: "Telefono", field: "telefono", align: "center" },
   { name: "observaciones", label: "Observaciones del Cliente", field: "observaciones", align: "center" },
   { name: "foto", label: "Foto", field: "foto", align: "center" },
+  { name: "fechavencimiento", label: "fecha de vencimiento", field: "fechavencimiento", align: "center" },
   { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
   { name: "estado", label: "Estado", field: "estado", align: "center" },
   { name: "seguimiento", label: "Seguimiento", field: "seguimiento", align: "center" },
@@ -717,6 +718,11 @@ const seguimientoColumns = ref([
           <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
         </q-td>
       </template>
+            <template v-slot:body-cell-fechavencimiento="props">
+        <q-td :props="props">
+          <p>{{ formatDate(props.row.fechavencimiento) }}</p>
+        </q-td>
+      </template>
 
     <template v-slot:body-cell-observaciones="props">
       <q-td :props="props">
@@ -851,7 +857,7 @@ const seguimientoColumns = ref([
         </q-btn>
       </div>
     </div> -->
-
+<div  class="filtro" v-if="agregar"> 
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">
         <h3>Ingresar Clientes</h3>
@@ -883,7 +889,7 @@ const seguimientoColumns = ref([
       </div>
        <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
     <button v-else class="button" @click="editarcliente()" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
-    </div>
+    </div> </div>
   </div>
 </template>
 
@@ -891,14 +897,16 @@ const seguimientoColumns = ref([
 
 /* Estilos para el contenedor principal */
 .container {
-  width: 90vmax;
+  width: 97vmax;
   margin: 0 auto;
-  min-height: 100vh;
-  width: 99.1vw;
+  min-height:auto;
 background-color: rgb(185, 185, 185);
-
+overflow:hidden !important;
 }
 
+.container::-webkit-scrollbar {
+  display: none !important; /* Oculta el scrollbar */
+}
 
 .foto-modal {
   position: fixed;
@@ -1037,9 +1045,10 @@ background-color: rgb(185, 185, 185);
 .crearcliente {
   background-color: #f9f9f9;
   padding: 20px;
-  border-radius: 10px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+   margin-top: 1px; 
 width: 50vmax;
 height: 90vh;
 overflow: scroll;
@@ -1047,10 +1056,34 @@ border-color: green;
 margin-left: auto;
 margin-right: auto;
 position: absolute;
-top: 50%;
+top: 54%;
 left: 50%;
 transform: translate(-50%,-50%);
 }
+
+/* -------------------------------------- */
+
+.crearcliente::-webkit-scrollbar {
+  width: 8px; 
+  height: 8px; 
+}
+
+.crearcliente::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 2vmax; 
+}
+
+.crearcliente::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 2vmax; 
+}
+
+.crearcliente::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+/* -------------------------------------- */
+
 
 .encabezadoCrear{
     display: flex;
@@ -1120,7 +1153,7 @@ transform: translate(-50%,-50%);
 .tablaselect{
   display: flex;
   position: absolute;
-  width: 100%;
+  width: 95%;
 }
 
 .contenedorFiltro{
@@ -1223,5 +1256,15 @@ align-items: center;
   border-radius: 4px;
   border: 1px solid #ccc;
   resize: vertical;
+}
+
+.filtro{
+background-color: #0303039f;
+width: 100%;
+height:  100%;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
 }
 </style>

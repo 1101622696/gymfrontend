@@ -322,7 +322,7 @@ function getMaquinaCodigo(id) {
         </template>
       </q-table>
     
-  
+  <div  class="filtro" v-if="agregar"> 
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Mantenimiento</h3>
@@ -334,13 +334,14 @@ function getMaquinaCodigo(id) {
         <!-- <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" /> -->
         <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
         <input class="input" type="text" placeholder="Responsable" v-model.trim="responsable" />
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" @input="valor = formatCurrencyInput($event.target.value)" />
+        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
     <button v-else class="button" @click="editarmantenimiento()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
+      </div>
       </div>
     </div>
   </template>
@@ -501,6 +502,16 @@ margin-left: auto;
 
 .crearcliente input[type="submit"]:hover {
   background-color: #45a049;
+}
+
+.filtro{
+background-color: #0303039f;
+width: 100%;
+height:  100%;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
 }
 
 </style>

@@ -400,7 +400,7 @@ async function listardesactivadas() {
     </div>
       <!-- <button class="button" @click="listarMaquina()">Traer Datos</button> -->
   
-  
+  <div  class="filtro" v-if="agregar"> 
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Maquina</h3>
@@ -419,6 +419,7 @@ async function listardesactivadas() {
     <button v-else class="button" @click="editarmaquina()" :loading="useMaquina.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
+      </div>
       </div>
     </div>
   </template>
@@ -596,6 +597,16 @@ margin-left: auto;
   display: flex;
   position: relative;
   width: 90vmax;
+}
+
+.filtro{
+background-color: #0303039f;
+width: 100%;
+height:  100%;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%,-50%);
 }
 
 </style>
