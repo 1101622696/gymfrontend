@@ -56,7 +56,7 @@ function obtenerIngresoReciente() {
 }
 
 async function guardar() {
-  alert.value = false;
+  // alert.value = false;
 
   if (await validar()) {
     const todo = {
@@ -95,6 +95,8 @@ async function guardar() {
         // Actualizar listas relacionadas
         await listarClientes();
         await listarSedes();
+  alert.value = false;
+
       } else {
         console.error('Respuesta inesperada del servidor:', response);
         mostrarMensajeError("No se pudo enviar");
@@ -128,6 +130,8 @@ async function guardar() {
         } else {
           mostrarMensajeExito("Muy bien");
           listarIngresos();
+  alert.value = false;
+
         }
       }catch (error) {
       console.error("Error al actualizar el usuario:", error);

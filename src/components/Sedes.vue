@@ -67,7 +67,7 @@ function obtenerUltimaSede() {
   return localStorage.getItem('ultimaSede');
 }
 async function guardar() {
-  alert.value = false;
+  // alert.value = false;
 
   informacion.value = '';
 
@@ -103,6 +103,8 @@ async function guardar() {
 
         mostrarMensajeExito("Sede agregada exitosamente");
         listarSedes(); // Actualizar la lista de sedes
+  alert.value = false;
+
       } else {
         mostrarMensajeError("No se pudo agregar la Sede");
       }
@@ -152,6 +154,8 @@ async function editarsede() {
       } else {
         mostrarMensajeExito("Muy bien");
         listarSedes();
+  alert.value = false;
+
       }
     } catch (error) {
       console.error("Error al actualizar la sede:", error);

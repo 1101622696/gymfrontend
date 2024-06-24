@@ -53,7 +53,7 @@ function obtenerMantenimientoReciente() {
   return localStorage.getItem('mantenimientoReciente');
 }
 async function guardar() {
-  agregar.value = false;
+  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
@@ -91,6 +91,8 @@ async function guardar() {
         mostrarMensajeExito("Mantenimiento agregado correctamente");
         listarMaquina(); // Actualizar la lista de máquinas si es necesario
         listarMantenimiento(); // Actualizar la lista de mantenimientos
+  agregar.value = false;
+
       } else {
         console.error('Respuesta inesperada del servidor:', response);
         mostrarMensajeError("No se pudo agregar el mantenimiento");
@@ -134,6 +136,8 @@ if (!informacion.value || !informacion.value._id) {
       const response = await useMantenimiento.putMantenimiento(informacion.value._id, todo)
 if(response.status!==200){
   mostrarMensajeError("no se pudo enviar")
+  agregar.value = false;
+
 }else{
   mostrarMensajeExito("muy bien")
   listarMantenimiento();

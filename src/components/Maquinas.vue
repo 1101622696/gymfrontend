@@ -45,7 +45,7 @@ function obtenerMaquinaReciente() {
 }
 
 async function guardar() {
-  agregar.value = false;
+  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
@@ -78,6 +78,8 @@ async function guardar() {
         mostrarMensajeExito("Máquina agregada correctamente");
         listarMaquina(); // Actualizar la lista de máquinas
         listarSedes(); // Actualizar la lista de sedes
+  agregar.value = false;
+
       } else {
         console.error('Respuesta inesperada del servidor:', response);
         mostrarMensajeError("No se pudo agregar la máquina");
@@ -144,6 +146,8 @@ async function editarmaquina() {
       const response = await useMaquina.putMaquina(informacion.value._id, todo);
       if (response.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
+  agregar.value = false;
+
       } else {
         mostrarMensajeExito("Muy bien");
         listarMaquina();

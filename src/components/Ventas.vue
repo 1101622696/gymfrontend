@@ -51,7 +51,7 @@ function obtenerUltimaVenta() {
   return localStorage.getItem('ultimaVenta');
 }
 async function guardar() {
-  agregar.value = false;
+  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
@@ -65,6 +65,7 @@ async function guardar() {
 
       if (nombrez.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
+        
       } else {
         const nuevaVenta = {
           _id: nombrez.data.venta._id, // Asumiendo que el backend devuelve un _id
@@ -83,6 +84,8 @@ async function guardar() {
         mostrarMensajeExito("Venta agregada exitosamente");
         listarVentas();
         listarInventarios();
+  agregar.value = false;
+
       }
     } catch (error) {
       mostrarMensajeError("Error al enviar la solicitud: " + error.message);

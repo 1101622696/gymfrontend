@@ -14,6 +14,9 @@ const useCliente = useStoreClientes();
 let agregar = ref(false);
 let botoneditar=ref(false)
 let mostrarFoto = ref(false)
+let nivelimc = ref(false)
+
+
 
 function llamaragregarCliente() {
   botoneditar.value = true; 
@@ -75,7 +78,7 @@ function obtenerClienteReciente() {
 
 // Función guardar modificada
 async function guardar() {
-  agregar.value = false;
+  // agregar.value = false;
   if (await validar()) {
     const todo = {
       nombre: nombre.value,
@@ -116,6 +119,8 @@ async function guardar() {
         // Actualizar listas relacionadas
         await listarClientes();
         await listarPlanes();
+  agregar.value = false;
+
       } else {
         console.error('Respuesta inesperada del servidor:', response);
         mostrarMensajeError("No se pudo agregar el cliente");
@@ -165,6 +170,8 @@ async function editarcliente() {
       mostrarMensajeExito("Cliente actualizado exitosamente");
       listarClientes();
       listarPlanes();
+  agregar.value = false;
+
     } else {
       mostrarMensajeError("No se pudo actualizar el cliente");
     }
@@ -268,34 +275,6 @@ async function validar() {
     mostrarMensajeError("Debe ingresar un enlace para la foto");
     verificado = false;
   }
-
-  // for (let i = 0; i < seguimientos.value.length; i++) {
-  //   const seguimiento = seguimientos.value[i];
-  //   if (seguimiento.fecha === "") {
-  //     mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
-  //     verificado = false;
-  //   }
-  //   if (isNaN(seguimiento.peso) || seguimiento.peso <= 0) {
-  //     mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
-  //     verificado = false;
-  //   }
-  //   if (isNaN(seguimiento.imc) || seguimiento.imc <= 0) {
-  //     mostrarMensajeError(`El imc del seguimiento ${i + 1} debe ser un número válido`);
-  //     verificado = false;
-  //   }
-  //   if (isNaN(seguimiento.brazo) || seguimiento.brazo <= 0) {
-  //     mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
-  //     verificado = false;
-  //   }
-  //   if (isNaN(seguimiento.altura) || seguimiento.altura <= 0) {
-  //     mostrarMensajeError(`La altura del seguimiento ${i + 1} debe ser un número válido`);
-  //     verificado = false;
-  //   }
-  //   if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
-  //     mostrarMensajeError(`La edad del seguimiento ${i + 1} debe ser un número válido`);
-  //     verificado = false;
-  //   }
-  // }
 
   if (verificado) {
     mostrarMensajeExito("El formulario se envió correctamente");
@@ -653,6 +632,13 @@ const seguimientoColumns = ref([
     };
 
 
+    const mostarimc = () => {
+      nivelimc.value = !nivelimc.value;
+    };
+        const cerrarfoto = () => {
+      nivelimc.value = !nivelimc.value;
+    };
+
 </script>
 <template>
 
@@ -792,6 +778,16 @@ const seguimientoColumns = ref([
           <q-avatar size="150px">
             <img :src="selectedCliente?.foto" />
           </q-avatar>
+  <div>
+    <q-btn @click="mostarimc">
+      Nivel de IMC
+    </q-btn>
+    <div v-if="nivelimc" >
+        <q-btn color="red" @click="cerrarfoto" class="fotocerrar">
+x        </q-btn>
+      <img class="fotoimc" src="https://static.tuasaude.com/media/article/me/dr/imc_15748_l.jpg" alt="IMC Chart">
+    </div>
+  </div>
           <q-table
             flat
             bordered
@@ -815,6 +811,8 @@ const seguimientoColumns = ref([
 
         <div v-if="segui" class="segui-modal">
           <div class="segui-modal-contenedor">
+            <div class="agregarseguimiento">
+          </div>
             <div v-for="(seguimiento, index) in seguimientos" :key="index">
               <h4>Seguimiento</h4>
               <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
@@ -957,7 +955,16 @@ overflow:hidden !important;
 /**/
 /* Estilos para los botones */
 
-
+.fotoimc{
+  width:90%;
+  height:40%
+}
+.fotocerrar{
+    width:10%;
+  height: 10px;
+  background-color: rgb(214, 55, 55);
+  margin-top: 2%;
+}
 .buttonX {
   background-color: #ffffff00; 
   border: 0 solid #cccccc00; 

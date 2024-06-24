@@ -46,7 +46,7 @@ function obtenerUltimoPlan() {
   return localStorage.getItem('ultimoPlan');
 }
 async function guardar() {
-  agregar.value = false;
+  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
@@ -80,6 +80,8 @@ async function guardar() {
 
         mostrarMensajeExito("Plan agregado exitosamente");
         listarPlanes(); // Actualizar la lista de planes
+  agregar.value = false;
+
       } else {
         console.error('Respuesta inesperada del servidor:', response);
         mostrarMensajeError("No se pudo agregar el plan");
@@ -120,6 +122,8 @@ async function editarpago() {
       const response = await usePlan.putPlan(informacion.value._id, todo);
       if (response.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
+  agregar.value = false;
+
       } else {
         mostrarMensajeExito("Muy bien");
         listarPlanes();

@@ -52,7 +52,7 @@ function obtenerUltimoPago() {
 }
 
 async function guardar() {
-  agregar.value = false;
+  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
@@ -86,6 +86,8 @@ async function guardar() {
         listarPlanes(); // Actualizar la lista de planes
         listarPagos(); // Actualizar la lista de pagos
         listarClientes(); // Actualizar la lista de clientes
+  agregar.value = false;
+
       } else {
         console.error('Respuesta inesperada del servidor:', response);
         mostrarMensajeError("No se pudo agregar el pago");
@@ -125,6 +127,8 @@ async function editarpago() {
       const response = await usePagos.putPago(informacion.value._id, todo);
       if (response.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
+  agregar.value = false;
+
       } else {
         mostrarMensajeExito("Muy bien");
         listarPlanes();

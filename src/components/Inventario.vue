@@ -52,7 +52,7 @@ function obtenerProductoReciente() {
 
 // Función guardar modificada
 async function guardar() {
-  agregar.value = false;
+  // agregar.value = false;
   if (await validar()) {
     const todo = {
       descripcion: descripcion.value,
@@ -81,6 +81,8 @@ async function guardar() {
         
         // Actualizar lista de inventario
         await listarInventario();
+  agregar.value = false;
+
       } else {
         console.error('Respuesta inesperada del servidor:', response);
         mostrarMensajeError("No se pudo enviar");
@@ -122,6 +124,8 @@ if (await validar()){
       const response = await useInventario.putInventario(informacion.value._id, todo)
 if(response.status!==200){
   mostrarMensajeError("no se pudo eniar")
+  agregar.value = false;
+
 }else{
   mostrarMensajeExito("muy bien")
   listarInventario()

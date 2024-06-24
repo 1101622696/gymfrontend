@@ -93,6 +93,8 @@ async function guardar() {
         mostrarMensajeExito("Usuario agregado exitosamente");
         listarUsuarios();
         listarSedes();
+  alert.value = false;
+
       }
     } catch (error) {
       mostrarMensajeError("Error al enviar la solicitud: " + error.message);
@@ -134,6 +136,8 @@ async function editarusuario() {
         mostrarMensajeExito("Muy bien");
         listarUsuarios();
         listarSedes();
+  alert.value = false;
+
       }
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
