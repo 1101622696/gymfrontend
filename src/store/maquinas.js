@@ -14,10 +14,12 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const listarMaquina= async() =>{
             try {
                 loading.value  = true;
-                console.log(useUsuario.token);
+                console.log(`este es el usuariotoken ${useUsuario.token}`);
+                console.log(` este es el local ${localStorage.getItem('x-token')}`);
                 const response = await axios.get("api/maquinas/listar",{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
             });
             //    maquinas.value = response.data;
@@ -35,10 +37,12 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const listaractivadas = async () => {
             try {
               loading.value = true;
-              console.log(useUsuario.token);
+              console.log(localStorage.getItem('x-token'));
+              // console.log(useUsuario.token);
               const response = await axios.get("api/maquinas/listaractivadas", {
                 headers: {
-                  "x-token": useUsuario.token,
+                          "x-token": localStorage.getItem('x-token'),
+
                 },
               });
               return response;
@@ -53,10 +57,13 @@ export const useStoreMaquina = defineStore("Maquina", () => {
           const listardesactivadas = async () => {
             try {
               loading.value = true;
-              console.log(useUsuario.token);
+              console.log(localStorage.getItem('x-token'));
+
+              // console.log(useUsuario.token);
               const response = await axios.get("api/maquinas/listardesactivadas", {
                 headers: {
-                  "x-token": useUsuario.token,
+                          "x-token": localStorage.getItem('x-token'),
+
                 },
               });
               return response;
@@ -73,9 +80,12 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const postMaquina= async(data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.post("api/maquinas/escribir", data,{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -92,36 +102,38 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const putMaquina = async (id, data) => {
             try {
               loading.value = true;
-          
-              // Verificar que el ID esté definido
+              console.log(localStorage.getItem('x-token'));
+
               if (!id) {
                 throw new Error("ID no definido");
               }
-          
-              // Realizar la solicitud PUT a la API
-              const response = await axios.put(`api/maquinas/modificar/${id}`, data, {
+                        const response = await axios.put(`api/maquinas/modificar/${id}`, data, {
                 headers: {
-                  "x-token": useUsuario.token // Asegúrate de tener el token correctamente configurado
+                          "x-token": localStorage.getItem('x-token'),
+ 
                 }
               });
           
-              console.log(response.data); // Loguear la respuesta (opcional)
+              console.log(response.data); 
           
-              return response; // Devolver la respuesta completa de Axios
+              return response; 
             } catch (error) {
               console.error('Error al actualizar la máquina:', error);
-              return error; // Devolver el error para manejarlo en el contexto donde se llama a esta función
+              return error;
             } finally {
-              loading.value = false; // Asegurar que loading se restablezca a false sin importar el resultado
+              loading.value = false; 
             }
           };
           
         const putActivarMaquina= async(id) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.put(`api/maquinas/activar/activos/${id}`, {},{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -138,9 +150,12 @@ export const useStoreMaquina = defineStore("Maquina", () => {
         const putDesactivarMaquina= async(id) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.put(`api/maquinas/desactivar/desactivos/${id}`, {},{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);

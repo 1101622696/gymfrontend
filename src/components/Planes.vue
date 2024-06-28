@@ -179,18 +179,24 @@ async function validar() {
     //     mostrarMensajeError("El codigo está vacío");
     //     verificado = false;
     // }
-    if (valor.value === "") {
-        mostrarMensajeError("El valor está vacío");
-        verificado = false;
-    }
+if (valor.value === "") {
+    mostrarMensajeError("El valor está vacío");
+    verificado = false;
+} else if (!/^\d+$/.test(valor.value)) {
+    mostrarMensajeError("El valor debe ser un número");
+    verificado = false;
+}
     if (descripcion.value === "") {
         mostrarMensajeError("La descripcion está vacía");
         verificado = false;
     } 
-    if (dias.value === "") {
-        mostrarMensajeError("Escriba cuantos dias va a durar ese plan");
-        verificado = false;
-    } 
+if (dias.value === "") {
+    mostrarMensajeError("Escriba cuantos dias va a durar ese plan");
+    verificado = false;
+} else if (!/^\d+$/.test(dias.value)) {
+    mostrarMensajeError("Los días deben ser un número");
+    verificado = false;
+}
     // if (total.value === "") {
     //     mostrarMensajeError("El total está vacío");
     //     verificado = false;

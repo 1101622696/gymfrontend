@@ -14,17 +14,19 @@ export const useStorePlanes = defineStore("Planes", () => {
         const listarPlan= async() =>{
             try {
                 loading.value  = true;
-                console.log(useUsuario.token);
+                console.log(`este es el usuariotoken ${useUsuario.token}`);
+                console.log(` este es el local ${localStorage.getItem('x-token')}`);
                 const response = await axios.get("api/planes/listar",{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
             });
             //    planes.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de planes",error);
-                console.log(`${useUsuario.token} es el token`);
+                // console.log(`${useUsuario.token} es el token`);
 
                 throw error;
             }
@@ -35,10 +37,12 @@ export const useStorePlanes = defineStore("Planes", () => {
         const listaractivados = async () => {
             try {
               loading.value = true;
-              console.log(useUsuario.token);
+              console.log(localStorage.getItem('x-token'));
+            //   console.log(useUsuario.token);
               const response = await axios.get("api/planes/listaractivos", {
                 headers: {
-                  "x-token": useUsuario.token,
+                          "x-token": localStorage.getItem('x-token'),
+
                 },
               });
               return response;
@@ -53,10 +57,13 @@ export const useStorePlanes = defineStore("Planes", () => {
           const listardesactivados = async () => {
             try {
               loading.value = true;
-              console.log(useUsuario.token);
+              console.log(localStorage.getItem('x-token'));
+
+            //   console.log(useUsuario.token);
               const response = await axios.get("api/planes/listardesactivados", {
                 headers: {
-                  "x-token": useUsuario.token,
+                          "x-token": localStorage.getItem('x-token'),
+
                 },
               });
               return response;
@@ -71,9 +78,11 @@ export const useStorePlanes = defineStore("Planes", () => {
         const postPlan= async(data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
                 const r = await axios.post("api/planes/escribir", data,{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -90,10 +99,12 @@ export const useStorePlanes = defineStore("Planes", () => {
         const putPlan= async(id, data) =>{
             try {
                 loading.value =true
-                
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.put(`api/planes/modificar/${id}`, data,{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -109,9 +120,12 @@ export const useStorePlanes = defineStore("Planes", () => {
         const putActivarPlan= async(id) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.put(`api/planes/activar/activos/${id}`, {},{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -128,9 +142,12 @@ export const useStorePlanes = defineStore("Planes", () => {
         const putDesactivarPlan= async(id) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.put(`api/planes/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);

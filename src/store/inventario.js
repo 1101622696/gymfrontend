@@ -14,10 +14,12 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const listarInventario= async() =>{
             try {
                 loading.value  = true;
-                console.log(useUsuario.token);
+                console.log(`este es el usuariotoken ${useUsuario.token}`);
+                console.log(` este es el local ${localStorage.getItem('x-token')}`);
                 const response = await axios.get("api/inventario/listar",{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
             });
             //    inventario.value = response.data;
@@ -33,10 +35,13 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const listaractivados = async () => {
           try {
             loading.value = true;
-            console.log(useUsuario.token);
+            console.log(localStorage.getItem('x-token'));
+
+            // console.log(useUsuario.token);
             const response = await axios.get("api/inventario/listaractivados", {
               headers: {
-                "x-token": useUsuario.token,
+                        "x-token": localStorage.getItem('x-token'),
+
               },
             });
             return response;
@@ -53,10 +58,12 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const listardesactivados = async () => {
           try {
             loading.value = true;
-            console.log(useUsuario.token);
+            console.log(localStorage.getItem('x-token'));
+            // console.log(useUsuario.token);
             const response = await axios.get("api/inventario/listardesactivados", {
               headers: {
-                "x-token": useUsuario.token,
+                        "x-token": localStorage.getItem('x-token'),
+
               },
             });
             return response;
@@ -71,9 +78,11 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const postInventario= async(data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.post("api/inventario/escribir", data,{
                     headers:{
-                        "x-token":useUsuario.token
+                        "x-token":useUsuario.token,
                     }
                 })
                 console.log(r);
@@ -90,9 +99,12 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const putInventario= async(id, data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.put(`api/inventario/modificar/${id}`, data,{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -108,12 +120,15 @@ export const useStoreInventario = defineStore("Inventario", () => {
         const putActivarInventario = async (id) => {
             try {
               loading.value = true;
+              console.log(localStorage.getItem('x-token'));
+
               const r = await axios.put(
                 `api/inventario/activar/activados/${id}`,
                 {},
                 {
                   headers: {
-                    "x-token": useUsuario.token,
+                            "x-token": localStorage.getItem('x-token'),
+
                   },
                 }
               );
@@ -131,12 +146,16 @@ export const useStoreInventario = defineStore("Inventario", () => {
           const putDesactivarInventario = async (id) => {
             try {
               loading.value = true;
+
+              console.log(localStorage.getItem('x-token'));
+
               const r = await axios.put(
                 `api/inventario/desactivar/desactivados/${id}`,
                 {},
                 {
                   headers: {
-                    "x-token": useUsuario.token,
+                            "x-token": localStorage.getItem('x-token'),
+
                   },
                 }
               );

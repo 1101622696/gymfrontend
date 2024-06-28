@@ -74,6 +74,36 @@ const mostrarMensajeExito = (mensaje) => {
   });
 };
 
+// const iniciar = async () => {
+//   try {
+//     if (email.value === '' || passwordLogin.value === '') {
+//       mostrarMensajeError('El correo electrónico y la contraseña son obligatorios');
+//       return;
+//     }
+
+//     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+//     if (!emailRegex.test(email.value)) {
+//       mostrarMensajeError('Correo electrónico o contraseña incorrectos');
+//       return;
+//     }
+
+//     const res = await UseUsuario.login(email.value, passwordLogin.value);
+
+//     if (res.data.token) {
+//       mostrarMensajeExito('Inicio de sesión exitoso');
+//       router.push('/Home');
+//     } else {
+//       mostrarMensajeError('Correo electrónico o contraseña incorrectos');
+//     }
+//   } catch (error) {
+//     if (error.response && error.response.data) {
+//       mostrarMensajeError(error.response.data.msg);
+//     } else {
+//       mostrarMensajeError('Ha ocurrido un error en el servidor');
+//       console.log(error);
+//     }
+//   }
+// };
 const iniciar = async () => {
   try {
     if (email.value === '' || passwordLogin.value === '') {
@@ -88,8 +118,10 @@ const iniciar = async () => {
     }
 
     const res = await UseUsuario.login(email.value, passwordLogin.value);
-
     if (res.data.token) {
+      // Guardar el token en localStorage
+      localStorage.setItem('token', res.data.token);
+      
       mostrarMensajeExito('Inicio de sesión exitoso');
       router.push('/Home');
     } else {

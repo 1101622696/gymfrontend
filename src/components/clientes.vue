@@ -867,11 +867,11 @@ x        </q-btn>
         <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
         <!-- <input class="input" type="textarea" placeholder="Observaciones" v-model.trim="observaciones" /> -->
             <textarea class="input textarea" placeholder="Observaciones" v-model.trim="observaciones"></textarea>
-        <!-- <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" /> -->
-                <div class="input-container">
+        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
+                <!-- <div class="input-container">
           <label for="fechaNacimiento">Fecha de Nacimiento</label>
           <input class="fechaNacimiento" type="date" v-model.trim="fechaNacimiento" />
-        </div>
+        </div> -->
         <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
         <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan" style="background-color: #grey; margin-bottom: 20px" />
         <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />

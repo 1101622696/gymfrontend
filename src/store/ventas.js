@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
 import { useStoreUsuarios } from "./usuarios";
-
+import { Notify } from "quasar";
 export const useStoreVentas = defineStore("Ventas", () => {
 
     let loading = ref(false)
@@ -13,10 +13,12 @@ export const useStoreVentas = defineStore("Ventas", () => {
         const listarVenta= async() =>{
             try {
                 loading.value  = true;
-                console.log(useUsuario.token);
+                console.log(`este es el usuariotoken ${useUsuario.token}`);
+                console.log(` este es el local ${localStorage.getItem('x-token')}`);
                 const response = await axios.get("api/ventas/listar",{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
             });
             //    ventas.value = response.data;
@@ -35,14 +37,28 @@ export const useStoreVentas = defineStore("Ventas", () => {
         const postVenta= async(data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
                 const r = await axios.post("api/ventas/escribir", data,{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
+
+                Notify.create({
+                  message: 'venta registrado correctamente',
+                  color: "positive",
+                  position: "top",
+                })
+
                 console.log(r);
                 return r
             } catch (error) {
+              Notify.create({
+                type: 'negative',
+                message: error.response.data.errors[0].msg
+              })
+
                 loading.value =true
                 console.log(error);
                 return error;
@@ -54,12 +70,14 @@ export const useStoreVentas = defineStore("Ventas", () => {
         const putVenta = async (id, data) => {
   try {
     loading.value = true;
+    console.log(localStorage.getItem('x-token'));
     if (!id) {
       throw new Error("ID no definido");
     }
     const r = await axios.put(`api/ventas/modificar/${id}`, data, {
       headers: {
-        "x-token": useUsuario.token
+                "x-token": localStorage.getItem('x-token'),
+
       }
     });
     console.log(r);

@@ -3,7 +3,9 @@ import axios from "axios";
 import { ref } from "vue";
 
 export const useStoreUsuarios = defineStore("Usuarios", () => {
-  const token = ref("");
+  // const token = ref("");
+  const token = ref(localStorage.getItem('x-token') || "");
+
   const loading = ref(false);
   const usuarios = ref([]);
   const user = ref({});
@@ -12,9 +14,11 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const listarUsuario = async () => {
     try {
       loading.value = true;
+      // console.log(`este es el usuariotoken ${useUsuario.token}`);
+      console.log(` este es el local ${localStorage.getItem('x-token')}`);
       const response = await axios.get("api/usuarios/listar", {
         headers: {
-          "x-token": token.value
+          "x-token": localStorage.getItem('x-token')
         }
       });
       return response;
@@ -29,9 +33,10 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const listaractivados = async () => {
     try {
       loading.value = true;
+      console.log(localStorage.getItem('x-token'));
       const response = await axios.get("api/usuarios/listaractivados", {
         headers: {
-          "x-token": token.value
+          "x-token": localStorage.getItem('x-token')
         }
       });
       return response;
@@ -46,9 +51,10 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const listardesactivados = async () => {
     try {
       loading.value = true;
+      console.log(localStorage.getItem('x-token'));
       const response = await axios.get("api/usuarios/listardesactivados", {
         headers: {
-          "x-token": token.value
+          "x-token": localStorage.getItem('x-token')
         }
       });
       return response;
@@ -63,9 +69,10 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const postUsuario = async (data) => {
     try {
       loading.value = true;
+      console.log(localStorage.getItem('x-token'));
       const response = await axios.post("api/usuarios/escribir", data, {
         headers: {
-          "x-token": token.value
+          "x-token": localStorage.getItem('x-token')
         }
       });
       return response;
@@ -79,10 +86,11 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
 
   const putUsuarios = async (id, data) => {
     try {
-      loading.value = true;
+      loading.value = true;    
+      console.log(localStorage.getItem('x-token'));
       const response = await axios.put(`api/usuarios/modificar/${id}`, data, {
         headers: {
-          "x-token": token.value
+          "x-token": localStorage.getItem('x-token')
         }
       });
       return response;
@@ -97,9 +105,11 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const putActivarUsuario = async (id) => {
     try {
       loading.value = true;
+      console.log(localStorage.getItem('x-token'));
+
       const response = await axios.put(`api/usuarios/activar/activos/${id}`, {}, {
         headers: {
-          "x-token": token.value
+          "x-token": localStorage.getItem('x-token')
         }
       });
       return response;
@@ -114,9 +124,10 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const putDesactivarUsuario = async (id) => {
     try {
       loading.value = true;
+      console.log(localStorage.getItem('x-token'));
       const response = await axios.put(`api/usuarios/desactivar/desactivados/${id}`, {}, {
         headers: {
-          "x-token": token.value
+          "x-token": localStorage.getItem('x-token')
         }
       });
       return response;
@@ -133,7 +144,11 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
       const res = await axios.post("api/usuarios/login", { email, password });
       token.value = res.data.token;
       user.value = res.data.usuario;
-      role.value = res.data.usuario.rol;  // Almacenar el rol del usuario
+      role.value = res.data.usuario.rol;
+      
+      localStorage.setItem('x-token', res.data.token);
+      console.log('Token guardado:', res.data.token); // Añade este console.log
+      
       return res;
     } catch (error) {
       console.log("Error en el login", error);
@@ -143,7 +158,8 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const validaremail = async (email) => {
     try {
       const res = await axios.get(`api/usuarios/email?email=${email}`);
-      token.value = res.data.token;
+      localStorage.setItem('x-token', res.data.token); // Corrección aquí
+
       return res;
     } catch (error) {
       console.error("No se pudo obtener la informacion requerida", error);
@@ -153,9 +169,11 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
     const putUsuariospassword = async (id, data) => {
       try {
         loading.value = true;
+        console.log(localStorage.getItem('x-token'));
+
         const response = await axios.put(`api/usuarios/password/${id}`, data, {
           headers: {
-            "x-token": token.value
+            "x-token": localStorage.getItem('x-token')
           }
         });
         return response;

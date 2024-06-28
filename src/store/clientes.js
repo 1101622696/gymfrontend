@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
 import { useStoreUsuarios } from "./usuarios";
+import { Notify } from "quasar";
 
 export const useStoreClientes = defineStore(
   "Cliente",
@@ -13,13 +14,15 @@ export const useStoreClientes = defineStore(
     const listarCliente = async (payload) => {
       try {
         loading.value = true;
-        console.log(useUsuario.token);
+        // console.log(useUsuario.token);
+        console.log(localStorage.getItem('x-token'));
+
         let ruta;
         if (payload == null) ruta = "api/clientes/listar";
         else ruta=`api/clientes/listar?busqueda=${payload}`;
         const response = await axios.get(ruta, {
           headers: {
-            "x-token": useUsuario.token,
+                   "x-token": localStorage.getItem('x-token'),
           },
         });
         //    clientes.value = response.data;
@@ -36,10 +39,12 @@ export const useStoreClientes = defineStore(
     const listaractivados = async () => {
       try {
         loading.value = true;
-        console.log(useUsuario.token);
+        // console.log(useUsuario.token);
+        console.log(localStorage.getItem('x-token'));
+
         const response = await axios.get("api/clientes/listaractivados", {
           headers: {
-            "x-token": useUsuario.token,
+                   "x-token": localStorage.getItem('x-token'),
           },
         });
         //    clientes.value = response.data;
@@ -55,10 +60,12 @@ export const useStoreClientes = defineStore(
     const listardesactivados = async () => {
       try {
         loading.value = true;
-        console.log(useUsuario.token);
+        // console.log(useUsuario.token);
+        console.log(localStorage.getItem('x-token'));
+
         const response = await axios.get("api/clientes/listardesactivados", {
           headers: {
-            "x-token": useUsuario.token,
+                   "x-token": localStorage.getItem('x-token'),
           },
         });
         //    clientes.value = response.data;
@@ -74,10 +81,12 @@ export const useStoreClientes = defineStore(
     const listarClientesporPlan = async (id) => {
       try {
         loading.value = true;
-        console.log(useUsuario.token);
+        console.log(`este es el usuariotoken ${useUsuario.token}`);
+        console.log(` este es el local ${localStorage.getItem('x-token')}`);
+
         const response = await axios.get(`api/clientes/porplan/${id}`, {
           headers: {
-            "x-token": useUsuario.token,
+                   "x-token": localStorage.getItem('x-token'),
           },
         });
         //    clientes.value = response.data;
@@ -92,9 +101,11 @@ export const useStoreClientes = defineStore(
     const listarClientesporCumpleanos = async (dia, mes) => {
       try {
           loading.value = true;
+          console.log(localStorage.getItem('x-token'));
+
           const response = await axios.get(`/api/clientes/cumpleanos?dia=${dia}&mes=${mes}`, {
               headers: {
-                  "x-token": useUsuario.token,
+                         "x-token": localStorage.getItem('x-token'),
               },
           });
           return response.data;
@@ -106,36 +117,28 @@ export const useStoreClientes = defineStore(
       }
   };
 
-
-    // const postCliente = async (data) => {
-    //   try {
-    //     loading.value = true;
-    //     const r = await axios.get("api/clientes/escribir", data, {
-    //       headers: {
-    //         token: useUsuario.token,
-    //       },
-    //     });
-    //     console.log(r);
-    //     return r;
-    //   } catch (error) {
-    //     loading.value = true;
-    //     console.log(error);
-    //     return error;
-    //   } finally {
-    //     loading.value = false;
-    //   }
-    // };
     const postCliente = async (data) => {
       try {
         loading.value = true;
+        console.log(localStorage.getItem('x-token'));
+
         const r = await axios.post("api/clientes/escribir", data, {
           headers: {
-            "x-token": useUsuario.token,
+                   "x-token": localStorage.getItem('x-token'),
           },
         });
+        Notify.create({
+          message: 'Cliente registrado correctamente',
+          color: "positive",
+          position: "top",
+        })
         console.log(r);
         return r;
       } catch (error) {
+        Notify.create({
+          type: 'negative',
+          message: error.respone.data.errors[0].msj
+        })
         console.log(error);
         return error;
       } finally {
@@ -146,9 +149,12 @@ export const useStoreClientes = defineStore(
     const putCliente = async (id, data) => {
       try {
         loading.value = true;
+
+        console.log(localStorage.getItem('x-token'));
+
         const r = await axios.put(`api/clientes/modificar/${id}`, data, {
           headers: {
-            "x-token": useUsuario.token,
+                   "x-token": localStorage.getItem('x-token'),
           },
         });
         console.log(r);
@@ -164,12 +170,14 @@ export const useStoreClientes = defineStore(
     const putActivarCliente = async (id) => {
       try {
         loading.value = true;
+        console.log(localStorage.getItem('x-token'));
+
         const r = await axios.put(
           `api/clientes/activar/activados/${id}`,
           {},
           {
             headers: {
-              "x-token": useUsuario.token,
+                     "x-token": localStorage.getItem('x-token'),
             },
           }
         );
@@ -187,12 +195,14 @@ export const useStoreClientes = defineStore(
     const putDesactivarCliente = async (id) => {
       try {
         loading.value = true;
+        console.log(localStorage.getItem('x-token'));
+
         const r = await axios.put(
           `api/clientes/desactivar/desactivados/${id}`,
           {},
           {
             headers: {
-              "x-token": useUsuario.token,
+                     "x-token": localStorage.getItem('x-token'),
             },
           }
         );
@@ -217,7 +227,7 @@ export const useStoreClientes = defineStore(
           { seguimiento: seguimientos.seguimiento }, // Envía directamente el array de seguimiento
           {
             headers: {
-              "x-token": useUsuario.token,
+                     "x-token": localStorage.getItem('x-token'),
             },
           }
         );

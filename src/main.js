@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 import { useIntervalStore } from './store/interval.js';
 
 // axios.defaults.baseURL = "http://localhost:4000/";
-axios.defaults.baseURL = "https://gimnasio-ij9r.onrender.com";
+axios.defaults.baseURL = "https://proyecto-gimnasio.onrender.com";
 
 // sin interval
 // let requestsPending = 0;

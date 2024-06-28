@@ -13,17 +13,19 @@ export const useStoreSedes = defineStore("Sedes", () => {
         const listarSede= async() =>{
             try {
                 loading.value  = true;
-                console.log(useUsuario.token);
+                console.log(`este es el usuariotoken ${useUsuario.token}`);
+                console.log(` este es el local ${localStorage.getItem('x-token')}`);
                 const response = await axios.get("api/sedes/listar",{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
             });
             //    sedes.value = response.data;
                return response;
             } catch (error) {
                 console.error("NO se pudo obtener la lista de sedes",error);
-                console.log(`${useUsuario.token} es el token`);
+                // console.log(`${useUsuario.token} es el token`);
 
                 throw error;
             }
@@ -35,10 +37,12 @@ export const useStoreSedes = defineStore("Sedes", () => {
         const listaractivadas = async () => {
             try {
               loading.value = true;
-              console.log(useUsuario.token);
+              console.log(localStorage.getItem('x-token'));
+              // console.log(useUsuario.token);
               const response = await axios.get("api/sedes/listaractivados", {
                 headers: {
-                  "x-token": useUsuario.token,
+                          "x-token": localStorage.getItem('x-token'),
+
                 },
               });
               return response;
@@ -53,10 +57,12 @@ export const useStoreSedes = defineStore("Sedes", () => {
           const listardesactivadas = async () => {
             try {
               loading.value = true;
-              console.log(useUsuario.token);
+              console.log(localStorage.getItem('x-token'));
+              // console.log(useUsuario.token);
               const response = await axios.get("api/sedes/listardesactivados", {
                 headers: {
-                  "x-token": useUsuario.token,
+                          "x-token": localStorage.getItem('x-token'),
+
                 },
               });
               return response;
@@ -68,30 +74,14 @@ export const useStoreSedes = defineStore("Sedes", () => {
             }}
 
     
-        // const postSede= async(data) =>{
-        //     try {
-        //         loading.value =true
-        //         const r = await axios.post("api/sedes/escribir", data,{
-        //             headers:{
-        //                 "x-token":useUsuario.token
-        //             }
-        //         })
-        //         console.log(r);
-        //         return r
-        //     } catch (error) {
-        //         loading.value =true
-        //         console.log(error);
-        //         return error;
-        //     }finally{
-        //         loading.value = false
-        //     }
-        // }
         const postSede = async (data) => {
             const loading = ref(true);
+            console.log(localStorage.getItem('x-token'));
             try {
               const response = await axios.post("api/sedes/escribir", data, {
                 headers: {
-                  "x-token": useUsuario.token
+                          "x-token": localStorage.getItem('x-token'),
+
                 }
               });
               console.log(response);
@@ -107,12 +97,14 @@ export const useStoreSedes = defineStore("Sedes", () => {
           const putSedes = async (id, data) => {
             try {
               loading.value = true;
+              console.log(localStorage.getItem('x-token'));
               if (!id) {
                 throw new Error("ID no definido");
               }
               const r = await axios.put(`api/sedes/modificar/${id}`, data, {
                 headers: {
-                  "x-token": useUsuario.token
+                          "x-token": localStorage.getItem('x-token'),
+
                 }
               });
               console.log(r);
@@ -130,9 +122,11 @@ export const useStoreSedes = defineStore("Sedes", () => {
         const putActivarSede= async(id) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
                 const r = await axios.put(`api/sedes/activar/activos/${id}`, {},{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -149,9 +143,11 @@ export const useStoreSedes = defineStore("Sedes", () => {
         const putDesactivarSede= async(id) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
                 const r = await axios.put(`api/sedes/desactivar/desactivados/${id}`, {},{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);

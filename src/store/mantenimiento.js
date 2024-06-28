@@ -14,10 +14,12 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         const listarMantenimiento= async() =>{
             try {
                 loading.value  = true;
-                console.log(useUsuario.token);
+                console.log(`este es el usuariotoken ${useUsuario.token}`);
+                console.log(` este es el local ${localStorage.getItem('x-token')}`);
                 const response = await axios.get("api/mantenimiento/listar",{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
             });
             //    mantenimiento.value = response.data;
@@ -36,9 +38,12 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         const postMantenimiento= async(data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.post("api/mantenimiento/escribir", data,{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -55,9 +60,11 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
         const putMantenimiento= async(id, data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
                 const r = await axios.put(`api/mantenimiento/modificar/${id}`, data,{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);

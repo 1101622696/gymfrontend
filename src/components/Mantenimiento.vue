@@ -192,10 +192,13 @@ async function validar() {
         mostrarMensajeError("El responsable está vacío");
         verificado = false;
     } 
-    if (valor.value === "") {
-        mostrarMensajeError("El valor está vacío");
-        verificado = false;
-    }
+if (valor.value === "") {
+    mostrarMensajeError("El valor está vacío");
+    verificado = false;
+} else if (!/^\d+$/.test(valor.value)) {
+    mostrarMensajeError("El valor debe ser un número");
+    verificado = false;
+}
 
     return verificado;
 }

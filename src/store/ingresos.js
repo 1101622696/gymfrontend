@@ -15,10 +15,12 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
         const listarIngreso= async() =>{
             try {
                 loading.value  = true;
-                console.log(useUsuario.token);
+                console.log(`este es el usuariotoken ${useUsuario.token}`);
+                console.log(` este es el local ${localStorage.getItem('x-token')}`);
                 const response = await axios.get("api/ingresos/listar",{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
             });
             //    ingresos.value = response.data;
@@ -37,9 +39,12 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
         const postIngresos= async(data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
+
                 const r = await axios.post("api/ingresos/escribir", data,{
                     headers:{
-                        "x-token": useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);
@@ -56,9 +61,11 @@ export const useStoreIngresos = defineStore("Ingreso", () => {
         const putIngresos= async(id, data) =>{
             try {
                 loading.value =true
+                console.log(localStorage.getItem('x-token'));
                 const r = await axios.put(`api/ingresos/modificar/${id}`, data,{
                     headers:{
-                        "x-token":useUsuario.token
+                                "x-token": localStorage.getItem('x-token'),
+
                     }
                 })
                 console.log(r);

@@ -170,18 +170,13 @@ async function validar() {
         mostrarMensajeError("seleccione un inventario");
         verificado = false;
     }
-    // if (fecha.value === "") {
-    //     mostrarMensajeError("la fecha de la venta está vacía");
-    //     verificado = false;
-    // }
-    // if (codigo.value === "") {
-    //     mostrarMensajeError("el codigo está vacío");
-    //     verificado = false;
-    // } 
-    // if (valorUnitario.value == "") {
-    //     mostrarMensajeError("Digite un valor Unitario");
-    //     verificado = false;
-    // } 
+ if (valorUnitario.value === "") {
+    mostrarMensajeError("El valor está vacío");
+    verificado = false;
+} else if (!/^\d+$/.test(valorUnitario.value)) {
+    mostrarMensajeError("El valor debe ser un número");
+    verificado = false;
+}
     if (cantidad.value === "") {
         mostrarMensajeError("Ingrese la cantidad");
         verificado = false;

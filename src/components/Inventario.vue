@@ -212,14 +212,20 @@ async function validar() {
         mostrarMensajeError("la descripcion está vacío");
         verificado = false;
     }
-    if (valor.value === "") {
-        mostrarMensajeError("Ingrese un valor");
-        verificado = false;
+if (valor.value === "") {
+    mostrarMensajeError("El valor está vacío");
+    verificado = false;
+} else if (!/^\d+$/.test(valor.value)) {
+    mostrarMensajeError("El valor debe ser un número");
+    verificado = false;
 }
-    if (cantidad.value === "") {
-        mostrarMensajeError("la cantidad está vacía");
-        verificado = false;
-    }
+if (cantidad.value === "") {
+    mostrarMensajeError("El valor está vacío");
+    verificado = false;
+} else if (!/^\d+$/.test(valor.value)) {
+    mostrarMensajeError("El valor debe ser un número");
+    verificado = false;
+}
 
     if (verificado) {
         mostrarMensajeExito("El formulario se envió correctamente");
