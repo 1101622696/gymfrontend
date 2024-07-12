@@ -19,33 +19,6 @@ idCliente.value=""
 }
 
 
-// async function guardar() {
-//   alert.value = false;
-
-//       if (await validar()) {
-//         const todo = {
-//           idSede: idSede.value.valor,
-//           idCliente: idCliente.value.valor,
-//       };
-//       console.log(`${idCliente.value.valor} es el id de cliente`);
-//       console.log(`${idSede.value.valor} es el id de sede`);
-//       console.log(`${nombreCodigoC.value} es el  de cliente`);
-//       console.log(`${nombreCodigoS.value} es el  de sede`);
-
-
-
-//         let nombrez = await useIngreso.postIngresos(todo);
-//         if (nombrez.status !== 200) {
-//           mostrarMensajeError("No se pudo enviar");
-//         } else {
-//           mostrarMensajeExito("Muy bien");
-//           listarIngresos();
-//           listarClientes();
-//           listarSedes();
-//         }
-//       }
-      
-//     }
 
 function guardarIngresoReciente(id) {
   localStorage.setItem('ingresoReciente', id);
@@ -56,7 +29,6 @@ function obtenerIngresoReciente() {
 }
 
 async function guardar() {
-  // alert.value = false;
 
   if (await validar()) {
     const todo = {
@@ -81,10 +53,8 @@ async function guardar() {
 
         console.log('Nuevo ingreso a añadir:', nuevoIngreso);
 
-        // Guardar el ID del nuevo ingreso en localStorage
         guardarIngresoReciente(nuevoIngreso._id);
 
-        // Añadir el nuevo registro al principio del array
         rows.value.unshift(nuevoIngreso);
 
         console.log('Filas actualizadas:', rows.value);
@@ -92,7 +62,6 @@ async function guardar() {
         mostrarMensajeExito("Ingreso agregado correctamente");
         cerrar();
 
-        // Actualizar listas relacionadas
         await listarClientes();
         await listarSedes();
   alert.value = false;
@@ -113,9 +82,23 @@ async function guardar() {
           alert.value = true;
     accion.value =2;
       informacion.value = info;
-      idSede.value.valor = info.idSede;
-      idCliente.value.valor = info.idCliente;
+          const selectedSede = sedesTodo.value.find(sede => sede._id === info.idSede);
+    if (selectedSede) {
+        idSede.value = {
+            label: `${selectedSede.nombre}`, 
+            valor: selectedSede._id, 
+            nombre: selectedSede.nombre  
+        };
     }
+    const selectedCliente = clientesTodo.value.find(cliente => cliente._id === info.idCliente);
+    if (selectedCliente) {
+        idCliente.value = {
+            label: `${selectedCliente.nombre} - ${selectedCliente.documento}`,
+            valor: selectedCliente._id,
+            nombre: selectedCliente.nombre
+        };
+    }
+}
 
     async function editaringreso() {
       if (await validar()) {

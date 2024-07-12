@@ -33,41 +33,6 @@ function llamaragregarCliente() {
   // seguimientos.value = [{ fecha: '', peso: '', imc: '', brazo: '', altura: '', edad: '' }];
 }
 
-
-// async function guardar() {
-
-// agregar.value = false;
-//   if (await validar()) {
-//     const todo = {
-//       nombre: nombre.value,
-//       documento: documento.value,
-//       direccion: direccion.value,
-//       fechaNacimiento: fechaNacimiento.value,
-//       telefono: telefono.value,
-//       observaciones: observaciones.value,
-//       idPlan: idPlan.value.valor,
-//       foto: foto.value,
-//       // seguimientos:seguimientos.value,
-//     };
-// // console.log(seguimientos.value);
-// // console.log('este son seguimientos arriba');
-// console.log(nombre.value);
-// console.log(direccion.value);
-// console.log(fechaNacimiento.value);
-// console.log(telefono.value);
-// console.log(idPlan.value);
-//     let nombrez = await useCliente.postCliente(todo);
-
-//     if (nombrez.status === 200) {
-//       mostrarMensajeExito("Cliente agregado exitosamente");
-//       listarClientes();
-//       listarPlanes();
-//     } else {
-//       mostrarMensajeError("No se pudo agregar el cliente");
-//     }
-//   }
-// }
-
 function guardarClienteReciente(id) {
   localStorage.setItem('clienteReciente', id);
 }
@@ -76,9 +41,7 @@ function obtenerClienteReciente() {
   return localStorage.getItem('clienteReciente');
 }
 
-// Función guardar modificada
 async function guardar() {
-  // agregar.value = false;
   if (await validar()) {
     const todo = {
       nombre: nombre.value,
@@ -106,17 +69,14 @@ async function guardar() {
 
         console.log('Nuevo cliente a añadir:', nuevoCliente);
 
-        // Guardar el ID del nuevo cliente en localStorage
         guardarClienteReciente(nuevoCliente._id);
 
-        // Añadir el nuevo registro al principio del array
         rows.value.unshift(nuevoCliente);
 
         console.log('Filas actualizadas:', rows.value);
 
         mostrarMensajeExito("Cliente agregado exitosamente");
         
-        // Actualizar listas relacionadas
         await listarClientes();
         await listarPlanes();
   agregar.value = false;
@@ -145,8 +105,14 @@ direccion.value=info.direccion
 fechaNacimiento.value=info.fechaNacimiento
 telefono.value=info.telefono
 observaciones.value=info.observaciones
-idPlan.value.valor=info.idPlan
-foto.value=info.foto
+    const selectedPlan = planesTodo.value.find(plan => plan._id === info.idPlan);
+    if (selectedPlan) {
+        idPlan.value = {
+            label: `${selectedPlan.codigo} - ${selectedPlan.descripcion}`, 
+            valor: selectedPlan._id, 
+            nombre: selectedPlan.nombre  
+        };
+    }foto.value=info.foto
 
 }
 
@@ -668,7 +634,7 @@ const seguimientoColumns = ref([
 
       <div class="inputlistar" v-if="listP">
       <select v-model="planSeleccionado" @change="buscarClientesporPlan" class="custom-select2">
-        <option disabled value="">Seleccione una opción</option>
+        <option disabled value="">Seleccione un plan</option>
         <option v-for="plan in planesTodo" :key="plan.id" :value="plan._id">{{ plan.descripcion }}</option>
       </select>
     </div>

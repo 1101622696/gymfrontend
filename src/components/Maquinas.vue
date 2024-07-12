@@ -18,23 +18,6 @@ descripcion.value=""
 }
 
 
-// async function guardar(){
-
-// agregar.value = false;
-// if (await validar()){
-//   const todo={
-//     idSede:idSede.value.valor,
-//     descripcion:descripcion.value,
-//     }
-// let nombrez= await useMaquina.postMaquina(todo)
-// if(nombrez.status!=200){
-//   mostrarMensajeError("no se pudo enviar")
-// }else{
-//   mostrarMensajeExito("muy bien")
-//   listarMaquina(), listarSedes();
-// }
-// }
-// }
 
 function guardarMaquinaReciente(id) {
   localStorage.setItem('maquinaReciente', id);
@@ -45,7 +28,6 @@ function obtenerMaquinaReciente() {
 }
 
 async function guardar() {
-  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
@@ -59,25 +41,21 @@ async function guardar() {
 
       if (response.status === 200) {
         const nuevaMaquina = {
-          _id: response.data.maquina._id, // Asumiendo que el backend devuelve un _id
-          idSede: response.data.maquina.idSede,
+          _id: response.data.maquina._id,          idSede: response.data.maquina.idSede,
           descripcion: response.data.maquina.descripcion,
-          // ... otros campos que puedas necesitar
         };
 
         console.log('Nueva máquina añadida:', nuevaMaquina);
 
-        // Guardar el ID de la nueva máquina en localStorage
         guardarMaquinaReciente(nuevaMaquina._id);
 
-        // Añadir el nuevo registro al principio del array
         rows.value.unshift(nuevaMaquina);
 
         console.log('Máquinas actualizadas:', rows.value);
 
         mostrarMensajeExito("Máquina agregada correctamente");
-        listarMaquina(); // Actualizar la lista de máquinas
-        listarSedes(); // Actualizar la lista de sedes
+        listarMaquina(); 
+        listarSedes(); 
   agregar.value = false;
 
       } else {
@@ -99,16 +77,19 @@ function editar(info) {
   agregar.value = true;
   botoneditar.value = false;
 
-  // Asegúrate de que informacion sea una ref
   if (!informacion) {
     informacion = ref({});
   }
 
-  // Asigna una copia del objeto info
   informacion.value = { ...info };
-
-  // Asigna los valores individuales
-  idSede.value.valor = info.idSede;
+          const selectedSede = sedesTodo.value.find(sede => sede._id === info.idSede);
+    if (selectedSede) {
+        idSede.value = {
+            label: `${selectedSede.nombre}`, 
+            valor: selectedSede._id, 
+            nombre: selectedSede.nombre  
+        };
+    }  
   descripcion.value = info.descripcion;
   fechaUltmantenimiento.value = info.fechaUltmantenimiento;
 

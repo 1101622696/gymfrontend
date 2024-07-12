@@ -18,31 +18,10 @@ function agregarmantenimiento(){
 idMantenimiento.value=""
 descripcion.value=""
 responsable.value=""
-// fecha.value=""
 valor.value=""
 }
 
 
-// async function guardar(){
-
-// agregar.value = false;
-// if (await validar()){
-//   const todo={
-//     idMantenimiento:idMantenimiento.value.valor,
-//     descripcion:descripcion.value,
-//     responsable:responsable.value,
-//     // fecha:fecha.value,
-//     valor:valor.value
-//     }
-// let nombrez= await useMantenimiento.postMantenimiento(todo)
-// if(nombrez.status!=200){
-//   mostrarMensajeError("no se pudo enviar")
-// }else{
-//   mostrarMensajeExito("mantenimiento agregado")
-//   listarMaquina(), listarMantenimiento();
-// }
-// }
-// }
 
 
 function guardarMantenimientoReciente(id) {
@@ -53,14 +32,12 @@ function obtenerMantenimientoReciente() {
   return localStorage.getItem('mantenimientoReciente');
 }
 async function guardar() {
-  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
       idMantenimiento: idMantenimiento.value.valor,
       descripcion: descripcion.value,
       responsable: responsable.value,
-      // fecha: fecha.value, // Asumiendo que la fecha no se usa actualmente
       valor: valor.value
     };
 
@@ -70,27 +47,24 @@ async function guardar() {
 
       if (response.status === 200) {
         const nuevoMantenimiento = {
-          _id: response.data.mantenimiento._id, // Asumiendo que el backend devuelve un _id
+          _id: response.data.mantenimiento._id,  
           idMantenimiento: response.data.mantenimiento.idMantenimiento,
           descripcion: response.data.mantenimiento.descripcion,
           responsable: response.data.mantenimiento.responsable,
           valor: response.data.mantenimiento.valor,
-          // ... otros campos que puedas necesitar
         };
 
         console.log('Nuevo mantenimiento añadido:', nuevoMantenimiento);
 
-        // Guardar el ID del nuevo mantenimiento en localStorage
         guardarMantenimientoReciente(nuevoMantenimiento._id);
 
-        // Añadir el nuevo registro al principio del array
         rows.value.unshift(nuevoMantenimiento);
 
         console.log('Mantenimientos actualizados:', rows.value);
 
         mostrarMensajeExito("Mantenimiento agregado correctamente");
-        listarMaquina(); // Actualizar la lista de máquinas si es necesario
-        listarMantenimiento(); // Actualizar la lista de mantenimientos
+        listarMaquina(); 
+        listarMantenimiento(); 
   agregar.value = false;
 
       } else {
@@ -109,13 +83,18 @@ function editar(info){
     botoneditar.value = false;
 
 informacion.value=info
-idMantenimiento.value.valor=info.idMantenimiento
+          const selectMaquina = maquinaTodo.value.find(sede => sede._id === info.idMantenimiento);
+    if (selectMaquina) {
+        idMantenimiento.value = {
+            label: `${selectMaquina.codigo} - ${selectMaquina.descripcion}`,
+            valor: selectMaquina._id, 
+            nombre: selectMaquina.nombre  
+        };
+    }
 descripcion.value=info.descripcion
 responsable.value=info.responsable
-// fecha.value=info.fecha
 valor.value=info.valor
 }
-
 async function editarmantenimiento(){
 if (await validar()){
   const todo={

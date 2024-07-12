@@ -105,10 +105,21 @@ function editar(info) {
   botoneditar.value = false;
 
   informacion.value = info;
-  idPlan.value.valor = info.idPlan; 
-  idCliente.value.valor = info.idCliente; 
-}
-
+    const selectedPlan = planesTodo.value.find(plan => plan._id === info.idPlan);
+    if (selectedPlan) {
+        idPlan.value = {
+            label: `${selectedPlan.codigo} - ${selectedPlan.descripcion}`, 
+            valor: selectedPlan._id, 
+            nombre: selectedPlan.nombre  
+        };
+    }    const selectedCliente = clientesTodo.value.find(cliente => cliente._id === info.idCliente);
+    if (selectedCliente) {
+        idCliente.value = {
+            label: `${selectedCliente.nombre} - ${selectedCliente.documento}`,
+            valor: selectedCliente._id,
+            nombre: selectedCliente.nombre
+        };
+    }}
 
 async function editarpago() {
   if (await validar()) {

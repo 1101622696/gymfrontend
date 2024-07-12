@@ -26,28 +26,6 @@ rol.value=""
 
 }
 
-
-// async function guardar(){
-
-// alert.value = false;
-// if (await validar()){
-//   const todo={
-//     idSede:idSede.value.valor,
-//     nombre:nombre.value,
-//     email:email.value,
-//     telefono:telefono.value,
-//     password:password.value,
-//     rol:rol.value
-//     }
-// let nombrez= await useUsuarios.postUsuario(todo)
-// if(nombrez.status!=200){
-//   mostrarMensajeError("no se pudo enviar")
-// }else{
-//   mostrarMensajeExito("muy bien")
-//   listarUsuarios(), listarSedes();
-// }
-// }
-// }
 function guardarUltimoUsuario(id) {
   localStorage.setItem('ultimoUsuario', id);
 }
@@ -75,19 +53,16 @@ async function guardar() {
         mostrarMensajeError("No se pudo enviar");
       } else {
         const nuevoUsuario = {
-          _id: nombrez.data.usuario._id, // Asumiendo que el backend devuelve un _id
+          _id: nombrez.data.usuario._id, 
           idSede: nombrez.data.usuario.idSede,
           nombre: nombrez.data.usuario.nombre,
           email: nombrez.data.usuario.email,
           telefono: nombrez.data.usuario.telefono,
           rol: nombrez.data.usuario.rol,
-          // ... otros campos que puedas necesitar
         };
 
-        // Guardar el ID del nuevo usuario en localStorage
         guardarUltimoUsuario(nuevoUsuario._id);
 
-        // Añadir el nuevo usuario al principio del array
         rows.value.unshift(nuevoUsuario);
 
         mostrarMensajeExito("Usuario agregado exitosamente");
@@ -107,13 +82,20 @@ function editar(info) {
   accion.value = 2;
 
   informacion.value = info;
-  idSede.value = info.idSede; 
-  nombre.value = info.nombre;
+          const selectedSede = sedesTodo.value.find(sede => sede._id === info.idSede);
+    if (selectedSede) {
+        idSede.value = {
+            label: `${selectedSede.nombre}`, 
+            valor: selectedSede._id, 
+            nombre: selectedSede.nombre  
+        };
+    }  nombre.value = info.nombre;
   email.value = info.email;
   telefono.value = info.telefono;
   password.value = info.password;
   rol.value = info.rol; 
 }
+
 
 
 

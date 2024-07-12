@@ -25,24 +25,6 @@ cantidad.value=""
 }
 
 
-// async function guardar(){
-
-// agregar.value = false;
-// if (await validar()){
-//   const todo={
-//     idInventario:idInventario.value.valor,
-//     valorUnitario:valorUnitario.value,
-//     cantidad:cantidad.value
-//     }
-// let nombrez= await useSales.postVenta(todo)
-// if(nombrez.status!=200){
-//   mostrarMensajeError("no se pudo enviar")
-// }else{
-//   mostrarMensajeExito("muy bien")
-//   listarVentas(), listarInventarios();
-// }
-// }
-// }
 function guardarUltimaVenta(id) {
   localStorage.setItem('ultimaVenta', id);
 }
@@ -51,7 +33,6 @@ function obtenerUltimaVenta() {
   return localStorage.getItem('ultimaVenta');
 }
 async function guardar() {
-  // agregar.value = false;
 
   if (await validar()) {
     const todo = {
@@ -68,17 +49,14 @@ async function guardar() {
         
       } else {
         const nuevaVenta = {
-          _id: nombrez.data.venta._id, // Asumiendo que el backend devuelve un _id
+          _id: nombrez.data.venta._id, 
           idInventario: nombrez.data.venta.idInventario,
           valorUnitario: nombrez.data.venta.valorUnitario,
           cantidad: nombrez.data.venta.cantidad,
-          // ... otros campos que puedas necesitar
         };
 
-        // Guardar el ID de la nueva venta en localStorage
         guardarUltimaVenta(nuevaVenta._id);
 
-        // Añadir la nueva venta al principio del array
         rows.value.unshift(nuevaVenta);
 
         mostrarMensajeExito("Venta agregada exitosamente");
@@ -99,11 +77,17 @@ function editar(info) {
   botoneditar.value = false;
 
   informacion.value = info;
-  idInventario.value = info.idInventario;
+            const selectedInventario = inventarioTodo.value.find(inventario => inventario._id === info.idInventario);
+    if (selectedInventario) {
+        idInventario.value = {
+            label: `${selectedInventario.descripcion}- ${selectedInventario.codigo}`, 
+            valor: selectedInventario._id, 
+            nombre: selectedInventario.nombre  
+        };
+    }
   valorUnitario.value = info.valorUnitario;
   cantidad.value = info.cantidad;
 }
-
 
 async function editarventa() {
   if (await validar()) {
