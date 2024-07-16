@@ -369,24 +369,63 @@ let mescumple = ref("");
 
 async function buscarClientesporCumpleanos() {
   try {
-    const res = await useCliente.listarClientesporCumpleanos(diacumple.value, mescumple.value);
-    rows.value = res.clientes.map(cliente => ({
-      ...cliente,
-      idPlan: cliente.idPlan, 
-    }));
+    const dia = parseInt(diacumple.value);
+    const mes = parseInt(mescumple.value);
+
+    console.log(`Buscando clientes nacidos el día ${dia} del mes ${mes}`);
+
+    const res = await useCliente.listarClientesporCumpleanos(dia, mes);
+    
+    if (res.clientes && Array.isArray(res.clientes)) {
+      rows.value = res.clientes.map(cliente => ({
+        ...cliente,
+        idPlan: cliente.idPlan,
+      }));
+      
+      if (rows.value.length === 0) {
+        mostrarMensajeError("No se encontraron clientes con esa fecha de cumpleaños");
+      } else {
+        mostrarMensajeExito(`Se encontraron ${rows.value.length} clientes`);
+      }
+    } else {
+      mostrarMensajeError("La respuesta del servidor no es válida");
+    }
   } catch (error) {
     console.error("Error al buscar clientes por cumpleaños:", error);
+    mostrarMensajeError("Ocurrió un error al buscar clientes. Por favor, intente de nuevo.");
   }
-};
+}
 function ejecutarlistcumple() {
-if (diacumple.value < 1 || diacumple.value >31){
-  mostrarMensajeError("ingrese un dia valido")
-}
-if (mescumple.value < 1 || mescumple.value >12){
-  mostrarMensajeError("ingrese un mes valido")
-}else{
-  buscarClientesporCumpleanos()
-}
+  const dia = parseInt(diacumple.value);
+  const mes = parseInt(mescumple.value);
+
+  if (isNaN(dia) || dia < 1 || dia > 31) {
+    mostrarMensajeError("Ingrese un día válido (entre 1 y 31)");
+    return;
+  }
+
+  if (isNaN(mes) || mes < 1 || mes > 12) {
+    mostrarMensajeError("Ingrese un mes válido (entre 1 y 12)");
+    return;
+  }
+
+  // Validación adicional para meses con menos de 31 días
+  if ((mes === 4 || mes === 6 || mes === 9 || mes === 11) && dia > 30) {
+    mostrarMensajeError("Este mes solo tiene 30 días");
+    return;
+  }
+
+  if (mes === 2) {
+    if (dia > 29) {
+      mostrarMensajeError("Febrero no puede tener más de 29 días");
+      return;
+    }
+    if (dia === 29) {
+      mostrarMensajeError("Asegúrese de que es un año bisiesto");
+    }
+  }
+
+  buscarClientesporCumpleanos();
 }
 
 
@@ -422,18 +461,33 @@ function cerrar() {
   agregar.value = false;
     } 
 
-   const formatDate = (dateStr) => {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      return new Date(dateStr).toLocaleDateString(undefined, options);
-    };
 
 
 
+function formatDate(dateStr) {
+  if (!dateStr) return 'Fecha no disponible';
+  
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return 'Fecha inválida';
 
-    const formateDate = (date) => {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      return new Date(date).toLocaleDateString(undefined, options);
-    };
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString(undefined, options);
+};
+
+ function formatDateNacimiento(fechaNacimiento) {
+  if (!fechaNacimiento) return 'Fecha no disponible';
+
+  const date = new Date(fechaNacimiento);
+  if (isNaN(date.getTime())) return 'Fecha inválida';
+
+  // Sumar un día a la fecha de nacimiento
+  date.setDate(date.getDate() + 1);
+
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return date.toLocaleDateString('es-ES', options);
+}
+
+
     const verFoto = (cliente) => {
       clienteSeleccionado.value = cliente
     }
@@ -510,7 +564,7 @@ console.log(listNombre.value);
     };
 
 
-const seguimientos = ref([{ fecha: '', peso: '', brazo: '', altura: '', edad: '' }]);
+const seguimientos = ref([{peso: '', brazo: '', altura: '', edad: '' }]);
 
 async function actualizarSegui() {
   if (await validarseguii()) {
@@ -527,6 +581,8 @@ async function actualizarSegui() {
         listarClientes();
         listarPlanes();
         closeModal();
+      seguimientoModalOpen.value = false;
+
       } 
       // else {
       //   mostrarMensajeError("No se pudo agregar el seguimiento");
@@ -545,24 +601,24 @@ async function validarseguii() {
 
   for (let i = 0; i < seguimientos.value.length; i++) {
     const seguimiento = seguimientos.value[i];
-    if (seguimiento.fecha === "") {
-      mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
-      verificado = false;
-    }
+    // if (seguimiento.fecha === "") {
+    //   mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
+    //   verificado = false;
+    // }
     if (isNaN(seguimiento.peso) || seguimiento.peso <= 0) {
-      mostrarMensajeError(`El peso del seguimiento ${i + 1} debe ser un número válido`);
+      mostrarMensajeError(`El peso del seguimiento debe ser un número válido`);
       verificado = false;
     }
     if (isNaN(seguimiento.brazo) || seguimiento.brazo <= 0) {
-      mostrarMensajeError(`El brazo del seguimiento ${i + 1} debe ser un número válido`);
+      mostrarMensajeError(`El brazo del seguimiento  debe ser un número válido`);
       verificado = false;
     }
     if (isNaN(seguimiento.altura) || seguimiento.altura <= 0) {
-      mostrarMensajeError(`La altura del seguimiento ${i + 1} debe ser un número válido`);
+      mostrarMensajeError(`La altura debe ser un número válido`);
       verificado = false;
     }
     if (isNaN(seguimiento.edad) || seguimiento.edad <= 0) {
-      mostrarMensajeError(`La edad del seguimiento ${i + 1} debe ser un número válido`);
+      mostrarMensajeError(`La edad del seguimiento debe ser un número válido`);
       verificado = false;
     }
   }
@@ -580,7 +636,9 @@ const seguimientoColumns = ref([
   { name: 'imc', label: 'IMC', field: 'imc', align: 'center' },
   { name: 'brazo', label: 'Brazo', field: 'brazo', align: 'center' },
   { name: 'altura', label: 'Altura', field: 'altura', align: 'center' },
-  { name: 'edad', label: 'Edad', field: 'edad', align: 'center' }
+  { name: 'edad', label: 'Edad', field: 'edad', align: 'center' },
+  { name: "edita", label: "Editar", field: "edita", align: "center" },
+  
 ]);
 
 
@@ -605,6 +663,42 @@ const seguimientoColumns = ref([
       nivelimc.value = !nivelimc.value;
     };
 
+let infor=ref("")
+
+    function editarsegui(inf) {
+      segui.value = true;
+      infor.value = inf;
+      botoneditar.value = true;
+      seguimientos.value = [{ ...inf }];
+    }
+
+async function editaseguimiento() {
+  if (await validarseguii()) {
+    const seguimientoData = {
+      peso: seguimientos.value[0].peso,
+      brazo: seguimientos.value[0].brazo,
+      altura: seguimientos.value[0].altura,
+      edad: seguimientos.value[0].edad
+    };
+
+    try {
+      const response = await useCliente.putEditaSeguimiento(
+        selectedCliente.value._id,
+        infor.value._id,
+        seguimientoData
+      );
+      
+      mostrarMensajeExito("Seguimiento editado exitosamente");
+      listarClientes();
+      listarPlanes();
+      closeModal();
+      seguimientoModalOpen.value = false;
+    } catch (error) {
+      console.error("Error al actualizar el seguimiento:", error);
+      mostrarMensajeError("No se pudo editar el seguimiento");
+    }
+  }
+}
 </script>
 <template>
 
@@ -640,13 +734,11 @@ const seguimientoColumns = ref([
     </div>
 
    
-    <div class="inputlistarcumple" v-if="listF">
-      <input class="inputc" type="number" placeholder="Digite día" v-model.trim="diacumple" min="1" max="31" required />
-      <input class="inputc" type="number" placeholder="Digite mes" v-model.trim="mescumple" min="1" max="12" required />
-    
-    <button class="button" id="buttonf" @click="ejecutarlistcumple()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
-  
-    </div>
+<div class="inputlistarcumple" v-if="listF">
+  <input class="inputc" type="number" placeholder="Digite día" v-model.number="diacumple" min="1" max="31" required />
+  <input class="inputc" type="number" placeholder="Digite mes" v-model.number="mescumple" min="1" max="12" required />
+  <button class="button" id="buttonf" @click="ejecutarlistcumple()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+</div>
 
   
       <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
@@ -665,11 +757,11 @@ const seguimientoColumns = ref([
           <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
         </q-td>
       </template>
-      <template v-slot:body-cell-fechaNacimiento="props">
-        <q-td :props="props">
-          <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
-        </q-td>
-      </template>
+<template v-slot:body-cell-fechaNacimiento="props">
+  <q-td :props="props">
+    <p>{{ formatDateNacimiento(props.row.fechaNacimiento) }}</p>
+  </q-td>
+</template>
             <template v-slot:body-cell-fechavencimiento="props">
         <q-td :props="props">
           <p>{{ formatDate(props.row.fechavencimiento) }}</p>
@@ -706,7 +798,7 @@ const seguimientoColumns = ref([
   <q-td :props="props">
     <q-btn class="option-button" @click="editar(props.row)">
       ✏️
-            <q-tooltip v-model="showing">Edita</q-tooltip>
+            <!-- <q-tooltip v-model="showing">Edita</q-tooltip> -->
     </q-btn>
     <q-btn @click="editarestado(props.row)" v-if="props.row.estado == 1" class="option-button" >
       ❌
@@ -723,7 +815,7 @@ const seguimientoColumns = ref([
       <q-td :props="props">
         <q-btn class="segui" @click="openSeguimientoModal(props.row)">
           Seguimiento
-            <q-tooltip v-model="showing">mira el seguimiento</q-tooltip>
+            <!-- <q-tooltip v-model="showing">mira el seguimiento</q-tooltip> -->
         </q-btn>
       </q-td>
     </template>
@@ -734,6 +826,7 @@ const seguimientoColumns = ref([
         </q-td>
       </template>
     </q-table>
+
 
 <q-dialog v-model="seguimientoModalOpen" persistent>
       <q-card>
@@ -761,11 +854,20 @@ x        </q-btn>
             :columns="seguimientoColumns"
             row-key="fecha"
           >
-            <template v-slot:body-cell-fecha="props">
-              <q-td :props="props">
-                {{ formatDate(props.row.fecha) }}
-              </q-td>
-            </template>
+        <template v-slot:body-cell-fecha="props">
+      <q-td :props="props">
+        <p>{{ formatDate(props.row.fecha) }}</p>
+      </q-td>
+    </template>
+                  <template v-slot:body-cell-edita="props">
+        <q-td :props="props">
+          <div class="photo-container">
+            <q-btn class="segui-modal-cerrar" @click="editarsegui(props.row)"  style="margin-left: auto; margin-right: auto; display: block;">
+edite           
+ </q-btn>
+          </div>
+        </q-td>
+      </template>
           </q-table>
         </q-card-section>
         <q-card-actions align="right">
@@ -781,18 +883,19 @@ x        </q-btn>
           </div>
             <div v-for="(seguimiento, index) in seguimientos" :key="index">
               <h4>Seguimiento</h4>
-              <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
+              <!-- <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" /> -->
               <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
               <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
               <input class="input" type="number" placeholder="altura (cm)" v-model.number="seguimiento.altura" />
               <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
             </div>
-            <q-btn class="agregaedita" @click="actualizarSegui">
-              Actualizar Seguimiento
-            </q-btn>
-            <q-btn color="primary" @click="toggleSegui" class="segui-modal-cerrar">
-              X
-            </q-btn>
+            <button v-if="botoneditar" class="button" @click="editaseguimiento" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">
+              Editar
+            </button>
+            <button v-else class="button" @click="actualizarSegui" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">
+              Agregar Seguimiento
+            </button>
+            <q-btn color="primary" @click="toggleSegui" class="segui-modal-cerrar" style="margin-left: auto; margin-right: auto; display: block;">Cancelar</q-btn >
           </div>
         </div>
       </q-card>
@@ -800,27 +903,6 @@ x        </q-btn>
 
 
 
-<!-- este medio sirve -->
-
-<!-- <div v-if="segui" class="segui-modal">
-      <div class="segui-modal-contenedor">
-        <div v-for="(seguimiento, index) in seguimientos" :key="index">
-          <h4>Seguimiento {{ index + 1 }}</h4>
-          <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" />
-          <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
-          <input class="input" type="number" placeholder="IMC" v-model.number="seguimiento.imc" />
-          <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-          <input class="input" type="number" placeholder="altura" v-model.number="seguimiento.altura" />
-          <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
-        </div>
-        <q-btn class="agregaedita" @click="actualizarSegui">
-          Actualizar Seguimiento
-        </q-btn>
-        <q-btn color="primary" @click="toggleSegui" class="segui-modal-cerrar">
-          X
-        </q-btn>
-      </div>
-    </div> -->
 <div  class="filtro" v-if="agregar"> 
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">

@@ -101,16 +101,19 @@ export const useStoreClientes = defineStore(
     const listarClientesporCumpleanos = async (dia, mes) => {
       try {
           loading.value = true;
-          console.log(localStorage.getItem('x-token'));
-
-          const response = await axios.get(`/api/clientes/cumpleanos?dia=${dia}&mes=${mes}`, {
+          console.log(`Enviando solicitud para día ${dia} y mes ${mes}`);
+  
+          const response = await axios.get('/api/clientes/cumpleanos', {
+              params: { dia, mes },
               headers: {
-                         "x-token": localStorage.getItem('x-token'),
+                  "x-token": localStorage.getItem('x-token'),
               },
           });
+  
+          console.log('Respuesta del servidor:', response.data);
           return response.data;
       } catch (error) {
-          console.error("No se pudo obtener la lista de clientes", error);
+          console.error("Error al obtener la lista de clientes:", error.response?.data || error.message);
           throw error;
       } finally {
           loading.value = false;
@@ -220,6 +223,9 @@ export const useStoreClientes = defineStore(
 
     const putClienteSeguimiento = async (id, seguimientos) => {
       try {
+        loading.value = true;
+        console.log(localStorage.getItem('x-token'));
+
         console.log('Datos a enviar:', seguimientos); // Añade este console.log para verificar la estructura de datos
     
         const response = await axios.put(
@@ -239,6 +245,24 @@ export const useStoreClientes = defineStore(
         console.error("Error al actualizar seguimiento:", error);
       }
     }
+    const putEditaSeguimiento = async (clienteId, seguimientoId, seguimientoData) => {
+      try {
+        const response = await axios.put(
+          `/api/clientes/editar/seguimiento/${clienteId}/${seguimientoId}`,
+          { seguimiento: [seguimientoData] },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "x-token": localStorage.getItem('x-token'),
+            },
+          }
+        );
+        return response.data;
+      } catch (error) {
+        console.error("Error en putEditaSeguimiento:", error);
+        throw error;
+      }
+    };
     
     
     return {
@@ -251,6 +275,7 @@ export const useStoreClientes = defineStore(
       putCliente,
       putActivarCliente,
       putDesactivarCliente,
+      putEditaSeguimiento,
       // putseaguictivarCliente,
       putClienteSeguimiento,
       loading,
