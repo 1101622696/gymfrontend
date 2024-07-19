@@ -152,7 +152,7 @@ async function editarsede() {
       if (response.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
       } else {
-        mostrarMensajeExito("Muy bien");
+        mostrarMensajeExito("Sede actualizada exitosamente");
         listarSedes();
   alert.value = false;
 
@@ -224,7 +224,7 @@ async function validar() {
     }
 
     if (verificado) {
-        mostrarMensajeExito("El formulario se envió correctamente");
+        // mostrarMensajeExito("El formulario se envió correctamente");
     }
 
     return verificado;
@@ -333,7 +333,7 @@ async function listardesactivadas() {
 
             <q-table class="table" flat bordered title="Sedes" :rows="rows" :columns="columns" row-key="id">
            <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+          <q-td :props="props" style="text-align: center;">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
                           <q-tooltip v-model="showing">Edita</q-tooltip>

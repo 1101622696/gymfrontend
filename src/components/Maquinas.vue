@@ -130,7 +130,7 @@ async function editarmaquina() {
   agregar.value = false;
 
       } else {
-        mostrarMensajeExito("Muy bien");
+        mostrarMensajeExito(" Máquina actualizada exitosamente");
         listarMaquina();
         listarSedes();
       }
@@ -273,8 +273,8 @@ const organizarSedes = computed(() => {
 
 async function listarSedes() {
     try {
-    const res = await useSedes.listarSede()
-       sedesTodo.value = res.data.sede;
+    const res = await useSedes.listaractivadas()
+       sedesTodo.value = res.data.activadas;
     } catch (error) {
         console.error("Error al listar sedes:", error);
     }
@@ -341,22 +341,22 @@ async function listardesactivadas() {
   
       <q-table class="table" flat bordered title="Maquinas" :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idSede="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getSedeNombre(props.row.idSede) }}</p>
         </q-td>
       </template>
   <template v-slot:body-cell-fechaIngreso="props">
-      <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
         <p>{{ formatDate(props.row.fechaIngreso) }}</p>
       </q-td>
     </template>
     <template v-slot:body-cell-fechaUltmantenimiento="props">
-      <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
         <p>{{ formatDate(props.row.fechaUltmantenimiento) }}</p>
       </q-td>
     </template>
               <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
                           <q-tooltip v-model="showing">Edita</q-tooltip>
@@ -374,7 +374,7 @@ async function listardesactivadas() {
           </q-td>
         </template>
         <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn v-if="props.row.estado == 1"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
@@ -395,7 +395,8 @@ async function listardesactivadas() {
        <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede"         style="background-color: #grey; margin-bottom: 20px"
       />
         <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
-        <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
+      <q-input class="input" filled v-model.trim="descripcion" label="Descripción" :dense="dense" />
+
         <!-- <input class="input" type="date" placeholder="fecha de ingreso" v-model.trim="fechaIngreso" /> -->
         <!-- <input class="input" type="date" placeholder="Última fecha de mantenimiento " v-model.trim="fechaUltmantenimiento" /> -->
     </div>
@@ -472,7 +473,6 @@ async function listardesactivadas() {
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 1px solid #ccc;
   border-radius: 4px;
 }
 

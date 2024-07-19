@@ -111,7 +111,7 @@ async function guardar() {
         if (response.status !== 200) {
           mostrarMensajeError("No se pudo enviar");
         } else {
-          mostrarMensajeExito("Muy bien");
+          mostrarMensajeExito("Ingreso actualizado exitosamente");
           listarIngresos();
   alert.value = false;
 
@@ -156,7 +156,7 @@ async function validar() {
     }
 
     if (verificado) {
-        mostrarMensajeExito("El formulario se envió correctamente");
+        // mostrarMensajeExito("El formulario se envió correctamente");
     }
 
     console.log(idCliente.value);
@@ -234,8 +234,8 @@ const organizarClientes = computed(() => {
 });
 async function listarClientes() {
     try {
-    const res = await useCliente.listarCliente()
-       clientesTodo.value = res.data.cliente;
+    const res = await useCliente.listaractivados()
+       clientesTodo.value = res.data.activados;
     } catch (error) {
         console.error("Error al listar planes:", error);
     }
@@ -252,8 +252,8 @@ const organizarSedes = computed(() => {
 
 async function listarSedes() {
     try {
-    const res = await useSedes.listarSede()
-       sedesTodo.value = res.data.sede;
+    const res = await useSedes.listaractivadas()
+       sedesTodo.value = res.data.activadas;
     } catch (error) {
         console.error("Error al listar planes:", error);
     }
@@ -292,22 +292,22 @@ const formatDate = (dateStr) => {
     <q-table class="table" flat bordered title="Ingresos" :rows="rows" :columns="columns" row-key="_id">
 
       <template v-slot:body-cell-idSede="props">
-  <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
     <p>{{ props.row.idSede ? getSedeNombre(props.row.idSede) : 'Sede no especificada' }}</p>
   </q-td>
 </template>
 <template v-slot:body-cell-idCliente="props">
-  <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
     <p>{{ props.row.idCliente ? getClienteNombre(props.row.idCliente) : 'Cliente no especificado' }}</p>
   </q-td>
 </template>
 <template v-slot:body-cell-fecha="props">
-  <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
     <p>{{ props.row.fecha ? formatDate(props.row.fecha) : 'Fecha no disponible' }}</p>
   </q-td>
 </template>
         <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
                           <q-tooltip v-model="showing">Edita</q-tooltip>

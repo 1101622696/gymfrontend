@@ -118,7 +118,7 @@ if(response.status!==200){
   agregar.value = false;
 
 }else{
-  mostrarMensajeExito("muy bien")
+  mostrarMensajeExito("Mantenimiento actualizado exitosamente")
   listarMantenimiento();
 }
 }catch (error) {
@@ -249,8 +249,8 @@ const organizarMaquinas = computed(() => {
 
 async function listarMaquina() {
     try {
-    const res = await useMaquina.listarMaquina()
-       maquinaTodo.value = res.data.maquina;
+    const res = await useMaquina.listaractivadas()
+       maquinaTodo.value = res.data.activadas;
     } catch (error) {
         console.error("Error al listar maquinas:", error);
     }
@@ -284,22 +284,22 @@ function getMaquinaCodigo(id) {
 
       <q-table class="table" flat bordered title="mantenimiento" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-idMantenimiento="props">
-    <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
       <p>{{ getMaquinaCodigo(props.row.idMantenimiento) }}</p>
     </q-td>
   </template>
       <template v-slot:body-cell-fecha="props">
-      <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
         <p>{{ formatDate(props.row.fecha) }}</p>
       </q-td>
     </template>
              <template v-slot:body-cell-valor="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatCurrency(props.row.valor) }}</p>
         </q-td>
       </template>
                <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
                           <q-tooltip v-model="showing">Edita</q-tooltip>
@@ -318,9 +318,9 @@ function getMaquinaCodigo(id) {
         <q-select standout v-model="idMantenimiento" :options="organizarMaquinas" option-value="valor" option-label="label" label="Máquina" style="background-color: #grey; margin-bottom: 20px"
       />
         <!-- <input class="input" type="date" placeholder="Fecha" v-model.trim="fecha" /> -->
-        <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
-        <input class="input" type="text" placeholder="Responsable" v-model.trim="responsable" />
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
+      <q-input class="input" filled v-model.trim="descripcion" label="Descripción" :dense="dense" />
+      <q-input class="input" filled v-model.trim="responsable" label="Responsable" :dense="dense" />
+      <q-input class="input" filled v-model.trim="valor" label="Valor" :dense="dense" />
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
@@ -394,7 +394,6 @@ function getMaquinaCodigo(id) {
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 1px solid #ccc;
   border-radius: 4px;
 }
 

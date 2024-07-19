@@ -115,7 +115,7 @@ async function editarusuario() {
       if (response.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
       } else {
-        mostrarMensajeExito("Muy bien");
+        mostrarMensajeExito("Usuario actualizado exitosamente");
         listarUsuarios();
         listarSedes();
   alert.value = false;
@@ -194,7 +194,7 @@ async function validar() {
     }
 
     if (verificado) {
-        mostrarMensajeExito("El formulario se envió correctamente");
+        // mostrarMensajeExito("El formulario se envió correctamente");
     }
 
     return verificado;
@@ -292,9 +292,9 @@ const organizarSedes = computed(() => {
 
 async function listarSedes() {
     try {
-   const res = await useSedes.listarSede()
+   const res = await useSedes.listaractivadas()
     console.log(res.data);
-    sedesTodo.value=res.data.sede
+    sedesTodo.value=res.data.activadas
 
     } catch (error) {
         console.error("Error al listar sedes:", error);

@@ -125,7 +125,7 @@ async function editarpago() {
   agregar.value = false;
 
       } else {
-        mostrarMensajeExito("Muy bien");
+        mostrarMensajeExito(" Plan actualizado exitosamente");
         listarPlanes();
       }
     } catch (error) {
@@ -202,7 +202,7 @@ if (dias.value === "") {
     //     verificado = false;
     // } 
     if (verificado) {
-        mostrarMensajeExito("El formulario se envió correctamente");
+        // mostrarMensajeExito("El formulario se envió correctamente");
     }
 
     return verificado;
@@ -310,12 +310,12 @@ function formatCurrency(value) {
   
       <q-table class="table" flat bordered title="Planes" :rows="rows" :columns="columns" row-key="id">
          <template v-slot:body-cell-valor="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatCurrency(props.row.valor) }}</p>
         </q-td>
       </template>
       <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
                           <q-tooltip v-model="showing">Edita</q-tooltip>
@@ -334,7 +334,7 @@ function formatCurrency(value) {
           </q-td>
         </template>
         <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn v-if="props.row.estado == 1"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
@@ -352,11 +352,9 @@ function formatCurrency(value) {
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <!-- <input class="input" type="text" placeholder="Código" v-model.trim="codigo" /> -->
-        <input class="input" type="text" placeholder="Descripción" v-model.trim="descripcion" />
-        <!-- <input class="input" type="text" placeholder="Valor" v-model.trim="valor" @input="valor = formatCurrencyInput($event.target.value)" /> -->
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor"/>
-        <input class="input" type="text" placeholder="Dias" v-model.trim="dias" />
+      <q-input class="input" filled v-model.trim="descripcion" label="Descripción" :dense="dense" />
+      <q-input class="input" filled v-model.trim="valor" label="Valor" :dense="dense" />
+      <q-input class="input" filled v-model.dias="dias" label="Dias" :dense="dense" />
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="usePlan.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
@@ -430,7 +428,6 @@ function formatCurrency(value) {
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 1px solid #ccc;
   border-radius: 4px;
 }
 

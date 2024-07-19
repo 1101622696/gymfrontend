@@ -102,7 +102,9 @@ informacion.value=info
 nombre.value=info.nombre
 documento.value=info.documento
 direccion.value=info.direccion
-fechaNacimiento.value=info.fechaNacimiento
+    const date = new Date(info.fechaNacimiento);
+    const formattedDate = date.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    fechaNacimiento.value = formattedDate;
 telefono.value=info.telefono
 observaciones.value=info.observaciones
     const selectedPlan = planesTodo.value.find(plan => plan._id === info.idPlan);
@@ -243,7 +245,7 @@ async function validar() {
   }
 
   if (verificado) {
-    mostrarMensajeExito("El formulario se envió correctamente");
+    // mostrarMensajeExito("El formulario se envió correctamente");
   }
 
   return verificado;
@@ -438,24 +440,40 @@ function getPlanCodigo(id) {
   listarClientes(), listarPlanes()
 })
 
-const organizarPlanes = computed(() => {
-    nombreCodigo.value = planesTodo.value.map((element) => ({
-        label: `${element.codigo} - ${element.descripcion}`,
-        valor: `${element._id}`,
-        nombre: `${element.nombre}`,
-    }));
-    return nombreCodigo.value;
-});
+// const organizarPlanes = computed(() => {
+//     nombreCodigo.value = planesTodo.value.map((element) => ({
+//         label: `${element.codigo} - ${element.descripcion}`,
+//         valor: `${element._id}`,
+//         nombre: `${element.nombre}`,
+//     }));
+//     return nombreCodigo.value;
+// });
 
 
+// async function listarPlanes() {
+//     try {
+//     const res = await usePlan.listarPlan()
+//        planesTodo.value = res.data.plan;
+//     } catch (error) {
+//         console.error("Error al listar planes:", error);
+//     }
+// }
 async function listarPlanes() {
     try {
-    const res = await usePlan.listarPlan()
-       planesTodo.value = res.data.plan;
+        const res = await usePlan.listaractivados();
+        planesTodo.value = res.data.activados;
     } catch (error) {
         console.error("Error al listar planes:", error);
     }
 }
+
+const organizarPlanes = computed(() => {
+    return planesTodo.value.map((element) => ({
+        label: `${element.codigo} - ${element.descripcion}`,
+        valor: `${element._id}`,
+        nombre: `${element.nombre}`,
+    }));
+});
 
 function cerrar() {
   agregar.value = false;
@@ -474,18 +492,17 @@ function formatDate(dateStr) {
   return date.toLocaleDateString(undefined, options);
 };
 
- function formatDateNacimiento(fechaNacimiento) {
-  if (!fechaNacimiento) return 'Fecha no disponible';
+//  function formatDateNacimiento(fechaNacimiento) {
+//   if (!fechaNacimiento) return 'Fecha no disponible';
 
-  const date = new Date(fechaNacimiento);
-  if (isNaN(date.getTime())) return 'Fecha inválida';
+//   const date = new Date(fechaNacimiento);
+//   if (isNaN(date.getTime())) return 'Fecha inválida';
 
-  // Sumar un día a la fecha de nacimiento
-  date.setDate(date.getDate() + 1);
+//   date.setDate(date.getDate() + 1);
 
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
-  return date.toLocaleDateString('es-ES', options);
-}
+//   const options = { year: 'numeric', month: 'long', day: 'numeric' };
+//   return date.toLocaleDateString('es-ES', options);
+// }
 
 
     const verFoto = (cliente) => {
@@ -537,56 +554,47 @@ buscarClientesPorNombre()
 console.log(listNombre.value);
 }
 
+let segui = ref(false);
+let currentClientId = ref(null);
+const seguimientoModalOpen = ref(false);
+const selectedCliente = ref(null);
+let clienteSeleccionado = ref(null);
+let infor = ref("");
+// let botoneditar = ref(false);
 
+const toggleSegui = () => {
+  segui.value = !segui.value;
+};
+const cerrarformu = () => {
+  segui.value = !segui.value;
+};
 
-    let segui = ref(false);
-    let currentClientId = ref(null);
+const closeModal = () => {
+  seguimientoModalOpen.value = false;
+  segui.value = false;
+};
 
-    const seguimientoModalOpen = ref(false);
-    const selectedCliente = ref(null);
-      let  clienteSeleccionado=ref(null);
+const openSeguimientoModal = (cliente) => {
+  console.log("Cliente seleccionado:", cliente);
+  selectedCliente.value = cliente;
+  seguimientoModalOpen.value = true;
+};
 
-    const toggleSegui = () => {
-      segui.value = !segui.value;
-      seguimientoModalOpen.value = false;
-    };
-
-    const closeModal = () => {
-      seguimientoModalOpen.value = false;
-      segui.value = false; 
-    };
-
-    const openSeguimientoModal = (cliente) => {
-      console.log("Cliente seleccionado:", cliente);
-      selectedCliente.value = cliente;
-      seguimientoModalOpen.value = true;
-      segui.value = true; 
-    };
-
-
-const seguimientos = ref([{peso: '', brazo: '', altura: '', edad: '' }]);
+const seguimientos = ref([{ peso: '', brazo: '', altura: '', edad: '' }]);
 
 async function actualizarSegui() {
   if (await validarseguii()) {
-    const todoz = {
-      seguimiento: seguimientos.value 
-    };
+    const todoz = { seguimiento: seguimientos.value };
     console.log("Datos a enviar:", JSON.stringify(todoz, null, 2));
 
     try {
       let seguiz = await useCliente.putClienteSeguimiento(selectedCliente.value._id, todoz);
-
       if (seguiz && seguiz.status === 200) {
         mostrarMensajeExito("Seguimiento agregado exitosamente");
         listarClientes();
         listarPlanes();
         closeModal();
-      seguimientoModalOpen.value = false;
-
-      } 
-      // else {
-      //   mostrarMensajeError("No se pudo agregar el seguimiento");
-      // }
+      }
     } catch (error) {
       console.error("Error al actualizar seguimiento:", error);
       mostrarMensajeError("Error interno del servidor");
@@ -594,23 +602,16 @@ async function actualizarSegui() {
   }
 }
 
-
-
 async function validarseguii() {
   let verificado = true;
-
   for (let i = 0; i < seguimientos.value.length; i++) {
     const seguimiento = seguimientos.value[i];
-    // if (seguimiento.fecha === "") {
-    //   mostrarMensajeError(`La fecha del seguimiento ${i + 1} está vacía`);
-    //   verificado = false;
-    // }
     if (isNaN(seguimiento.peso) || seguimiento.peso <= 0) {
       mostrarMensajeError(`El peso del seguimiento debe ser un número válido`);
       verificado = false;
     }
     if (isNaN(seguimiento.brazo) || seguimiento.brazo <= 0) {
-      mostrarMensajeError(`El brazo del seguimiento  debe ser un número válido`);
+      mostrarMensajeError(`El brazo del seguimiento debe ser un número válido`);
       verificado = false;
     }
     if (isNaN(seguimiento.altura) || seguimiento.altura <= 0) {
@@ -631,46 +632,21 @@ async function validarseguii() {
 }
 
 const seguimientoColumns = ref([
-  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
+  { name: "edita", label: "Editar", field: "edita", align: "center" },
   { name: 'peso', label: 'Peso', field: 'peso', align: 'center' },
   { name: 'imc', label: 'IMC', field: 'imc', align: 'center' },
   { name: 'brazo', label: 'Brazo', field: 'brazo', align: 'center' },
   { name: 'altura', label: 'Altura', field: 'altura', align: 'center' },
   { name: 'edad', label: 'Edad', field: 'edad', align: 'center' },
-  { name: "edita", label: "Editar", field: "edita", align: "center" },
-  
+  { name: 'fecha', label: 'Fecha', field: 'fecha', align: 'center' },
 ]);
 
-
-
-      const tooltipContent = ref('');
- const showTooltip = (text) => {
-      tooltipContent.value = text;
-      const tooltip = this.$refs.tooltip;
-      tooltip && tooltip.show();
-    };
-
-    const hideTooltip = () => {
-      const tooltip = this.$refs.tooltip;
-      tooltip && tooltip.hide();
-    };
-
-
-    const mostarimc = () => {
-      nivelimc.value = !nivelimc.value;
-    };
-        const cerrarfoto = () => {
-      nivelimc.value = !nivelimc.value;
-    };
-
-let infor=ref("")
-
-    function editarsegui(inf) {
-      segui.value = true;
-      infor.value = inf;
-      botoneditar.value = true;
-      seguimientos.value = [{ ...inf }];
-    }
+function editarsegui(inf) {
+  segui.value = true;
+  infor.value = inf;
+  botoneditar.value = true;
+  seguimientos.value = [{ ...inf }];
+}
 
 async function editaseguimiento() {
   if (await validarseguii()) {
@@ -682,23 +658,30 @@ async function editaseguimiento() {
     };
 
     try {
-      const response = await useCliente.putEditaSeguimiento(
-        selectedCliente.value._id,
-        infor.value._id,
-        seguimientoData
-      );
-      
+      const response = await useCliente.putEditaSeguimiento(selectedCliente.value._id, infor.value._id, seguimientoData);
       mostrarMensajeExito("Seguimiento editado exitosamente");
       listarClientes();
       listarPlanes();
       closeModal();
-      seguimientoModalOpen.value = false;
     } catch (error) {
       console.error("Error al actualizar el seguimiento:", error);
       mostrarMensajeError("No se pudo editar el seguimiento");
     }
   }
 }
+
+const getIMCStyle = (imc) => {
+  if (imc < 18.5) {
+    return { backgroundColor: '#3876d3', label: 'Bajo peso' };
+  } else if (imc >= 18.5 && imc < 24.9) {
+    return { backgroundColor: '#38db32', label: 'Normal' };
+  } else if (imc >= 25 && imc < 29.9) {
+    return { backgroundColor: 'orange', label: 'Sobrepeso' };
+  } else if (imc >= 30) {
+    return { backgroundColor: 'red', label: 'Obesidad' };
+  }
+  return { backgroundColor: 'white', label: '' };
+};
 </script>
 <template>
 
@@ -753,23 +736,23 @@ async function editaseguimiento() {
 
     <q-table class="table" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idPlan="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
         </q-td>
       </template>
 <template v-slot:body-cell-fechaNacimiento="props">
-  <q-td :props="props">
-    <p>{{ formatDateNacimiento(props.row.fechaNacimiento) }}</p>
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
+    <p>{{ formatDate(props.row.fechaNacimiento) }}</p>
   </q-td>
 </template>
             <template v-slot:body-cell-fechavencimiento="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatDate(props.row.fechavencimiento) }}</p>
         </q-td>
       </template>
 
     <template v-slot:body-cell-observaciones="props">
-      <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
         <span class="truncated-text">
           {{ props.row.observaciones }}
           <q-tooltip anchor="bottom middle" self="top middle" :content="props.row.observaciones" transition-show="scale" transition-hide="scale">
@@ -780,10 +763,10 @@ async function editaseguimiento() {
     </template>
 
       <template v-slot:body-cell-foto="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <div class="photo-container">
             <q-btn class="fotico" @click="verFoto(props.row)">
-              Vea la foto aquí
+              Ver foto
             </q-btn>
           </div>
           <div v-if="clienteSeleccionado !== null" class="foto-modal">
@@ -795,7 +778,7 @@ async function editaseguimiento() {
         </q-td>
       </template>
 <template v-slot:body-cell-opciones="props">
-  <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
     <q-btn class="option-button" @click="editar(props.row)">
       ✏️
             <!-- <q-tooltip v-model="showing">Edita</q-tooltip> -->
@@ -812,7 +795,7 @@ async function editaseguimiento() {
 </template>
 
 <template v-slot:body-cell-seguimiento="props">
-      <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
         <q-btn class="segui" @click="openSeguimientoModal(props.row)">
           Seguimiento
             <!-- <q-tooltip v-model="showing">mira el seguimiento</q-tooltip> -->
@@ -820,7 +803,7 @@ async function editaseguimiento() {
       </q-td>
     </template>
       <template v-slot:body-cell-estado="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <q-btn v-if="props.row.estado == 1"  style="color:green">Activo</q-btn>
           <q-btn v-else  style="color:red">Inactivo</q-btn>
         </q-td>
@@ -829,78 +812,80 @@ async function editaseguimiento() {
 
 
 <q-dialog v-model="seguimientoModalOpen" persistent>
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">{{ selectedCliente?.nombre }}</div>
-        </q-card-section>
-        <q-card-section>
-          <q-avatar size="150px">
-            <img :src="selectedCliente?.foto" />
-          </q-avatar>
-  <div>
-    <q-btn @click="mostarimc">
-      Nivel de IMC
-    </q-btn>
-    <div v-if="nivelimc" >
-        <q-btn color="red" @click="cerrarfoto" class="fotocerrar">
-x        </q-btn>
-      <img class="fotoimc" src="https://static.tuasaude.com/media/article/me/dr/imc_15748_l.jpg" alt="IMC Chart">
+  <q-card>
+    <q-card-section>
+      <div class="nombreyfoto">
+        <div class="text-h6">{{ selectedCliente?.nombre }}</div>
+        <q-avatar size="150px">
+          <img :src="selectedCliente?.foto" />
+        </q-avatar>
+        <q-btn @click="toggleSegui" label="Agregar nuevo seguimiento" class="button" />
+      </div>
+      <q-table
+        flat
+        bordered
+        :rows="selectedCliente?.seguimiento || []"
+        :columns="seguimientoColumns"
+        row-key="fecha"
+      >
+        <template v-slot:body-cell-fecha="props">
+          <q-td :props="props">
+            <p>{{ formatDate(props.row.fecha) }}</p>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-imc="props">
+          <q-td :props="props" :style="{ backgroundColor: getIMCStyle(props.row.imc).backgroundColor }">
+            <p class="option-button">{{ props.row.imc }}</p>
+            <span>{{ getIMCStyle(props.row.imc).label }}</span>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-edita="props">
+          <q-td :props="props">
+            <div class="photo-container">
+              <q-btn
+                class="segui-modal-cerrar"
+                @click="editarsegui(props.row)"
+                style="margin-left: auto; margin-right: auto; display: block;"
+              >
+                ✏️
+              </q-btn>
+            </div>
+          </q-td>
+        </template>
+      </q-table>
+    </q-card-section>
+    <q-card-actions align="right">
+      <q-btn flat label="Cerrar" color="primary" @click="closeModal" />
+    </q-card-actions>
+  </q-card>
+
+  <div v-if="segui" class="segui-modal" style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 10;">
+    <div class="segui-modal-contenedor">
+      <div class="formulariosegui">
+        <div v-for="(seguimiento, index) in seguimientos" :key="index" >
+          <h4 class="titulosegui">Seguimiento</h4>
+      <q-input class="inputsegui" type="number" filled v-model.number="seguimiento.edad" label="Edad" :dense="dense" />
+      <q-input class="inputsegui" type="number" filled v-model.number="seguimiento.altura" label="Altura (cm)" :dense="dense" />
+      <q-input class="inputsegui" type="number" filled v-model.number="seguimiento.brazo" label="Brazo" :dense="dense" />
+      <q-input class="inputsegui" type="number" filled v-model.number="seguimiento.peso" label="Peso" :dense="dense" />
+
+
+        </div>
+        <div class="botonesegui">
+          <button v-if="botoneditar" class="button" @click="editaseguimiento" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">
+            Editar
+          </button>
+          <button v-else class="button" @click="actualizarSegui" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">
+            Agregar Seguimiento
+          </button>
+          <q-btn @click="toggleSegui" class="button" style="margin-left: auto; margin-right: auto; display: block;">
+            Cerrar
+          </q-btn>
+        </div>
+      </div>
     </div>
   </div>
-          <q-table
-            flat
-            bordered
-            :rows="selectedCliente?.seguimiento || []"
-            :columns="seguimientoColumns"
-            row-key="fecha"
-          >
-        <template v-slot:body-cell-fecha="props">
-      <q-td :props="props">
-        <p>{{ formatDate(props.row.fecha) }}</p>
-      </q-td>
-    </template>
-                  <template v-slot:body-cell-edita="props">
-        <q-td :props="props">
-          <div class="photo-container">
-            <q-btn class="segui-modal-cerrar" @click="editarsegui(props.row)"  style="margin-left: auto; margin-right: auto; display: block;">
-edite           
- </q-btn>
-          </div>
-        </q-td>
-      </template>
-          </q-table>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Cerrar" color="primary" @click="closeModal" />
-          <div class="agregarseguimiento">
-            <!-- <q-btn class="agregaedita" @click="toggleSegui">✏️</q-btn> -->
-          </div>
-        </q-card-actions>
-
-        <div v-if="segui" class="segui-modal">
-          <div class="segui-modal-contenedor">
-            <div class="agregarseguimiento">
-          </div>
-            <div v-for="(seguimiento, index) in seguimientos" :key="index">
-              <h4>Seguimiento</h4>
-              <!-- <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model="seguimiento.fecha" /> -->
-              <input class="input" type="number" placeholder="Peso" v-model.number="seguimiento.peso" />
-              <input class="input" type="number" placeholder="Brazo" v-model.number="seguimiento.brazo" />
-              <input class="input" type="number" placeholder="altura (cm)" v-model.number="seguimiento.altura" />
-              <input class="input" type="number" placeholder="Edad" v-model.number="seguimiento.edad" />
-            </div>
-            <button v-if="botoneditar" class="button" @click="editaseguimiento" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">
-              Editar
-            </button>
-            <button v-else class="button" @click="actualizarSegui" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">
-              Agregar Seguimiento
-            </button>
-            <q-btn color="primary" @click="toggleSegui" class="segui-modal-cerrar" style="margin-left: auto; margin-right: auto; display: block;">Cancelar</q-btn >
-          </div>
-        </div>
-      </q-card>
-    </q-dialog>
-
+</q-dialog>
 
 
 <div  class="filtro" v-if="agregar"> 
@@ -910,19 +895,19 @@ edite
         <button class="buttonX" @click="cerrar()">X</button>
       </div>
       <div class="inputs">
-        <input class="input" type="text" placeholder="Nombre" v-model.trim="nombre" />
-        <input class="input" type="text" placeholder="N° Documento" v-model.trim="documento" />
-        <input class="input" type="text" placeholder="Dirección" v-model.trim="direccion" />
+      <q-input class="input" filled v-model.trim="nombre" label="Nombre" :dense="dense" />
+      <q-input class="input" filled v-model.trim="documento" label="N° Documento" :dense="dense" />
+      <q-input class="input" filled v-model.trim="direccion" label="Dirección" :dense="dense" />
         <!-- <input class="input" type="textarea" placeholder="Observaciones" v-model.trim="observaciones" /> -->
             <textarea class="input textarea" placeholder="Observaciones" v-model.trim="observaciones"></textarea>
-        <input class="input" type="date" placeholder="Fecha de Nacimiento" v-model.trim="fechaNacimiento" />
-                <!-- <div class="input-container">
+<q-input class="input" filled type="date" v-model.trim="fechaNacimiento" label="fecha de Nacimiento" :dense="dense" />                <!-- <div class="input-container">
           <label for="fechaNacimiento">Fecha de Nacimiento</label>
           <input class="fechaNacimiento" type="date" v-model.trim="fechaNacimiento" />
         </div> -->
-        <input class="input" type="text" placeholder="Teléfono" v-model.trim="telefono" />
+      <q-input class="input" filled v-model.trim="telefono" label="Teléfono" :dense="dense" />
         <q-select standout v-model="idPlan" :options="organizarPlanes" option-value="valor" option-label="label" label="Plan" style="background-color: #grey; margin-bottom: 20px" />
-        <input class="input" type="text" placeholder="Foto" v-model.trim="foto" />
+      <q-input class="input" filled v-model.trim="foto" label="Foto" :dense="dense" />
+
         <!-- <div v-for="(seguimiento, index) in seguimientos" :key="index">
           <h4>Seguimiento {{ index + 1 }}</h4>
           <input class="input" type="date" placeholder="Formato: DD/MM/YYYY" v-model.trim="seguimiento.fecha" />
@@ -969,7 +954,9 @@ overflow:hidden !important;
 
 .foto-modal-contenedor {
   position: relative;
-   background-color: rgb(226, 226, 226);
+   /* background-color: rgb(226, 226, 226); */
+   /* background-color: #3876d3; */
+
   /*padding: 20px;
   border-radius: 8px; */
   max-width: 400px;
@@ -1058,7 +1045,6 @@ overflow:hidden !important;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 1px solid #ccc;
   border-radius: 4px;
 }
 
@@ -1321,5 +1307,68 @@ position: absolute;
 top: 50%;
 left: 50%;
 transform: translate(-50%,-50%);
+}
+.nombreyfoto, .formulariosegui{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center ;
+}
+
+/* .formulariosegui{
+color:black;
+}
+.inputsegui{
+width: 60%;
+height: 40px;
+margin:2%;
+margin-left: 20%;
+border: 1px solid green
+}
+.titulosegui{
+color: rgb(80, 80, 248);
+font-family: 'Times New Roman', Times, serif;
+font-size: 30px;
+text-align: center;
+}
+.botonesegui{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-left: 10%;
+} */
+ .formulariosegui {
+  color: #333;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.inputsegui {
+  width: 100%;
+  height: 60px;
+  margin: 10px 0;
+  padding: 0 10px;
+  /* border: 1px solid #4CAF50; */
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.titulosegui {
+  color: #3f51b5;
+  font-family: 'Arial', sans-serif;
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.botonesegui {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+.tablalineas{
+  border:2px solid black
 }
 </style>

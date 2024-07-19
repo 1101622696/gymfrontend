@@ -120,34 +120,48 @@ export const useStoreClientes = defineStore(
       }
   };
 
-    const postCliente = async (data) => {
-      try {
-        loading.value = true;
-        console.log(localStorage.getItem('x-token'));
-
-        const r = await axios.post("api/clientes/escribir", data, {
-          headers: {
-                   "x-token": localStorage.getItem('x-token'),
-          },
-        });
-        Notify.create({
-          message: 'Cliente registrado correctamente',
-          color: "positive",
-          position: "top",
-        })
-        console.log(r);
-        return r;
-      } catch (error) {
-        Notify.create({
-          type: 'negative',
-          message: error.respone.data.errors[0].msj
-        })
-        console.log(error);
-        return error;
-      } finally {
-        loading.value = false;
+  const postCliente = async (data) => {
+    try {
+      loading.value = true;
+      console.log(localStorage.getItem('x-token'));
+  
+      const r = await axios.post("api/clientes/escribir", data, {
+        headers: {
+          "x-token": localStorage.getItem('x-token'),
+        },
+      });
+  
+      Notify.create({
+        message: 'Cliente registrado correctamente',
+        color: "positive",
+        position: "top",
+      });
+  
+      console.log(r);
+      return r;
+    } catch (error) {
+      // Manejo robusto del error
+      let errorMessage = 'cliente con documento duplicao';
+      if (error.response && error.response.data && error.response.data.errors && error.response.data.errors[0] && error.response.data.errors[0].msg) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response && error.response.data && error.response.data.error) {
+        errorMessage = error.response.data.error;
       }
-    };
+  
+      Notify.create({
+        type: 'negative',
+        message: errorMessage,
+      });
+  
+      console.log("Error al guardar el cliente:", error);
+      return error;
+    } finally {
+      loading.value = false;
+    }
+  };
+  
+  
+
 
     const putCliente = async (id, data) => {
       try {

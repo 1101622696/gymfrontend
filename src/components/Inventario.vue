@@ -123,11 +123,11 @@ if (await validar()){
     try {
       const response = await useInventario.putInventario(informacion.value._id, todo)
 if(response.status!==200){
-  mostrarMensajeError("no se pudo eniar")
+  mostrarMensajeError("no se pudo enviar")
   agregar.value = false;
 
 }else{
-  mostrarMensajeExito("muy bien")
+  mostrarMensajeExito(" Producto actualizado exitosamente")
   listarInventario()
 }
 } catch (error) {
@@ -228,7 +228,7 @@ if (cantidad.value === "") {
 }
 
     if (verificado) {
-        mostrarMensajeExito("El formulario se envió correctamente");
+        // mostrarMensajeExito("El formulario se envió correctamente");
     }
 
     return verificado;
@@ -305,12 +305,12 @@ async function listardesactivados() {
   
       <q-table class="table" flat bordered title="Inventario" :rows="rows" :columns="columns" row-key="id">
                  <template v-slot:body-cell-valor="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatCurrency(props.row.valor) }}</p>
         </q-td>
       </template>
       <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
                           <q-tooltip v-model="showing">Edita</q-tooltip>
@@ -329,7 +329,7 @@ async function listardesactivados() {
           </q-td>
         </template>
         <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn v-if="props.row.estado == 1"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
@@ -346,9 +346,9 @@ async function listardesactivados() {
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
-        <input class="input" type="text" placeholder="Descripcion" v-model.trim="descripcion" />
-        <input class="input" type="text" placeholder="Valor" v-model.trim="valor" />
-        <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
+      <q-input class="input" filled v-model.trim="descripcion" label="Descripcion" :dense="dense" />
+      <q-input class="input" filled v-model.trim="valor" label="Valor" :dense="dense" />
+      <q-input class="input" filled v-model.trim="cantidad" label="Cantidad" :dense="dense" />
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useInventario.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
@@ -419,7 +419,6 @@ async function listardesactivados() {
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 1px solid #ccc;
   border-radius: 4px;
 }
 

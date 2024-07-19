@@ -89,7 +89,7 @@ const iniciar = async () => {
       // Guardar el token en localStorage
       localStorage.setItem('token', res.data.token);
 
-      mostrarMensajeExito('Inicio de sesión exitoso');
+      // mostrarMensajeExito('Inicio de sesión exitoso');
       router.push('/Home');
     } else {
       mostrarMensajeError('Correo electrónico o contraseña incorrectos');
@@ -98,7 +98,7 @@ const iniciar = async () => {
     if (error.response && error.response.data) {
       mostrarMensajeError(error.response.data.msg);
     } else {
-      mostrarMensajeError('Ha ocurrido un error en el servidor');
+      // mostrarMensajeError('Ha ocurrido un error en el servidor');
       console.log(error);
     }
   }

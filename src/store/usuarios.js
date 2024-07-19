@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 import { ref } from "vue";
+import { Notify } from "quasar";
+
 
 export const useStoreUsuarios = defineStore("Usuarios", () => {
   // const token = ref("");
@@ -149,8 +151,28 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
       localStorage.setItem('x-token', res.data.token);
       console.log('Token guardado:', res.data.token); // Añade este console.log
       
+
+      Notify.create({
+        message: 'Usuario registrado correctamente',
+        color: "positive",
+        position: "top",
+      });
+  
+      console.log(res);
       return res;
     } catch (error) {
+      // Manejo robusto del error
+      let errorMessage = 'Usuario o contraseña incorrecta';
+      if (error.response && error.response.data && error.response.data.errors && error.response.data.errors[0] && error.response.data.errors[0].msg) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response && error.response.data && error.response.data.error) {
+        errorMessage = error.response.data.error;
+      }
+  
+      Notify.create({
+        type: 'negative',
+        message: errorMessage,
+      });
       console.log("Error en el login", error);
       return error;
     }

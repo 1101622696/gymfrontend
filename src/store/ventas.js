@@ -78,11 +78,30 @@ export const useStoreVentas = defineStore("Ventas", () => {
       headers: {
                 "x-token": localStorage.getItem('x-token'),
 
-      }
-    });
-    console.log(r);
-    return r;
-  } catch (error) {
+              }
+            })
+
+            Notify.create({
+              message: 'Venta registrado correctamente',
+              color: "positive",
+              position: "top",
+            });
+        
+            console.log(r);
+            return r;
+          } catch (error) {
+            // Manejo  del error
+            let errorMessage = 'Error al actualizar';
+            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors[0] && error.response.data.errors[0].msg) {
+              errorMessage = error.response.data.errors[0].msg;
+            } else if (error.response && error.response.data && error.response.data.error) {
+              errorMessage = error.response.data.error;
+            }
+        
+            Notify.create({
+              type: 'negative',
+              message: errorMessage,
+            });
     loading.value = false;
     console.log(error);
     return error;

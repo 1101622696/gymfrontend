@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useStoreVentas } from "../store/ventas.js";
 import { useStoreInventario } from "../store/inventario.js";
 import { useQuasar } from 'quasar'
@@ -23,6 +23,7 @@ valorUnitario.value=""
 cantidad.value=""
 
 }
+const idInventarioSeleccionado = ref(null);
 
 
 function guardarUltimaVenta(id) {
@@ -36,7 +37,7 @@ async function guardar() {
 
   if (await validar()) {
     const todo = {
-      idInventario: idInventario.value.valor,
+      idInventario: idInventarioSeleccionado.value,
       valorUnitario: valorUnitario.value,
       cantidad: cantidad.value
     };
@@ -108,7 +109,7 @@ async function editarventa() {
       if (response.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
       } else {
-        mostrarMensajeExito("Muy bien");
+        mostrarMensajeExito("Venta actualizada exitosamente");
         listarVentas();
         listarInventarios();
       }
@@ -150,24 +151,24 @@ let columns =ref([
 async function validar() {
     let verificado = true;
 
-    if (idInventario.value === "") {
+    if (idInventarioSeleccionado.value === "") {
         mostrarMensajeError("seleccione un inventario");
         verificado = false;
     }
- if (valorUnitario.value === "") {
-    mostrarMensajeError("El valor está vacío");
-    verificado = false;
-} else if (!/^\d+$/.test(valorUnitario.value)) {
-    mostrarMensajeError("El valor debe ser un número");
-    verificado = false;
-}
+//  if (valorUnitario.value === "") {
+//     mostrarMensajeError("El valor está vacío");
+//     verificado = false;
+// } else if (!/^\d+$/.test(valorUnitario.value)) {
+//     mostrarMensajeError("El valor debe ser un número");
+//     verificado = false;
+// }
     if (cantidad.value === "") {
         mostrarMensajeError("Ingrese la cantidad");
         verificado = false;
     }
 
     if (verificado) {
-        mostrarMensajeExito("El formulario se envió correctamente");
+        // mostrarMensajeExito("El formulario se envió correctamente");
     }
 
     return verificado;
@@ -220,26 +221,62 @@ async function listarVentas() {
   }
 }
 
+// const organizarInventario = computed(() => {
+//   return inventarioTodo.value.map((element) => ({
+//     label: `${element.descripcion} - ${element.codigo}`,
+//     value: element._id,
+//     valor: element.valor
+//   }));
+// });
 
-const organizarInventario = computed(() => {
-    nombreCodigo.value = inventarioTodo.value.map((element) => ({
-        label: `${element.descripcion} - ${element.codigo}`,
-        valor: `${element._id}`,
-        nombre: `${element.nombre}`,
-    }));
-    return nombreCodigo.value;
-});
-
+// function actualizarValorUnitario(seleccionado) {
+//   console.log("Producto seleccionado:", seleccionado);
+//   if (seleccionado && seleccionado.valor) {
+//     console.log("Valor unitario encontrado:", seleccionado.valor);
+//     valorUnitario.value = seleccionado.valor;
+//   } else {
+//     console.log("Producto no encontrado o sin valor unitario");
+//     valorUnitario.value = '';
+//   }
+// }
 
 async function listarInventarios() {
-    try {
-   const res = await useInventario.listarInventario()
-    console.log(res.data);
-    inventarioTodo.value=res.data.inventario
-    } catch (error) {
-        console.error("Error al listar inventario:", error);
-    }
+  try {
+    const res = await useInventario.listaractivados();
+    console.log("Inventario cargado:", res.data);
+    inventarioTodo.value = res.data.activados;
+  } catch (error) {
+    console.error("Error al listar inventario:", error);
+  }
 }
+const organizarInventario = computed(() => {
+  return inventarioTodo.value.map((element) => ({
+    label: `${element.descripcion} - ${element.codigo}`,
+    value: element._id,  // Esto es el ID de MongoDB
+    valor: element.valor // Este es el precio unitario
+  }));
+});
+function actualizarValorUnitario(seleccionado) {
+  console.log("Producto seleccionado:", seleccionado);
+  if (seleccionado && seleccionado.valor) {
+    console.log("Valor unitario encontrado:", seleccionado.valor);
+    valorUnitario.value = seleccionado.valor;
+    idInventarioSeleccionado.value = seleccionado.value; // Guardamos el ID de MongoDB
+  } else {
+    console.log("Producto no encontrado o sin valor unitario");
+    valorUnitario.value = '';
+    idInventarioSeleccionado.value = null;
+  }
+}
+watch(idInventario, (newValue) => {
+  console.log("idInventario cambiado a:", newValue);
+  actualizarValorUnitario(newValue);
+});
+
+// Para depuración
+watch(inventarioTodo, (newValue) => {
+  console.log("inventarioTodo actualizado:", newValue);
+}, { deep: true });
 function getInventarioDescripcion(id) {
   const inventario = inventarioTodo.value.find(inventario => inventario._id === id);
   return inventario ? `${inventario.descripcion} - ${inventario.codigo}`: "";
@@ -266,27 +303,27 @@ function formatCurrency(value) {
   
       <q-table class="table" flat bordered title="Ventas" :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idInventario="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getInventarioDescripcion(props.row.idInventario) }}</p>
         </q-td>
       </template>
-       <template v-slot:body-cell-fecha="props">
-      <q-td :props="props">
-        <p>{{ formatDate(props.row.fecha) }}</p>
-      </q-td>
-    </template>
+<template v-slot:body-cell-fecha="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
+    <p>{{ formatDate(props.row.fecha) }}</p>
+  </q-td>
+</template>
       <template v-slot:body-cell-valorUnitario="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatCurrency(props.row.valorUnitario) }}</p>
         </q-td>
       </template>
       <template v-slot:body-cell-total="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatCurrency(props.row.total) }}</p>
         </q-td>
       </template>
         <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
                           <q-tooltip v-model="showing">Edita</q-tooltip>
@@ -303,12 +340,34 @@ function formatCurrency(value) {
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
- <q-select standout v-model="idInventario" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
-      />
-        <!-- <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario" @input="valorUnitario = formatCurrencyInput($event.target.value)" /> -->
-        <input class="input" type="text" placeholder="Valor Unitario" v-model.trim="valorUnitario"  />
-
-        <input class="input" type="text" placeholder="Cantidad" v-model.trim="cantidad" />
+ <!-- <q-select standout v-model="idInventario" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
+      /> -->
+    <!-- <q-select
+      v-model="idInventario"
+      :options="organizarInventario"
+      option-label="label"
+      label="Inventario"
+      @update:model-value="actualizarValorUnitario"
+      map-options
+    >
+      <template v-slot:selected-item="scope">
+        <div>{{ scope.opt.label }}</div>
+      </template>
+    </q-select> -->
+    <q-select
+  v-model="productoSeleccionado"
+  :options="organizarInventario"
+  option-label="label"
+  label="Inventario"
+  @update:model-value="actualizarValorUnitario"
+  map-options
+>
+  <template v-slot:selected-item="scope">
+    <div>{{ scope.opt.label }}</div>
+  </template>
+</q-select>
+      <q-input class="input" filled v-model.trim="valorUnitario" label="Valor Unitario" :dense="dense" />
+      <q-input class="input" filled v-model.trim="cantidad" label="Cantidad" :dense="dense" />
     </div>
     
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
@@ -324,13 +383,11 @@ function formatCurrency(value) {
 
 <style scoped>
 
-/* Estilos para el contenedor principal */
 .container {
   width: 90vmax;
   margin: 0 auto;
 }
 
-/* Estilos para el título */
 .title {
   font-size: 24px;
   font-weight: bold;
@@ -374,17 +431,14 @@ function formatCurrency(value) {
   color: #000000; 
 }
 
-/* Estilos para los inputs */
 .input {
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-/* Estilos para la tabla */
 .table {
   width: 100%;
   border-collapse: collapse;

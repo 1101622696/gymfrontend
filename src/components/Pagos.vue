@@ -141,7 +141,7 @@ async function editarpago() {
   agregar.value = false;
 
       } else {
-        mostrarMensajeExito("Muy bien");
+        mostrarMensajeExito("Pago actualizado exitosamente");
         listarPlanes();
         listarPagos();
         listarClientes();
@@ -272,8 +272,8 @@ const organizarClientes = computed(() => {
 
 async function listarClientes() {
   try {
-    const res = await useCliente.listarCliente();
-    clientesTodo.value = res.data.cliente;
+    const res = await useCliente.listaractivados();
+    clientesTodo.value = res.data.activados;
   } catch (error) {
     console.error("Error al listar clientes:", error);
   }
@@ -301,8 +301,8 @@ const organizarPlanes = computed(() => {
 
 async function listarPlanes() {
     try {
-    const res = await usePlan.listarPlan()
-       planesTodo.value = res.data.plan;
+    const res = await usePlan.listaractivados()
+       planesTodo.value = res.data.activados;
     } catch (error) {
         console.error("Error al listar planes:", error);
     }
@@ -324,27 +324,27 @@ function formatCurrency(value) {
   
       <q-table class="table" flat bordered title="Pagos" :rows="rows" :columns="columns" row-key="id">
               <template v-slot:body-cell-idPlan="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
         </q-td>
       </template>
     <template v-slot:body-cell-idCliente="props">
-      <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getClienteDocumento(props.row.idCliente) }}</p>
       </q-td>
     </template>
         <template v-slot:body-cell-fecha="props">
-      <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
         <p>{{ formatDate(props.row.fecha) }}</p>
       </q-td>
     </template>
           <template v-slot:body-cell-valor="props">
-        <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatCurrency(props.row.valor) }}</p>
         </q-td>
       </template>
            <template v-slot:body-cell-opciones="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn class="option-button" @click="editar(props.row)">
               ✏️
             </q-btn>
@@ -357,7 +357,7 @@ function formatCurrency(value) {
           </q-td>
         </template>
         <template v-slot:body-cell-estado="props">
-          <q-td :props="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn v-if="props.row.estado == 1"
              style="color:green">Activo</q-btn>
             <q-btn v-else 
