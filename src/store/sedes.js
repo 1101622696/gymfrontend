@@ -8,14 +8,17 @@ export const useStoreSedes = defineStore("Sedes", () => {
     let loading = ref(false)
     let sedes =ref([])
     const useUsuario=useStoreUsuarios()
-    
-    
-        const listarSede= async() =>{
+
+
+        const listarSede= async(payload) =>{
             try {
                 loading.value  = true;
                 console.log(`este es el usuariotoken ${useUsuario.token}`);
                 console.log(` este es el local ${localStorage.getItem('x-token')}`);
-                const response = await axios.get("api/sedes/listar",{
+                let ruta;
+                if (payload == null) ruta = "api/sedes/listar";
+                else ruta=`api/sedes/listar?busqueda=${payload}`;
+                const response = await axios.get(ruta,{
                     headers:{
                                 "x-token": localStorage.getItem('x-token'),
 
@@ -32,7 +35,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
             finally {
                 loading.value=false
         }}
-    
+
 
         const listaractivadas = async () => {
             try {
@@ -53,7 +56,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
               loading.value = false;
             }
           };
-      
+
           const listardesactivadas = async () => {
             try {
               loading.value = true;
@@ -73,7 +76,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
               loading.value = false;
             }}
 
-    
+
         const postSede = async (data) => {
             const loading = ref(true);
             console.log(localStorage.getItem('x-token'));
@@ -93,7 +96,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
               loading.value = false;
             }
           };
-    
+
           const putSedes = async (id, data) => {
             try {
               loading.value = true;
@@ -117,8 +120,8 @@ export const useStoreSedes = defineStore("Sedes", () => {
               loading.value = false;
             }
           };
-          
-    
+
+
         const putActivarSede= async(id) =>{
             try {
                 loading.value =true
@@ -139,7 +142,7 @@ export const useStoreSedes = defineStore("Sedes", () => {
                 loading.value = false
             }
         }
-    
+
         const putDesactivarSede= async(id) =>{
             try {
                 loading.value =true
@@ -160,14 +163,14 @@ export const useStoreSedes = defineStore("Sedes", () => {
                 loading.value = false
             }
         }
-    
 
-    
-        
+
+
+
         return{ listarSede, listaractivadas,listardesactivadas, postSede, putSedes, putActivarSede, putDesactivarSede, loading, sedes, useUsuario}
-    
+
     },
-    
+
     {persist: true}
-    
+
     )

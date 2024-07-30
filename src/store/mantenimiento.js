@@ -9,8 +9,8 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
     let loading = ref(false)
     let mantenimiento =ref([])
     const useUsuario=useStoreUsuarios()
-    
-    
+
+
         const listarMantenimiento= async() =>{
             try {
                 loading.value  = true;
@@ -33,8 +33,52 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
             finally {
                 loading.value=false
         }}
-    
-    
+
+        const listarpormaquina= async(id) =>{
+            try {
+                loading.value  = true;
+
+                const response = await axios.get(`api/mantenimiento/listarpormaquina/${id}`,{
+                    headers:{
+                                "x-token": localStorage.getItem('x-token'),
+
+                    }
+            });
+            //    mantenimiento.value = response.data;
+               return response;
+            } catch (error) {
+                console.error("NO se pudo obtener la lista de mantenimiento",error);
+                console.log(`${useUsuario.token} es el token`);
+
+                throw error;
+            }
+            finally {
+                loading.value=false
+        }}
+
+
+        const listarporfecha= async(fecha) =>{
+            try {
+                loading.value  = true;
+
+                const response = await axios.get(`api/mantenimiento/listarporfecha/`,{
+                    params: { fecha },
+                    headers:{
+                                "x-token": localStorage.getItem('x-token'),
+
+                    }
+            });
+            //    mantenimiento.value = response.data;
+               return response;
+            } catch (error) {
+                console.error("NO se pudo obtener la lista de mantenimiento",error);
+                console.log(`${useUsuario.token} es el token`);
+
+                throw error;
+            }
+            finally {
+                loading.value=false
+        }}
         const postMantenimiento= async(data) =>{
             try {
                 loading.value =true
@@ -56,7 +100,7 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                 loading.value = false
             }
         }
-    
+
         const putMantenimiento= async(id, data) =>{
             try {
                 loading.value =true
@@ -77,11 +121,11 @@ export const useStoreMantenimiento = defineStore("Mantenimiento", () => {
                 loading.value = false
             }
         }
-    
-        return{ listarMantenimiento, postMantenimiento, putMantenimiento, loading, mantenimiento, useUsuario}
-    
+
+        return{ listarMantenimiento,listarpormaquina,listarporfecha, postMantenimiento, putMantenimiento, loading, mantenimiento, useUsuario}
+
     },
-    
+
     {persist: true}
-    
+
     )

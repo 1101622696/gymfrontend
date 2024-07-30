@@ -9,14 +9,17 @@ export const useStorePlanes = defineStore("Planes", () => {
     let loading = ref(false)
     let planes =ref([])
     const useUsuario=useStoreUsuarios()
-    
-    
-        const listarPlan= async() =>{
+
+
+        const listarPlan= async(payload) =>{
             try {
                 loading.value  = true;
                 console.log(`este es el usuariotoken ${useUsuario.token}`);
                 console.log(` este es el local ${localStorage.getItem('x-token')}`);
-                const response = await axios.get("api/planes/listar",{
+                let ruta;
+                if (payload == null) ruta = "api/planes/listar";
+                else ruta=`api/planes/listar?busqueda=${payload}`;
+                const response = await axios.get(ruta,{
                     headers:{
                                 "x-token": localStorage.getItem('x-token'),
 
@@ -33,7 +36,7 @@ export const useStorePlanes = defineStore("Planes", () => {
             finally {
                 loading.value=false
         }}
-    
+
         const listaractivados = async () => {
             try {
               loading.value = true;
@@ -53,7 +56,7 @@ export const useStorePlanes = defineStore("Planes", () => {
               loading.value = false;
             }
           };
-      
+
           const listardesactivados = async () => {
             try {
               loading.value = true;
@@ -74,7 +77,7 @@ export const useStorePlanes = defineStore("Planes", () => {
               loading.value = false;
             }
           };
-    
+
         const postPlan= async(data) =>{
             try {
                 loading.value =true
@@ -95,7 +98,7 @@ export const useStorePlanes = defineStore("Planes", () => {
                 loading.value = false
             }
         }
-    
+
         const putPlan= async(id, data) =>{
             try {
                 loading.value =true
@@ -138,7 +141,7 @@ export const useStorePlanes = defineStore("Planes", () => {
                 loading.value = false
             }
         }
-    
+
         const putDesactivarPlan= async(id) =>{
             try {
                 loading.value =true
@@ -160,12 +163,12 @@ export const useStorePlanes = defineStore("Planes", () => {
                 loading.value = false
             }
         }
-    
-    
+
+
         return{ listarPlan, listaractivados,listardesactivados, postPlan, putPlan, putActivarPlan, putDesactivarPlan, loading, planes, useUsuario}
-    
+
     },
-    
+
     {persist: true}
-    
+
     )

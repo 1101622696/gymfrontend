@@ -78,7 +78,7 @@ async function guardar() {
         console.log('Filas actualizadas:', rows.value);
 
         mostrarMensajeExito("Producto agregado");
-        
+
         // Actualizar lista de inventario
         await listarInventario();
   agregar.value = false;
@@ -129,6 +129,7 @@ if(response.status!==200){
 }else{
   mostrarMensajeExito(" Producto actualizado exitosamente")
   listarInventario()
+  agregar.value=false
 }
 } catch (error) {
       console.error("Error al actualizar el inventario:", error);
@@ -139,7 +140,7 @@ if(response.status!==200){
 
 function cerrar() {
   agregar.value = false;
-} 
+}
 
 let informacion=ref("")
 // let codigo = ref("");
@@ -171,7 +172,7 @@ async function listarInventario() {
 
     if (res && res.data && res.data.inventario) {
       const productoRecienteId = obtenerProductoReciente();
-      
+
       // Ordenar los productos
       rows.value = res.data.inventario.sort((a, b) => {
         if (a._id === productoRecienteId) return -1;
@@ -270,26 +271,66 @@ async function listardesactivados() {
   }
 }
 
+let listN= ref(false);
+let busqueda= ref("");
     const ordenar= ref("Todos")
    function ejecutarFiltro() {
 
       if (ordenar.value == 'Todos') {
         listarInventario();
+        listN.value=false
+        busqueda.value=""
       } else if (ordenar.value == 'Activos') {
         listaractivados();
+        listN.value=false
+        busqueda.value=""
       } else if (ordenar.value == 'Inactivos') {
         listardesactivados();
-      }
-    };
+        busqueda.value=""
+        listN.value=false
+      } else if (ordenar.value == 'Nombre') {
+      listN.value=true
+      }};
+
+      function ejecutarlistnombre(){
+ListarPorNombre()
+}
+
+async function ListarPorNombre() {
+  try {
+    const res = await useInventario.listarInventario(busqueda.value);
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.inventario) {
+      const productoRecienteId = obtenerProductoReciente();
+
+      // Ordenar los productos
+      rows.value = res.data.inventario.sort((a, b) => {
+        if (a._id === productoRecienteId) return -1;
+        if (b._id === productoRecienteId) return 1;
+        // Puedes cambiar este criterio de ordenación según tus necesidades
+        return b.cantidad - a.cantidad; // Ordena por cantidad de forma descendente
+      });
+
+      console.log("Filas ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar inventario:", error);
+  }
+}
+
     function formatCurrency(value) {
   return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
-      
+
       function formatCurrencyInput(value) {
   value = value.replace(/\D/g, ''); // Remove all non-digit characters
   return value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add dots
 }
-      
+
+
 </script>
 
 <template>
@@ -297,12 +338,19 @@ async function listardesactivados() {
       <button class="button" @click="agregarInventario()">Agregar Inventario</button>
 
       <div class="tablaselect">
+
+        <div class="inputlistarn" v-if="listN">
+          <input class="inputn" type="text" placeholder="Digite nombre o codigo" v-model.trim="busqueda" />
+          <button class="button"  id="buttonf" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+        </div>
+
         <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
           <option value="Todos">Todos</option>
           <option value="Activos">Activos</option>
           <option value="Inactivos">Inactivos</option>
+          <option value="Nombre">Descripcion / Codigo</option>
         </select>
-  
+
       <q-table class="table" flat bordered title="Inventario" :rows="rows" :columns="columns" row-key="id">
                  <template v-slot:body-cell-valor="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
@@ -332,14 +380,14 @@ async function listardesactivados() {
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn v-if="props.row.estado == 1"
              style="color:green">Activo</q-btn>
-            <q-btn v-else 
+            <q-btn v-else
                style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
     </q-table>
   </div>
-    
-  <div  class="filtro" v-if="agregar"> 
+
+  <div  class="filtro" v-if="agregar">
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Inventario</h3>
@@ -350,7 +398,7 @@ async function listardesactivados() {
       <q-input class="input" filled v-model.trim="valor" label="Valor" :dense="dense" />
       <q-input class="input" filled v-model.trim="cantidad" label="Cantidad" :dense="dense" />
     </div>
-    
+
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useInventario.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
     <button v-else class="button" @click="editarinventario()" :loading="useInventario.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
@@ -358,15 +406,22 @@ async function listardesactivados() {
       </div>
     </div>
   </template>
-  
+
 
 
 <style scoped>
 
 /* Estilos para el contenedor principal */
 .container {
-  width: 90vmax;
+  width: 96vmax;
   margin: 0 auto;
+  min-height:auto;
+background-color: rgb(185, 185, 185);
+overflow:hidden !important;
+}
+
+.container::-webkit-scrollbar {
+  display: none !important; /* Oculta el scrollbar */
 }
 
 /* Estilos para el título */
@@ -377,23 +432,23 @@ async function listardesactivados() {
 }
 
 .buttonX {
-  background-color: #ffffff00; 
-  border: 0 solid #cccccc00; 
-  color: #504d4d; 
-  font-weight: bold; 
-  font-size: 20px; 
-  cursor: pointer; 
+  background-color: #ffffff00;
+  border: 0 solid #cccccc00;
+  color: #504d4d;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
   transition: transform .2s;
 }
 
 .buttonX:hover {
-    font-size: 25px; 
+    font-size: 25px;
   transform: scale(1.2);
-  color: #000000; 
+  color: #000000;
 }
 
 .button {
-  background-color: #45a049; 
+  background-color: #45a049;
   border: none;
   color: white;
   padding: 10px 20px;
@@ -410,7 +465,7 @@ async function listardesactivados() {
 }
 
 .button:hover {
-  background-color: #69bb6d; 
+  background-color: #69bb6d;
   box-shadow: 3px 2px 10px black;
 }
 /* Estilos para los inputs */
@@ -453,7 +508,7 @@ async function listardesactivados() {
 }
 
 .option-button:hover {
-  background-color: #005f6b; 
+  background-color: #005f6b;
 }
 
 
@@ -540,7 +595,7 @@ margin-left: auto;
 .tablaselect{
   display: flex;
   position: absolute;
-  width: 100%;
+  width: 97%;
 }
 
 .contenedorFiltro{
@@ -560,21 +615,6 @@ margin-left: auto;
   z-index: 1;
 }
 
-.inputlistarcumple{
-  position:absolute;
-  width: auto;
-  height: 4.5vmin;
-  background-color: rgba(16, 16, 16, 0);
-  right: 15%;
-  margin-top:0.8vmin;
-  z-index: 1;
-  display: flex;
-  flex-direction: row;
-
-gap:1vmin;
-border-radius: 1vmin;
-align-items: center;
-}
 
 .inputlistarn{
   position:absolute;
@@ -588,9 +628,20 @@ align-items: center;
   display: flex;
   flex-direction: row;
 align-items: center;
-
 }
-
+.inputlistarn{
+  position:absolute;
+  width: auto;
+  height: 4.5vmin;
+  gap: 1vmin;
+  background-color: rgba(16, 16, 16, 0);
+  right: 15%;
+  margin-top:0.5vmin;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+align-items: center;
+}
 .inputn{
   width: 15vmax;
   margin: 8px 0;
@@ -612,12 +663,16 @@ align-items: center;
 
 #buttonf{
   padding: 0px;
-  width: 7vmin;
+  width: 8vmin;
   height: 2.5vmin;
   display: flex;
   text-align: center;
   padding: 0px;
+  font-size: small;
+  margin: 0px;
+  margin-bottom: 1px;
 }
+
 
 
 /* estilos pa observaciones */
@@ -637,7 +692,7 @@ align-items: center;
 }
 .textarea {
   width: 100%;
-  height: 200px; 
+  height: 200px;
   padding: 10px;
   font-size: 16px;
   border-radius: 4px;

@@ -9,14 +9,15 @@ export const useStoreInventario = defineStore("Inventario", () => {
     let loading = ref(false)
     let inventario =ref([])
     const useUsuario=useStoreUsuarios()
-    
-    
-        const listarInventario= async() =>{
+
+
+        const listarInventario= async(payload) =>{
             try {
                 loading.value  = true;
-                console.log(`este es el usuariotoken ${useUsuario.token}`);
-                console.log(` este es el local ${localStorage.getItem('x-token')}`);
-                const response = await axios.get("api/inventario/listar",{
+                let ruta;
+                if (payload == null) ruta = "api/inventario/listar";
+                else ruta=`api/inventario/listar?busqueda=${payload}`;
+                const response = await axios.get(ruta,{
                     headers:{
                                 "x-token": localStorage.getItem('x-token'),
 
@@ -31,7 +32,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
             finally {
                 loading.value=false
         }}
-    
+
         const listaractivados = async () => {
           try {
             loading.value = true;
@@ -54,7 +55,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
             loading.value = false;
           }
         };
-    
+
         const listardesactivados = async () => {
           try {
             loading.value = true;
@@ -74,7 +75,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
             loading.value = false;
           }
         };
-    
+
         const postInventario= async(data) =>{
             try {
                 loading.value =true
@@ -95,7 +96,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
                 loading.value = false
             }
         }
-    
+
         const putInventario= async(id, data) =>{
             try {
                 loading.value =true
@@ -142,7 +143,7 @@ export const useStoreInventario = defineStore("Inventario", () => {
               loading.value = false;
             }
           };
-      
+
           const putDesactivarInventario = async (id) => {
             try {
               loading.value = true;
@@ -169,11 +170,11 @@ export const useStoreInventario = defineStore("Inventario", () => {
               loading.value = false;
             }
           };
-    
+
         return{ listarInventario,listaractivados,listardesactivados, postInventario, putInventario, putActivarInventario, putDesactivarInventario, loading, inventario, useUsuario}
-    
+
     },
-    
+
     {persist: true}
-    
+
     )

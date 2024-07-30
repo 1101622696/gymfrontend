@@ -98,18 +98,21 @@ export const useStoreClientes = defineStore(
         loading.value = false;
       }
     };
+
+
+
     const listarClientesporCumpleanos = async (dia, mes) => {
       try {
           loading.value = true;
           console.log(`Enviando solicitud para día ${dia} y mes ${mes}`);
-  
+
           const response = await axios.get('/api/clientes/cumpleanos', {
               params: { dia, mes },
               headers: {
                   "x-token": localStorage.getItem('x-token'),
               },
           });
-  
+
           console.log('Respuesta del servidor:', response.data);
           return response.data;
       } catch (error) {
@@ -124,19 +127,19 @@ export const useStoreClientes = defineStore(
     try {
       loading.value = true;
       console.log(localStorage.getItem('x-token'));
-  
+
       const r = await axios.post("api/clientes/escribir", data, {
         headers: {
           "x-token": localStorage.getItem('x-token'),
         },
       });
-  
+
       Notify.create({
         message: 'Cliente registrado correctamente',
         color: "positive",
         position: "top",
       });
-  
+
       console.log(r);
       return r;
     } catch (error) {
@@ -147,20 +150,20 @@ export const useStoreClientes = defineStore(
       } else if (error.response && error.response.data && error.response.data.error) {
         errorMessage = error.response.data.error;
       }
-  
+
       Notify.create({
         type: 'negative',
         message: errorMessage,
       });
-  
+
       console.log("Error al guardar el cliente:", error);
       return error;
     } finally {
       loading.value = false;
     }
   };
-  
-  
+
+
 
 
     const putCliente = async (id, data) => {
@@ -174,13 +177,23 @@ export const useStoreClientes = defineStore(
                    "x-token": localStorage.getItem('x-token'),
           },
         });
-        console.log(r);
+        Notify.create({
+          message: 'cliente actualizado correctamente',
+          color: "positive",
+          position: "top",
+        })
+
         return r;
-      } catch (error) {
-        loading.value = true;
+
+    } catch (error) {
+      Notify.create({
+        type: 'negative',
+        message: error.response.data.errors[0].msg
+      })
+        loading.value =true
         console.log(error);
         return error;
-      } finally {
+    } finally {
         loading.value = false;
       }
     };
@@ -233,7 +246,7 @@ export const useStoreClientes = defineStore(
         loading.value = false;
       }
     };
-    
+
 
     const putClienteSeguimiento = async (id, seguimientos) => {
       try {
@@ -241,7 +254,7 @@ export const useStoreClientes = defineStore(
         console.log(localStorage.getItem('x-token'));
 
         console.log('Datos a enviar:', seguimientos); // Añade este console.log para verificar la estructura de datos
-    
+
         const response = await axios.put(
           `/api/clientes/modificar/seguimiento/${id}`,
           { seguimiento: seguimientos.seguimiento }, // Envía directamente el array de seguimiento
@@ -251,13 +264,23 @@ export const useStoreClientes = defineStore(
             },
           }
         );
-    
-        console.log("Respuesta del servidor:", response.data);
-        
+        Notify.create({
+          message: 'seguimiento actualizado correctamente',
+          color: "positive",
+          position: "top",
+        })
 
-      } catch (error) {
-        console.error("Error al actualizar seguimiento:", error);
-      }
+        return response;
+
+    } catch (error) {
+      Notify.create({
+        type: 'negative',
+        message: error.response.data.errors[0].msg
+      })
+        loading.value =true
+        console.log(error);
+        return error;
+    }
     }
     const putEditaSeguimiento = async (clienteId, seguimientoId, seguimientoData) => {
       try {
@@ -277,8 +300,8 @@ export const useStoreClientes = defineStore(
         throw error;
       }
     };
-    
-    
+
+
     return {
       listarCliente,
       listaractivados,

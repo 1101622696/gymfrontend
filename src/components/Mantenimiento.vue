@@ -31,6 +31,29 @@ function guardarMantenimientoReciente(id) {
 function obtenerMantenimientoReciente() {
   return localStorage.getItem('mantenimientoReciente');
 }
+
+
+async function actFechamaquina (idmaq) {
+
+  try {
+let r = await useMaquina.listarid(idmaq)
+
+let editmaqui = r.data.maquina
+console.log(editmaqui,"esta es la maquina a la que se le hace mantenimiento ")
+editmaqui.fechaUltmantenimiento = new Date()
+
+let res = await useMaquina.putMaquina(idmaq,editmaqui)
+
+console.log(res, "este es el res de putmaquina para la fecha")
+  }
+  catch (error) {
+      console.error("Error al actualizar la fecha del mantenimiento de la maquina:", error);
+    }
+}
+
+
+
+
 async function guardar() {
 
   if (await validar()) {
@@ -47,12 +70,14 @@ async function guardar() {
 
       if (response.status === 200) {
         const nuevoMantenimiento = {
-          _id: response.data.mantenimiento._id,  
+          _id: response.data.mantenimiento._id,
           idMantenimiento: response.data.mantenimiento.idMantenimiento,
           descripcion: response.data.mantenimiento.descripcion,
           responsable: response.data.mantenimiento.responsable,
           valor: response.data.mantenimiento.valor,
         };
+
+let idmaqui=nuevoMantenimiento.idMantenimiento
 
         console.log('Nuevo mantenimiento añadido:', nuevoMantenimiento);
 
@@ -63,8 +88,9 @@ async function guardar() {
         console.log('Mantenimientos actualizados:', rows.value);
 
         mostrarMensajeExito("Mantenimiento agregado correctamente");
-        listarMaquina(); 
-        listarMantenimiento(); 
+        listarMaquina();
+        listarMantenimiento();
+        actFechamaquina(idmaqui)
   agregar.value = false;
 
       } else {
@@ -87,8 +113,8 @@ informacion.value=info
     if (selectMaquina) {
         idMantenimiento.value = {
             label: `${selectMaquina.codigo} - ${selectMaquina.descripcion}`,
-            valor: selectMaquina._id, 
-            nombre: selectMaquina.nombre  
+            valor: selectMaquina._id,
+            nombre: selectMaquina.nombre
         };
     }
 descripcion.value=info.descripcion
@@ -120,6 +146,7 @@ if(response.status!==200){
 }else{
   mostrarMensajeExito("Mantenimiento actualizado exitosamente")
   listarMantenimiento();
+  agregar.value=false
 }
 }catch (error) {
       console.error("Error al actualizar el mantenimiento:", error);
@@ -166,11 +193,11 @@ async function validar() {
     if (descripcion.value === "") {
         mostrarMensajeError("La descripcion está vacía");
         verificado = false;
-    } 
+    }
     if (responsable.value === "") {
         mostrarMensajeError("El responsable está vacío");
         verificado = false;
-    } 
+    }
 if (valor.value === "") {
     mostrarMensajeError("El valor está vacío");
     verificado = false;
@@ -244,7 +271,9 @@ const organizarMaquinas = computed(() => {
         nombre: `${element.nombre}`,
     }));
     return nombreCodigo.value;
+
 });
+
 
 
 async function listarMaquina() {
@@ -255,7 +284,7 @@ async function listarMaquina() {
         console.error("Error al listar maquinas:", error);
     }
 }
-      
+
 function getMaquinaCodigo(id) {
   const mantenimiento = maquinaTodo.value.find((mantenimiento) => mantenimiento._id === id);
   return mantenimiento ? `${mantenimiento.codigo} - ${mantenimiento.descripcion}` : "mantenimiento no encontrado";
@@ -268,19 +297,91 @@ function getMaquinaCodigo(id) {
     function formatCurrency(value) {
   return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
-      
+
       function formatCurrencyInput(value) {
   value = value.replace(/\D/g, ''); // Remove all non-digit characters
   return value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add dots
 }
 
+const ordenar= ref("Todos")
+    let listP= ref(false);
+    let listF= ref(false);
+    let maquinaSeleccionada=ref("")
+    let fechaBuscada=ref("")
+
+function ejecutarFiltro() {
+
+if (ordenar.value == 'Todos') {
+  listarMantenimiento();
+  listP.value=false
+  listF.value=false
+  maquinaSeleccionada.value=""
+  fechaBuscada.value=""
+}else if (ordenar.value == 'Maquina') {
+  listP.value=true
+  listF.value=false
+  listarMaquina()
+}
+else if (ordenar.value == 'Fecha') {
+  listF.value=true
+  listP.value=false
+}};
+
+async function buscarpormaquina(){
+    try {
+      console.log(maquinaSeleccionada.value,"maquina id buscadaaaaaaaaaaaaaa")
+
+      const res = await useMantenimiento.listarpormaquina(maquinaSeleccionada.value);
+rows.value=res.data.mantenimiento
+    } catch (error) {
+        console.error("Error al listar maquinas:", error);
+    }}
+
+
+
+    async function buscarporfecha(){
+      if (fechaBuscada.value=== "") {
+      mostrarMensajeError("debe ingresar un fecha");
+    } else {
+    try {
+      console.log(fechaBuscada.value,"fecha buscadaaaaaaaaaaaaaa")
+      const res = await useMantenimiento.listarporfecha(fechaBuscada.value);
+rows.value=res.data.mantenimiento
+    } catch (error) {
+        console.error("Error al listar maquinas:", error);
+    }}}
 
 </script>
 
 <template>
     <div class="container">
-  
+
       <button class="button" @click="agregarmantenimiento()">Agregar Mantenimiento</button>
+
+        <div class="tablaselect">
+
+
+      <div class="inputlistar" v-if="listP">
+      <select v-model="maquinaSeleccionada" @change="buscarpormaquina" class="custom-select2">
+        <option disabled value="">Seleccione una maquina</option>
+        <option v-for="value in organizarMaquinas" :key="value.id" :value="value.valor">{{ value.label }}</option>
+      </select>
+    </div>
+
+
+
+    <div class="inputlistarcumple" v-if="listF">
+      <input class="inputc" type="date" v-model="fechaBuscada" required />
+      <button class="button" id="buttonf" @click="buscarporfecha()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+    </div>
+
+
+      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+        <option value="Todos">Todos</option>
+        <option value="Maquina">Por Maquina</option>
+        <option value="Fecha">Por Fecha</option>
+      </select>
+
 
       <q-table class="table" flat bordered title="mantenimiento" :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-idMantenimiento="props">
@@ -307,8 +408,9 @@ function getMaquinaCodigo(id) {
           </q-td>
         </template>
       </q-table>
-    
-  <div  class="filtro" v-if="agregar"> 
+    </div>
+
+  <div  class="filtro" v-if="agregar">
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Mantenimiento</h3>
@@ -322,7 +424,7 @@ function getMaquinaCodigo(id) {
       <q-input class="input" filled v-model.trim="responsable" label="Responsable" :dense="dense" />
       <q-input class="input" filled v-model.trim="valor" label="Valor" :dense="dense" />
     </div>
-    
+
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
     <button v-else class="button" @click="editarmantenimiento()" :loading="useMantenimiento.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
@@ -331,15 +433,17 @@ function getMaquinaCodigo(id) {
       </div>
     </div>
   </template>
-  
+
 
 
 <style scoped>
 
 /* Estilos para el contenedor principal */
 .container {
-  width: 90vmax;
+  width: 97vmax;
   margin: 0 auto;
+  min-height:auto;
+overflow:hidden !important;
 }
 
 /* Estilos para el título */
@@ -350,7 +454,7 @@ function getMaquinaCodigo(id) {
 }
 
 .button {
-  background-color: #45a049; 
+  background-color: #45a049;
   border: none;
   color: white;
   padding: 10px 20px;
@@ -367,24 +471,24 @@ function getMaquinaCodigo(id) {
 }
 
 .button:hover {
-  background-color: #69bb6d; 
+  background-color: #69bb6d;
   box-shadow: 3px 2px 10px black;
 }
 
 .buttonX {
-  background-color: #ffffff00; 
-  border: 0 solid #cccccc00; 
-  color: #504d4d; 
-  font-weight: bold; 
-  font-size: 20px; 
-  cursor: pointer; 
+  background-color: #ffffff00;
+  border: 0 solid #cccccc00;
+  color: #504d4d;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
   transition: transform .2s;
 }
 
 .buttonX:hover {
-    font-size: 25px; 
+    font-size: 25px;
   transform: scale(1.2);
-  color: #000000; 
+  color: #000000;
 }
 
 
@@ -428,7 +532,7 @@ function getMaquinaCodigo(id) {
 }
 
 .option-button:hover {
-  background-color: #005f6b; 
+  background-color: #005f6b;
 }
 
 
@@ -498,5 +602,102 @@ top: 50%;
 left: 50%;
 transform: translate(-50%,-50%);
 }
+
+.custom-select {
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   background-color: rgb(170, 170, 170);
+   border-radius: 1vmin;
+   right: 1%;
+   margin-top:0.8vmin;
+   z-index: 1;
+ }
+ .tablaselect{
+   display: flex;
+   position: absolute;
+   width: 97vmax;
+ }
+
+ .contenedorFiltro{
+   display: flex;
+   justify-content: flex-end;
+   width: 100%;
+ }
+
+ .custom-select2 {
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   background-color: rgb(170, 170, 170);
+   border-radius: 1vmin;
+   right: 15%;
+   margin-top:0.8vmin;
+   z-index: 1;
+ }
+
+ .inputlistarcumple{
+   position:absolute;
+   width: auto;
+   height: 4.5vmin;
+   background-color: rgba(16, 16, 16, 0);
+   right: 15%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   display: flex;
+   flex-direction: row;
+
+ gap:1vmin;
+ border-radius: 1vmin;
+ align-items: center;
+ }
+
+ .inputlistarn{
+   position:absolute;
+   width: auto;
+   height: 4.5vmin;
+   gap: 1vmin;
+   background-color: rgba(16, 16, 16, 0);
+   right: 15%;
+   margin-top:0.5vmin;
+   z-index: 1;
+   display: flex;
+   flex-direction: row;
+ align-items: center;
+
+ }
+
+ .inputn{
+   width: 15vmax;
+   margin: 8px 0;
+   height: 2.5vmin;
+   box-sizing: border-box;
+   border: 1px solid #ccc;
+   border-radius: 1vmin;
+   border: solid 1.5px black;
+ }
+ .inputc{
+   width: 8vmax;
+   margin: 8px 0;
+   height: 2.5vmin;
+   box-sizing: border-box;
+   border: 1px solid #ccc;
+   border-radius: 1vmin;
+   border: solid 1.5px black;
+ }
+
+ #buttonf{
+   padding: 0px;
+   width: 8vmin;
+   height: 2.5vmin;
+   display: flex;
+   text-align: center;
+   padding: 0px;
+   font-size: small;
+   margin: 0px;
+   margin-bottom: 1px;
+ }
+
+
 
 </style>

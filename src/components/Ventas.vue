@@ -46,11 +46,11 @@ async function guardar() {
       let nombrez = await useSales.postVenta(todo);
 
       if (nombrez.status !== 200) {
-        mostrarMensajeError("No se pudo enviar");
-        
+
+
       } else {
         const nuevaVenta = {
-          _id: nombrez.data.venta._id, 
+          _id: nombrez.data.venta._id,
           idInventario: nombrez.data.venta.idInventario,
           valorUnitario: nombrez.data.venta.valorUnitario,
           cantidad: nombrez.data.venta.cantidad,
@@ -60,10 +60,11 @@ async function guardar() {
 
         rows.value.unshift(nuevaVenta);
 
-        mostrarMensajeExito("Venta agregada exitosamente");
+
         listarVentas();
         listarInventarios();
   agregar.value = false;
+      window.location.reload();
 
       }
     } catch (error) {
@@ -78,22 +79,24 @@ function editar(info) {
   botoneditar.value = false;
 
   informacion.value = info;
-            const selectedInventario = inventarioTodo.value.find(inventario => inventario._id === info.idInventario);
-    if (selectedInventario) {
-        idInventario.value = {
-            label: `${selectedInventario.descripcion}- ${selectedInventario.codigo}`, 
-            valor: selectedInventario._id, 
-            nombre: selectedInventario.nombre  
-        };
-    }
-  valorUnitario.value = info.valorUnitario;
+
+  // Usar info.idInventario para encontrar el producto
+  const selectedInventario = inventarioTodo.value.find(inventario => inventario._id === info.idInventario);
+  if (selectedInventario) {
+    // Asignar solo el ID del inventario seleccionado al modelo del select
+    idInventarioSeleccionado.value = selectedInventario._id; // Asegúrate de que esto esté vinculado al select
+    valorUnitario.value = selectedInventario.valor; // Usar el valor unitario del inventario
+  } else {
+    console.error("Inventario no encontrado para ID:", info.idInventarioSeleccionado);
+    idInventarioSeleccionado.value = null; // Manejar el caso si no se encuentra
+  }
   cantidad.value = info.cantidad;
 }
 
 async function editarventa() {
   if (await validar()) {
     const todo = {
-      idInventario: idInventario.value.valor,
+      idInventario: idInventarioSeleccionado.value, // Asegúrate de que esto esté usando el ID correcto
       valorUnitario: valorUnitario.value,
       cantidad: cantidad.value
     };
@@ -107,15 +110,15 @@ async function editarventa() {
     try {
       const response = await useSales.putVenta(informacion.value._id, todo);
       if (response.status !== 200) {
-        mostrarMensajeError("No se pudo enviar");
+
       } else {
-        mostrarMensajeExito("Venta actualizada exitosamente");
         listarVentas();
         listarInventarios();
+  agregar.value = false;
+
       }
     } catch (error) {
       console.error("Error al actualizar la venta:", error);
-      mostrarMensajeError("No se pudo enviar");
     }
   }
 }
@@ -221,25 +224,6 @@ async function listarVentas() {
   }
 }
 
-// const organizarInventario = computed(() => {
-//   return inventarioTodo.value.map((element) => ({
-//     label: `${element.descripcion} - ${element.codigo}`,
-//     value: element._id,
-//     valor: element.valor
-//   }));
-// });
-
-// function actualizarValorUnitario(seleccionado) {
-//   console.log("Producto seleccionado:", seleccionado);
-//   if (seleccionado && seleccionado.valor) {
-//     console.log("Valor unitario encontrado:", seleccionado.valor);
-//     valorUnitario.value = seleccionado.valor;
-//   } else {
-//     console.log("Producto no encontrado o sin valor unitario");
-//     valorUnitario.value = '';
-//   }
-// }
-
 async function listarInventarios() {
   try {
     const res = await useInventario.listaractivados();
@@ -277,30 +261,156 @@ watch(idInventario, (newValue) => {
 watch(inventarioTodo, (newValue) => {
   console.log("inventarioTodo actualizado:", newValue);
 }, { deep: true });
+
 function getInventarioDescripcion(id) {
   const inventario = inventarioTodo.value.find(inventario => inventario._id === id);
   return inventario ? `${inventario.descripcion} - ${inventario.codigo}`: "";
 }
 
-    function formatDate(dateStr) {
+function formatDate(dateStr) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' };
       return new Date(dateStr).toLocaleDateString(undefined, options);
     }
 function formatCurrency(value) {
   return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
-      
+
       function formatCurrencyInput(value) {
-  value = value.replace(/\D/g, ''); // Remove all non-digit characters
-  return value.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Add dots
+  value = value.replace(/\D/g, '');
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
+
+
+const ordenar= ref("Todos")
+    let listP= ref(false);
+    let listF= ref(false);
+    let listN= ref("")
+    let productobuscado=ref("")
+    let fechaBuscada=ref("")
+    let busqueda=ref("")
+
+function ejecutarFiltro() {
+
+if (ordenar.value == 'Todos') {
+  listarVentas();
+  listP.value=false
+  listF.value=false
+  listN.value=false
+  productobuscado.value=""
+  fechaBuscada.value=""
+  busqueda.value=""
+}else if (ordenar.value == 'Inventario') {
+  listP.value=true
+  listF.value=false
+  listN.value=false
+}
+else if (ordenar.value == 'Fecha') {
+  listF.value=true
+  listP.value=false
+  listN.value=false
+}else if (ordenar.value == 'Nombre') {
+  listF.value=false
+  listP.value=false
+  listN.value=true
+}};
+
+async function listarporproducto() {
+  try {
+    console.log(productobuscado.value,"id del rpoducto es esteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    const res = await useSales.listarporproducto(productobuscado.value);
+    const ultimaVentaId = obtenerUltimaVenta();
+
+    if (res && res.data && res.data.venta) {
+      rows.value = res.data.venta;
+
+      // Ordenar las ventas poniendo la última venta agregada primero
+      rows.value.sort((a, b) => {
+        if (a._id === ultimaVentaId) return -1;
+        if (b._id === ultimaVentaId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra la última venta
+      });
+
+      console.log("Ventas ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar ventas:", error);
+  }
+}
+
+async function buscarporfecha(){
+      if (fechaBuscada.value=== "") {
+      mostrarMensajeError("debe ingresar un fecha");
+    } else {
+    try {
+      const res = await useSales.listarporfecha(fechaBuscada.value);
+rows.value=res.data.venta
+    } catch (error) {
+        console.error("Error al listar maquinas:", error);
+    }}}
+
+
+    async function ejecutarlistnombre() {
+  try {
+    const res = await useSales.listarVenta(busqueda.value);
+    const ultimaVentaId = obtenerUltimaVenta();
+
+    if (res && res.data && res.data.venta) {
+      rows.value = res.data.venta;
+
+      // Ordenar las ventas poniendo la última venta agregada primero
+      rows.value.sort((a, b) => {
+        if (a._id === ultimaVentaId) return -1;
+        if (b._id === ultimaVentaId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra la última venta
+      });
+
+      console.log("Ventas ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar ventas:", error);
+  }
+}
+
 
 </script>
 
 <template>
     <div class="container">
       <button class="button" @click="agregarventa()">Agregar Venta</button>
-  
+
+      <div class="tablaselect">
+
+        <div class="inputlistar" v-if="listP">
+          <select v-model="productobuscado" @change="listarporproducto" class="custom-select2">
+            <option disabled value="">Seleccione un producto</option>
+            <option v-for="value in organizarInventario" :key="value.id" :value="value.value">{{ value.label }}</option>
+          </select>
+        </div>
+
+      <div class="inputlistarn" v-if="listN">
+      <input class="inputn" type="number" placeholder="Digite codigo" v-model.trim="busqueda" />
+      <button class="button"  id="buttonf" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+    </div>
+
+
+<div class="inputlistarcumple" v-if="listF">
+  <input class="inputc" type="date" v-model="fechaBuscada" required />
+  <button class="button" id="buttonf" @click="buscarporfecha()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+</div>
+
+
+      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+        <option value="Todos">Todos</option>
+        <option value="Fecha">Por Fecha</option>
+        <option value="Nombre">Codigo</option>
+        <option value="Inventario">Por Producto</option>
+      </select>
+    </div>
+
       <q-table class="table" flat bordered title="Ventas" :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idInventario="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
@@ -332,8 +442,8 @@ function formatCurrency(value) {
           </q-td>
         </template>
       </q-table>
-  
-  <div  class="filtro" v-if="agregar"> 
+
+  <div  class="filtro" v-if="agregar">
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
         <h3>Ingresar Venta</h3>
@@ -355,7 +465,7 @@ function formatCurrency(value) {
       </template>
     </q-select> -->
     <q-select
-  v-model="productoSeleccionado"
+  v-model="idInventarioSeleccionado"
   :options="organizarInventario"
   option-label="label"
   label="Inventario"
@@ -369,7 +479,7 @@ function formatCurrency(value) {
       <q-input class="input" filled v-model.trim="valorUnitario" label="Valor Unitario" :dense="dense" />
       <q-input class="input" filled v-model.trim="cantidad" label="Cantidad" :dense="dense" />
     </div>
-    
+
     <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
     <button v-else class="button" @click="editarventa()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
@@ -378,166 +488,260 @@ function formatCurrency(value) {
       </div>
     </div>
   </template>
-  
 
 
-<style scoped>
 
-.container {
-  width: 90vmax;
-  margin: 0 auto;
-}
+  <style scoped>
 
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
+  .container {
+    width: 97vmax;
+    margin: 0 auto;
+    min-height:auto;
+  overflow:hidden !important;
+  }
 
-.button {
-  background-color: #45a049; 
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-  margin-bottom: 10px;
-  box-shadow: 5px 4px 8px black;
-  border-radius: 8px;
-}
 
-.button:hover {
-  background-color: #77c57b; 
-  box-shadow: 3px 2px 10px black;
-}
-.buttonX {
-  background-color: #ffffff00; 
-  border: 0 solid #cccccc00; 
-  color: #504d4d; 
-  font-weight: bold; 
-  font-size: 20px; 
-  cursor: pointer; 
-  transition: transform .2s;
-}
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
 
-.buttonX:hover {
-    font-size: 25px; 
-  transform: scale(1.2);
-  color: #000000; 
-}
+  .button {
+    background-color: #45a049;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    margin-bottom: 10px;
+    box-shadow: 5px 4px 8px black;
+    border-radius: 8px;
+  }
 
-.input {
+  .button:hover {
+    background-color: #77c57b;
+    box-shadow: 3px 2px 10px black;
+  }
+  .buttonX {
+    background-color: #ffffff00;
+    border: 0 solid #cccccc00;
+    color: #504d4d;
+    font-weight: bold;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform .2s;
+  }
+
+  .buttonX:hover {
+      font-size: 25px;
+    transform: scale(1.2);
+    color: #000000;
+  }
+
+  .input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table th, .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .table th {
+    background-color: #f2f2f2;
+  }
+
+  /* Estilos para las opciones de la tabla */
+  .option-button {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 2px;
+    border-radius: 4px;
+  }
+
+  .option-button:hover {
+    background-color: #005f6b;
+  }
+
+
+  .crearcliente {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+  width: 50vmax;
+  margin-left: auto;
+    margin-right: auto;
+      position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+
+  .encabezadoCrear{
+      display: flex;
+      justify-content: space-between;
+  }
+
+  .crearcliente h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .crearcliente input[type="text"],
+  .crearcliente input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+
+  .crearcliente input[type="text"]:focus,
+  .crearcliente input[type="date"]:focus {
+    outline: none;
+    border-color: #66afe9;
+    box-shadow: 0 0 5px #66afe9;
+  }
+
+  .crearcliente input[type="submit"] {
+    background-color: #4caf50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .crearcliente input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+
+  .filtro{
+  background-color: #0303039f;
   width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-  border-radius: 4px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th, .table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-.table th {
-  background-color: #f2f2f2;
-}
-
-/* Estilos para las opciones de la tabla */
-.option-button {
-  background-color: #008CBA;
-  border: none;
-  color: white;
-  padding: 5px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 12px;
-  margin: 2px;
-  border-radius: 4px;
-}
-
-.option-button:hover {
-  background-color: #005f6b; 
-}
-
-
-.crearcliente {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-width: 50vmax;
-margin-left: auto;
-  margin-right: auto;
-    position: absolute;
+  height:  100%;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-}
+  }
 
-.encabezadoCrear{
-    display: flex;
-    justify-content: space-between;
-}
+  .custom-select {
+    position:absolute;
+     width: 10vmax;
+     height: 4vmin;
+     background-color: rgb(170, 170, 170);
+     border-radius: 1vmin;
+     right: 1%;
+     margin-top:0.8vmin;
+     z-index: 1;
+   }
+   .tablaselect{
+     display: flex;
+     position: absolute;
+     width: 97vmax;
+   }
 
-.crearcliente h3 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #333;
-}
 
-.crearcliente input[type="text"],
-.crearcliente input[type="date"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
+  .custom-select2 {
+    position:absolute;
+     width: 10vmax;
+     height: 4vmin;
+     background-color: rgb(170, 170, 170);
+     border-radius: 1vmin;
+     right: 15%;
+     margin-top:0.8vmin;
+     z-index: 1;
+   }
 
-.crearcliente input[type="text"]:focus,
-.crearcliente input[type="date"]:focus {
-  outline: none;
-  border-color: #66afe9;
-  box-shadow: 0 0 5px #66afe9;
-}
+   .inputlistarcumple{
+     position:absolute;
+     width: auto;
+     height: 4.5vmin;
+     background-color: rgba(16, 16, 16, 0);
+     right: 15%;
+     margin-top:0.8vmin;
+     z-index: 1;
+     display: flex;
+     flex-direction: row;
 
-.crearcliente input[type="submit"] {
-  background-color: #4caf50;
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
+   gap:1vmin;
+   border-radius: 1vmin;
+   align-items: center;
+   }
 
-.crearcliente input[type="submit"]:hover {
-  background-color: #45a049;
-}
+   .inputlistarn{
+     position:absolute;
+     width: auto;
+     height: 4.5vmin;
+     gap: 1vmin;
+     background-color: rgba(16, 16, 16, 0);
+     right: 15%;
+     margin-top:0.5vmin;
+     z-index: 1;
+     display: flex;
+     flex-direction: row;
+   align-items: center;
 
-.filtro{
-background-color: #0303039f;
-width: 100%;
-height:  100%;
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%,-50%);
-}
+   }
 
-</style>
+   .inputn{
+     width: 15vmax;
+     margin: 8px 0;
+     height: 2.5vmin;
+     box-sizing: border-box;
+     border: 1px solid #ccc;
+     border-radius: 1vmin;
+     border: solid 1.5px black;
+   }
+   .inputc{
+     width: 8vmax;
+     margin: 8px 0;
+     height: 2.5vmin;
+     box-sizing: border-box;
+     border: 1px solid #ccc;
+     border-radius: 1vmin;
+     border: solid 1.5px black;
+   }
+
+   #buttonf{
+     padding: 0px;
+     width: 8vmin;
+     height: 2.5vmin;
+     display: flex;
+     text-align: center;
+     padding: 0px;
+     font-size: small;
+     margin: 0px;
+     margin-bottom: 1px;
+   }
+
+  </style>
+

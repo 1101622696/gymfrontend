@@ -52,7 +52,7 @@ horario.value=""
 //           }
 //         } catch (error) {
 //           mostrarMensajeError("Error al enviar la solicitud: " + error.message);
-//         } 
+//         }
 //         finally {
 //           loading.value = false;
 //         }
@@ -209,11 +209,11 @@ async function validar() {
     if (direccion.value === "") {
         mostrarMensajeError("La dirección está vacía");
         verificado = false;
-    } 
+    }
     // if (codigo.value === "") {
     //     mostrarMensajeError("Ingrese un código");
     //     verificado = false;
-    // } 
+    // }
     if (horario.value === "") {
         mostrarMensajeError("escriba el horario de la sede");
         verificado = false;
@@ -252,7 +252,7 @@ function mostrarMensajeExito(mensaje) {
 //     console.log(res.data);
 //     rows.value=res.data.sede
 // }
-      
+
       async function listarSedes() {
   try {
     const res = await useSedes.listarSede();
@@ -280,7 +280,7 @@ function mostrarMensajeExito(mensaje) {
 
 function cerrar() {
     alert.value = false;
-}  
+}
 
 onMounted(()=>{
   listarSedes();
@@ -305,17 +305,57 @@ async function listardesactivadas() {
   }
 }
 
+let listN= ref(false);
+let busqueda= ref("");
     const ordenar= ref("Todos")
    function ejecutarFiltro() {
 
       if (ordenar.value == 'Todos') {
         listarSedes();
+        busqueda.value=""
+      listN.value=false
+
       } else if (ordenar.value == 'Activos') {
         listaractivadas();
+        busqueda.value=""
+      listN.value=false
+
       } else if (ordenar.value == 'Inactivos') {
         listardesactivadas();
-      }
-    };
+        busqueda.value=""
+      listN.value=false
+
+      }else if (ordenar.value == 'Nombre') {
+      listN.value=true
+      }};
+
+      function ejecutarlistnombre(){
+ListarPorNombre()
+}
+
+async function ListarPorNombre() {
+  try {
+    const res = await useSedes.listarSede(busqueda.value);
+    console.log("Respuesta del servidor:", res);
+
+    if (res && res.data && res.data.sede) {
+      const ultimaSedeId = obtenerUltimaSede();
+
+      // Ordenar las sedes poniendo la última sede agregada primero
+      rows.value = res.data.sede.sort((a, b) => {
+        if (a._id === ultimaSedeId) return -1;
+        if (b._id === ultimaSedeId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra la última sede
+      });
+
+      console.log("Sedes ordenadas:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar sedes:", error);
+  }
+}
 
 </script>
 
@@ -325,10 +365,17 @@ async function listardesactivadas() {
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
         </div>
       <div class="tablaselect">
+
+        <div class="inputlistarn" v-if="listN">
+          <input class="inputn" type="text" placeholder="Digite nombre o ciudad" v-model.trim="busqueda" />
+          <button class="button"  id="buttonf" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+        </div>
+
         <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
           <option value="Todos">Todos</option>
           <option value="Activos">Activos</option>
           <option value="Inactivos">Inactivos</option>
+          <option value="Nombre">Por Nombre/Ciudad</option>
         </select>
 
             <q-table class="table" flat bordered title="Sedes" :rows="rows" :columns="columns" row-key="id">
@@ -355,7 +402,7 @@ async function listardesactivadas() {
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
              style="color:green">Activo</q-btn>
-            <q-btn v-else 
+            <q-btn v-else
                style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
@@ -378,13 +425,13 @@ async function listardesactivadas() {
   <q-input outlined v-model="direccion" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Direccion" type="text" />
   <q-input outlined v-model="telefono" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Teléfono" type="text" />   
+                        class="q-my-md q-mx-md" label="Teléfono" type="text" />
   <q-input outlined v-model="ciudad" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Ciudad" type="text" />  
+                        class="q-my-md q-mx-md" label="Ciudad" type="text" />
       <!-- <q-input outlined v-model="codigo" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Codigo" type="text" />                      -->
   <q-input outlined v-model="horario" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Horario" type="text" /> 
+                        class="q-my-md q-mx-md" label="Horario" type="text" />
 
 
           <q-card-actions align="right">
@@ -432,4 +479,64 @@ async function listardesactivadas() {
   margin-top:1.5vmin;
   z-index: 1;
 }
+
+.inputlistarn{
+  position:absolute;
+  width: auto;
+  height: 4.5vmin;
+  gap: 1vmin;
+  background-color: rgba(16, 16, 16, 0);
+  right: 15%;
+  margin-top:0.5vmin;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+align-items: center;
+}
+
+.inputn{
+  width: 15vmax;
+  margin: 8px 0;
+  height: 2.5vmin;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 1vmin;
+  border: solid 1.5px black;
+}
+
+.button {
+  background-color: #45a049;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 5px 4px 8px black;
+  border-radius: 8px;
+}
+
+.button:hover {
+  background-color: #69bb6d;
+  box-shadow: 3px 2px 10px black;
+}
+
+#buttonf{
+  padding: 0px;
+  width: 8vmin;
+  height: 2.5vmin;
+  display: flex;
+  text-align: center;
+  padding: 0px;
+  font-size: small;
+  margin: 0px;
+  margin-bottom: 1px;
+}
+
+
 </style>

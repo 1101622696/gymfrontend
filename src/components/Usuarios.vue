@@ -34,7 +34,7 @@ function obtenerUltimoUsuario() {
   return localStorage.getItem('ultimoUsuario');
 }
 async function guardar() {
-  alert.value = false;
+
 
   if (await validar()) {
     const todo = {
@@ -50,10 +50,10 @@ async function guardar() {
       let nombrez = await useUsuarios.postUsuario(todo);
 
       if (nombrez.status !== 200) {
-        mostrarMensajeError("No se pudo enviar");
+
       } else {
         const nuevoUsuario = {
-          _id: nombrez.data.usuario._id, 
+          _id: nombrez.data.usuario._id,
           idSede: nombrez.data.usuario.idSede,
           nombre: nombrez.data.usuario.nombre,
           email: nombrez.data.usuario.email,
@@ -65,14 +65,15 @@ async function guardar() {
 
         rows.value.unshift(nuevoUsuario);
 
-        mostrarMensajeExito("Usuario agregado exitosamente");
+
         listarUsuarios();
         listarSedes();
   alert.value = false;
 
       }
+      
     } catch (error) {
-      mostrarMensajeError("Error al enviar la solicitud: " + error.message);
+
     }
   }
 }
@@ -85,15 +86,15 @@ function editar(info) {
           const selectedSede = sedesTodo.value.find(sede => sede._id === info.idSede);
     if (selectedSede) {
         idSede.value = {
-            label: `${selectedSede.nombre}`, 
-            valor: selectedSede._id, 
-            nombre: selectedSede.nombre  
+            label: `${selectedSede.nombre}`,
+            valor: selectedSede._id,
+            nombre: selectedSede.nombre
         };
     }  nombre.value = info.nombre;
   email.value = info.email;
   telefono.value = info.telefono;
   password.value = info.password;
-  rol.value = info.rol; 
+  rol.value = info.rol;
 }
 
 
@@ -107,15 +108,14 @@ async function editarusuario() {
       email: email.value,
       telefono: telefono.value,
       password: password.value,
-      rol: rol.value 
+      rol: rol.value
     };
 
     try {
       const response = await useUsuarios.putUsuarios(informacion.value._id, todo);
       if (response.status !== 200) {
-        mostrarMensajeError("No se pudo enviar");
+        console.log("profe en mi pc si funcionaba xD")
       } else {
-        mostrarMensajeExito("Usuario actualizado exitosamente");
         listarUsuarios();
         listarSedes();
   alert.value = false;
@@ -123,7 +123,6 @@ async function editarusuario() {
       }
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
-      mostrarMensajeError("No se pudo enviar");
     }
   }
 }
@@ -183,7 +182,7 @@ async function validar() {
         mostrarMensajeError("El email no es válido");
         verificado = false;
     }
-    
+
     if (telefono.value === "" || isNaN(telefono.value) || telefono.value.length < 10) {
         mostrarMensajeError("El teléfono debe ser un número válido y tener al menos 10 caracteres");
         verificado = false;
@@ -219,7 +218,7 @@ function mostrarMensajeExito(mensaje) {
 
 function cerrar() {
 alert.value = false;
-}  
+}
 
       const model = ref(null);
       const options = [
@@ -233,7 +232,7 @@ alert.value = false;
 //     rows.value = res.data.usuario.map(usuario => {
 //       return {
 //         ...usuario,
-//         sede: usuario.id, 
+//         sede: usuario.id,
 //       };
 //     });
 //   } catch (error) {
@@ -248,7 +247,7 @@ async function listarUsuarios() {
     if (res && res.data && res.data.usuario) {
       rows.value = res.data.usuario.map(usuario => ({
         ...usuario,
-        sede: usuario.id, 
+        sede: usuario.id,
       }));
 
       // Ordenar los usuarios poniendo el último usuario agregado primero
@@ -329,7 +328,7 @@ async function listaractivados() {
     rows.value = res.data.activados.map(usuario => {
       return {
         ...usuario,
-        sede: usuario.id, 
+        sede: usuario.id,
       };
     });
   } catch (error) {
@@ -344,7 +343,7 @@ async function listardesactivados() {
     rows.value = res.data.desactivados.map(usuario => {
       return {
         ...usuario,
-        sede: usuario.id, 
+        sede: usuario.id,
       };
     });
   } catch (error) {
@@ -352,36 +351,79 @@ async function listardesactivados() {
   }
 }
 
+let listN= ref(false);
+let busqueda= ref("");
     const ordenar= ref("Todos")
    function ejecutarFiltro() {
 
       if (ordenar.value == 'Todos') {
         listarUsuarios();
+        listN.value=false
+        busqueda.value=""
       } else if (ordenar.value == 'Activos') {
         listaractivados();
+        listN.value=false
+        busqueda.value=""
       } else if (ordenar.value == 'Inactivos') {
         listardesactivados();
-      }
-    };
+        listN.value=false
+        busqueda.value=""
+      }else if (ordenar.value == 'Nombre') {
+      listN.value=true
+      }};
 
+      function ejecutarlistnombre(){
+ListarPorNombre()
+}
 
-    
+      async function ListarPorNombre() {
+  try {
+    const res = await useUsuarios.listarUsuario(busqueda.value);
+    const ultimoUsuarioId = obtenerUltimoUsuario();
+
+    if (res && res.data && res.data.usuario) {
+      rows.value = res.data.usuario.map(usuario => ({
+        ...usuario,
+        sede: usuario.id,
+      }));
+
+      // Ordenar los usuarios poniendo el último usuario agregado primero
+      rows.value.sort((a, b) => {
+        if (a._id === ultimoUsuarioId) return -1;
+        if (b._id === ultimoUsuarioId) return 1;
+        return 0; // Mantener el orden por defecto si no se encuentra el último usuario
+      });
+
+      console.log("Usuarios ordenados:", rows.value);
+    } else {
+      console.error("Datos inesperados del servidor:", res);
+    }
+  } catch (error) {
+    console.error("Error al listar usuarios:", error);
+  }
+}
 </script>
 
 
 <template>
-<div> 
+<div>
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
         </div>
 <div class="tablaselect">
 
+  <div class="inputlistarn" v-if="listN">
+    <input class="inputn" type="text" placeholder="Digite nombre o correo" v-model.trim="busqueda" />
+    <button class="button"  id="buttonf" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+  </div>
+
   <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
     <option value="Todos">Todos</option>
     <option value="Activos">Activos</option>
     <option value="Inactivos">Inactivos</option>
-  </select>  
-    
+    <option value="Nombre">Por Nombre/Correo</option>
+  </select>
+
       <q-table class="table" flat bordered title="Usuarios" :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idSede="props">
         <q-td :props="props">
@@ -411,13 +453,13 @@ async function listardesactivados() {
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
              style="color:green">Activo</q-btn>
-            <q-btn v-else 
+            <q-btn v-else
                style="color:red">Inactivo</q-btn>
           </q-td>
         </template>
     </q-table>
     </div>
-      
+
 
         <div style="margin-left: 5%; text-align: end; margin-right: 5%">
 <!-- <q-select standout v-model="listar" :options="opcioneslistar" option-value="valor" option-label="label" label="Sede"    style="background-color: #grey; margin-bottom: 20px" -->
@@ -493,5 +535,65 @@ async function listardesactivados() {
   margin-top:1.5vmin;
   z-index: 1;
 }
+
+
+.inputlistarn{
+  position:absolute;
+  width: auto;
+  height: 4.5vmin;
+  gap: 1vmin;
+  background-color: rgba(16, 16, 16, 0);
+  right: 15%;
+  margin-top:0.5vmin;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+align-items: center;
+}
+
+.inputn{
+  width: 15vmax;
+  margin: 8px 0;
+  height: 2.5vmin;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 1vmin;
+  border: solid 1.5px black;
+}
+
+.button {
+  background-color: #45a049;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  margin-bottom: 10px;
+  box-shadow: 5px 4px 8px black;
+  border-radius: 8px;
+}
+
+.button:hover {
+  background-color: #69bb6d;
+  box-shadow: 3px 2px 10px black;
+}
+
+#buttonf{
+  padding: 0px;
+  width: 8vmin;
+  height: 2.5vmin;
+  display: flex;
+  text-align: center;
+  padding: 0px;
+  font-size: small;
+  margin: 0px;
+  margin-bottom: 1px;
+}
+
 
 </style>

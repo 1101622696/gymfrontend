@@ -85,9 +85,9 @@ async function guardar() {
           const selectedSede = sedesTodo.value.find(sede => sede._id === info.idSede);
     if (selectedSede) {
         idSede.value = {
-            label: `${selectedSede.nombre}`, 
-            valor: selectedSede._id, 
-            nombre: selectedSede.nombre  
+            label: `${selectedSede.nombre}`,
+            valor: selectedSede._id,
+            nombre: selectedSede.nombre
         };
     }
     const selectedCliente = clientesTodo.value.find(cliente => cliente._id === info.idCliente);
@@ -131,7 +131,7 @@ let sedesTodo = ref([]);
 let clientesTodo = ref([]);
 let nombreCodigoS = ref([]);
 let nombreCodigoC = ref([]);
-
+let busqueda=ref("")
 
 let columns =ref([
       {name:"idSede", label:"Sede", field:"idSede", align:"center"},
@@ -183,7 +183,7 @@ function mostrarMensajeExito(mensaje) {
 
 function cerrar() {
     alert.value = false;
-}     
+}
 
 
       onMounted(()=>{
@@ -207,7 +207,7 @@ async function listarIngresos() {
 
     if (res && res.data && res.data.ingreso) {
       const ingresoRecienteId = obtenerIngresoReciente();
-      
+
       // Ordenar los ingresos
       rows.value = res.data.ingreso.sort((a, b) => {
         if (a._id === ingresoRecienteId) return -1;
@@ -282,6 +282,71 @@ const formatDate = (dateStr) => {
   return date.toLocaleDateString(undefined, options);
 };
 
+
+const fechaBuscada=ref("")
+
+const ordenar= ref("Todos")
+    let listNombre = ref("")
+    let listF= ref(false);
+    let listN= ref(false);
+
+function ejecutarFiltro() {
+
+if (ordenar.value == 'Todos') {
+  listarIngresos();
+  listF.value=false
+  listN.value=false
+  fechaBuscada.value=""
+  busqueda.value=""
+}
+else if (ordenar.value == 'Fecha') {
+  listF.value=true
+  listN.value=false
+}
+else if (ordenar.value == 'Nombre') {
+  listN.value=true
+  listF.value=false
+}};
+
+function ejecutarlistnombre(){
+buscarIngresosPorNombre()
+}
+
+async function buscarIngresosPorNombre(){
+  try {
+    const res = await useIngreso.listarIngresoNombre(busqueda.value);
+    rows.value = res.data.ingresos
+
+  } catch (error) {
+    console.error("Error al listar ingresos:", error);
+  }
+}
+
+
+function ejecutarfecha() {
+
+    if (fechaBuscada.value=== "") {
+      mostrarMensajeError("debe ingresar un fecha");
+    } else {
+
+  buscarIngresosporfecha();
+}}
+
+
+async function buscarIngresosporfecha() {
+  try {
+    const res = await useIngreso.listarIngresosFecha(fechaBuscada.value);
+
+    rows.value = res.data.ingresos
+
+    console.log(res,"este ees el res de ingreoso por fecha aaaaaaaaaaaaaaaaaaaaaaaaaaa")
+  } catch (error) {
+    console.error("Error al buscar ingreos por fecha:", error);
+    mostrarMensajeError("Ocurrió un error al buscar ingresos. Por favor, intente de nuevo.");
+  }
+}
+
+
 </script>
 
 <template>
@@ -289,6 +354,28 @@ const formatDate = (dateStr) => {
         <div style="margin-left: 5%; text-align: end; margin-right: 5%">
       <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Ingreso</q-btn>
     </div>
+
+    <div class="tablaselect">
+
+      <div class="inputlistarn" v-if="listN">
+      <input class="inputn" type="text" placeholder="Digite nombre o documento" v-model.trim="busqueda" />
+      <button class="button"  id="buttonf" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+    </div>
+
+
+<div class="inputlistarcumple" v-if="listF">
+  <input class="inputc" type="date" v-model="fechaBuscada" required />
+  <button class="button" id="buttonf" @click="ejecutarfecha()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
+</div>
+
+
+      <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
+        <option value="Todos">Todos</option>
+        <option value="Fecha">Por Fecha</option>
+        <option value="Nombre">Nombre/DNI</option>
+      </select>
+    </div>
+
     <q-table class="table" flat bordered title="Ingresos" :rows="rows" :columns="columns" row-key="_id">
 
       <template v-slot:body-cell-idSede="props">
@@ -325,7 +412,7 @@ const formatDate = (dateStr) => {
               {{ accion == 1 ? "Agregar Ingreso" : "Editar Ingreso" }}
             </div>
           </q-card-section>
-          <!-- esta no se descomenta 
+          <!-- esta no se descomenta
           <q-input outlined v-model="fecha" use-input hide-selected fill-input input-debounce="0" class="q-my-md q-mx-md" label="fecha del ingreso" type="date" /> -->
 
           <q-select standout v-model="idSede" :options="organizarSedes" option-value="valor" option-label="label" label="Sede" style="background-color: #grey; margin-bottom: 20px" />
@@ -353,4 +440,117 @@ const formatDate = (dateStr) => {
 
 <style scoped>
 
+.tablaselect{
+  display: flex;
+  position: absolute;
+  width: 95%;
+}
+
+.custom-select2 {
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 15%;
+  margin-top:0.8vmin;
+  z-index: 1;
+}
+
+.inputlistarcumple{
+  position:absolute;
+  width: auto;
+  height: 4.5vmin;
+  background-color: rgba(16, 16, 16, 0);
+  right: 15%;
+  margin-top:0.8vmin;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+
+gap:1vmin;
+border-radius: 1vmin;
+align-items: center;
+}
+
+.inputlistarn{
+  position:absolute;
+  width: auto;
+  height: 4.5vmin;
+  gap: 1vmin;
+  background-color: rgba(16, 16, 16, 0);
+  right: 15%;
+  margin-top:0.5vmin;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+align-items: center;
+}
+
+.inputn{
+  width: 15vmax;
+  margin: 8px 0;
+  height: 2.5vmin;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 1vmin;
+  border: solid 1.5px black;
+}
+
+.inputc{
+  width: 8vmax;
+  margin: 8px 0;
+  height: 2.5vmin;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 1vmin;
+  border: solid 1.5px black;
+}
+
+
+.contenedorFiltro{
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.custom-select {
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 1%;
+  margin-top:0.8vmin;
+  z-index: 1;
+}
+
+.button {
+  background-color: #45a049;
+  border: none;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 13px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  margin-bottom: 1px;
+  box-shadow: 5px 4px 8px black;
+  border-radius: 1vmin;
+}
+
+.button:hover {
+  background-color: #77c57b;
+  box-shadow: 3px 2px 10px black;
+}
+
+#buttonf{
+  padding: 0px;
+  width: 8vmin;
+  height: 2.5vmin;
+  display: flex;
+  text-align: center;
+  padding: 0px;
+}
 </style>

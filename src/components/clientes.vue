@@ -19,7 +19,7 @@ let nivelimc = ref(false)
 
 
 function llamaragregarCliente() {
-  botoneditar.value = true; 
+  botoneditar.value = true;
   agregar.value = true;
 
   nombre.value = "";
@@ -75,19 +75,18 @@ async function guardar() {
 
         console.log('Filas actualizadas:', rows.value);
 
-        mostrarMensajeExito("Cliente agregado exitosamente");
-        
+        // mostrarMensajeExito("Cliente agregado exitosamente");
+
         await listarClientes();
         await listarPlanes();
   agregar.value = false;
 
       } else {
         console.error('Respuesta inesperada del servidor:', response);
-        mostrarMensajeError("No se pudo agregar el cliente");
+
       }
     } catch (error) {
       console.error("Error al guardar el cliente:", error);
-      mostrarMensajeError("Ocurrió un error al guardar el cliente");
     }
   }
 }
@@ -110,9 +109,9 @@ observaciones.value=info.observaciones
     const selectedPlan = planesTodo.value.find(plan => plan._id === info.idPlan);
     if (selectedPlan) {
         idPlan.value = {
-            label: `${selectedPlan.codigo} - ${selectedPlan.descripcion}`, 
-            valor: selectedPlan._id, 
-            nombre: selectedPlan.nombre  
+            label: `${selectedPlan.codigo} - ${selectedPlan.descripcion}`,
+            valor: selectedPlan._id,
+            nombre: selectedPlan.nombre
         };
     }foto.value=info.foto
 
@@ -135,17 +134,12 @@ async function editarcliente() {
     try {
      const response = await useCliente.putCliente(informacion.value._id, todo);
     if (response.status === 200) {
-      mostrarMensajeExito("Cliente actualizado exitosamente");
       listarClientes();
       listarPlanes();
   agregar.value = false;
-
-    } else {
-      mostrarMensajeError("No se pudo actualizar el cliente");
-    }
+}
   }catch (error) {
       console.error("Error al actualizar el cliente:", error);
-      mostrarMensajeError("No se pudo enviar");
     }
 }
 }
@@ -274,7 +268,7 @@ function mostrarMensajeExito(mensaje) {
 //     const res = await useCliente.listarCliente();
 //     rows.value = res.data.cliente.map(cliente => ({
 //       ...cliente,
-//       idPlan: cliente.idPlan, 
+//       idPlan: cliente.idPlan,
 //     }));
 //   } catch (error) {
 //     console.error("Error al listar clientes:", error);
@@ -289,7 +283,7 @@ async function listarClientes() {
 
     if (res && res.data && res.data.cliente) {
       const clienteRecienteId = obtenerClienteReciente();
-      
+
       // Ordenar los clientes
       rows.value = res.data.cliente.map(cliente => ({
         ...cliente,
@@ -315,7 +309,7 @@ async function listaractivados() {
     const res = await useCliente.listaractivados();
     rows.value = res.data.activados.map(cliente => ({
       ...cliente,
-      idPlan: cliente.idPlan, 
+      idPlan: cliente.idPlan,
     }));
   } catch (error) {
     console.error("Error al listar clientes:", error);
@@ -329,7 +323,7 @@ async function listardesactivados() {
     const res = await useCliente.listardesactivados();
     rows.value = res.data.desactivados.map(cliente => ({
       ...cliente,
-      idPlan: cliente.idPlan, 
+      idPlan: cliente.idPlan,
     }));
     console.log(res)
   } catch (error) {
@@ -342,7 +336,7 @@ async function buscarClientesPorNombre() {
     const res = await useCliente.listarCliente(listNombre.value);
     rows.value = res.data.cliente.map(cliente => ({
       ...cliente,
-      idPlan: cliente.idPlan, 
+      idPlan: cliente.idPlan,
     }));
     console.log(res);
   } catch (error) {
@@ -350,14 +344,14 @@ async function buscarClientesPorNombre() {
   }
 };
 
-const planSeleccionado = ref("");
+let planSeleccionado = ref("");
 
 async function buscarClientesporPlan() {
   try {
     const res = await useCliente.listarClientesporPlan(planSeleccionado.value);
     rows.value = res.data.clientes.map(cliente => ({
       ...cliente,
-      idPlan: cliente.idPlan, 
+      idPlan: cliente.idPlan,
     }));
     console.log(res);
   } catch (error) {
@@ -377,13 +371,13 @@ async function buscarClientesporCumpleanos() {
     console.log(`Buscando clientes nacidos el día ${dia} del mes ${mes}`);
 
     const res = await useCliente.listarClientesporCumpleanos(dia, mes);
-    
+
     if (res.clientes && Array.isArray(res.clientes)) {
       rows.value = res.clientes.map(cliente => ({
         ...cliente,
         idPlan: cliente.idPlan,
       }));
-      
+
       if (rows.value.length === 0) {
         mostrarMensajeError("No se encontraron clientes con esa fecha de cumpleaños");
       } else {
@@ -477,14 +471,14 @@ const organizarPlanes = computed(() => {
 
 function cerrar() {
   agregar.value = false;
-    } 
+    }
 
 
 
 
 function formatDate(dateStr) {
   if (!dateStr) return 'Fecha no disponible';
-  
+
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return 'Fecha inválida';
 
@@ -522,16 +516,28 @@ if (ordenar.value == 'Todos') {
   listP.value=false
   listF.value=false
   listN.value=false
+  listNombre.value=""
+  diacumple.value=""
+  mescumple.value=""
+  planSeleccionado=""
 } else if (ordenar.value == 'Activos') {
   listaractivados();
   listP.value=false
   listF.value=false
   listN.value=false
+  listNombre.value=""
+  diacumple.value=""
+  mescumple.value=""
+  planSeleccionado=""
 } else if (ordenar.value == 'Inactivos') {
   listardesactivados();
   listP.value=false
   listF.value=false
   listN.value=false
+  listNombre.value=""
+  diacumple.value=""
+  mescumple.value=""
+  planSeleccionado=""
 }
 else if (ordenar.value == 'Plan') {
   listP.value=true
@@ -564,6 +570,8 @@ let infor = ref("");
 
 const toggleSegui = () => {
   segui.value = !segui.value;
+  botoneditar.value=false
+  seguimientos.value=[{ peso: '', brazo: '', altura: '', edad: '' }]
 };
 const cerrarformu = () => {
   segui.value = !segui.value;
@@ -571,7 +579,8 @@ const cerrarformu = () => {
 
 const closeModal = () => {
   seguimientoModalOpen.value = false;
-  segui.value = false;
+  segui.value=false;
+  console.log(segui.value,"este es closemodal segui")
 };
 
 const openSeguimientoModal = (cliente) => {
@@ -586,18 +595,15 @@ async function actualizarSegui() {
   if (await validarseguii()) {
     const todoz = { seguimiento: seguimientos.value };
     console.log("Datos a enviar:", JSON.stringify(todoz, null, 2));
-
     try {
       let seguiz = await useCliente.putClienteSeguimiento(selectedCliente.value._id, todoz);
-      if (seguiz && seguiz.status === 200) {
-        mostrarMensajeExito("Seguimiento agregado exitosamente");
         listarClientes();
         listarPlanes();
         closeModal();
-      }
+
     } catch (error) {
       console.error("Error al actualizar seguimiento:", error);
-      mostrarMensajeError("Error interno del servidor");
+
     }
   }
 }
@@ -696,14 +702,14 @@ const getIMCStyle = (imc) => {
 
   <div class="container">
 
-<div> 
+<div>
     <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
   </div>
 
     <div class="tablaselect">
 
       <div class="inputlistarn" v-if="listN">
-      <input class="inputn" type="text" placeholder="Digite nombre" v-model.trim="listNombre" />
+      <input class="inputn" type="text" placeholder="Digite nombre o documento" v-model.trim="listNombre" />
       <button class="button"  id="buttonf" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
     </div>
 
@@ -716,21 +722,21 @@ const getIMCStyle = (imc) => {
       </select>
     </div>
 
-   
+
 <div class="inputlistarcumple" v-if="listF">
   <input class="inputc" type="number" placeholder="Digite día" v-model.number="diacumple" min="1" max="31" required />
   <input class="inputc" type="number" placeholder="Digite mes" v-model.number="mescumple" min="1" max="12" required />
   <button class="button" id="buttonf" @click="ejecutarlistcumple()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
 </div>
 
-  
+
       <select v-model="ordenar" @change="ejecutarFiltro" class="custom-select">
         <option value="Todos">Todos</option>
         <option value="Activos">Activos</option>
         <option value="Inactivos">Inactivos</option>
         <option value="Plan">Por Plan</option>
         <option value="Fecha">Por Cumpleaños</option>
-        <option value="Nombre">Por Nombre</option>
+        <option value="Nombre">Por Nombre/DNI</option>
       </select>
     </div>
 
@@ -859,7 +865,7 @@ const getIMCStyle = (imc) => {
     </q-card-actions>
   </q-card>
 
-  <div v-if="segui" class="segui-modal" style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 10;">
+  <div v-if="segui" class="segui-modal" style="position: absolute; top: 3vmax; left: 50%; transform: translateX(-50%); background: white; padding: 20px; border: 1px solid #ccc; z-index: 10;">
     <div class="segui-modal-contenedor">
       <div class="formulariosegui">
         <div v-for="(seguimiento, index) in seguimientos" :key="index" >
@@ -878,9 +884,9 @@ const getIMCStyle = (imc) => {
           <button v-else class="button" @click="actualizarSegui" :loading="useCliente.loading" style="margin-left: auto; margin-right: auto; display: block;">
             Agregar Seguimiento
           </button>
-          <q-btn @click="toggleSegui" class="button" style="margin-left: auto; margin-right: auto; display: block;">
+          <button @click="toggleSegui" class="button" style="margin-left: auto; margin-right: auto; display: block;">
             Cerrar
-          </q-btn>
+          </button>
         </div>
       </div>
     </div>
@@ -888,7 +894,7 @@ const getIMCStyle = (imc) => {
 </q-dialog>
 
 
-<div  class="filtro" v-if="agregar"> 
+<div  class="filtro" v-if="agregar">
     <div class="crearcliente" v-if="agregar">
       <div class="encabezadoCrear">
         <h3>Ingresar Clientes</h3>
@@ -1001,24 +1007,24 @@ overflow:hidden !important;
   margin-top: 2%;
 }
 .buttonX {
-  background-color: #ffffff00; 
-  border: 0 solid #cccccc00; 
-  color: #504d4d; 
-  font-weight: bold; 
-  font-size: 20px; 
-  cursor: pointer; 
+  background-color: #ffffff00;
+  border: 0 solid #cccccc00;
+  color: #504d4d;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
   transition: transform .2s;
 }
 
 .buttonX:hover {
-    font-size: 25px; 
+    font-size: 25px;
   transform: scale(1.2);
-  color: #000000; 
+  color: #000000;
 }
 
 
 .button {
-  background-color: #45a049; 
+  background-color: #45a049;
   border: none;
   color: white;
   padding: 10px 20px;
@@ -1035,7 +1041,7 @@ overflow:hidden !important;
 }
 
 .button:hover {
-  background-color: #77c57b; 
+  background-color: #77c57b;
   box-shadow: 3px 2px 10px black;
 }
 
@@ -1079,7 +1085,7 @@ overflow:hidden !important;
 }
 
 .option-button:hover {
-  background-color: #005f6b; 
+  background-color: #005f6b;
 }
 
 
@@ -1089,7 +1095,7 @@ overflow:hidden !important;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-   margin-top: 1px; 
+   margin-top: 1px;
 width: 50vmax;
 height: 90vh;
 overflow: scroll;
@@ -1105,22 +1111,22 @@ transform: translate(-50%,-50%);
 /* -------------------------------------- */
 
 .crearcliente::-webkit-scrollbar {
-  width: 8px; 
-  height: 8px; 
+  width: 8px;
+  height: 8px;
 }
 
 .crearcliente::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-  border-radius: 2vmax; 
+  background: #f1f1f1;
+  border-radius: 2vmax;
 }
 
 .crearcliente::-webkit-scrollbar-thumb {
-  background: #888; 
-  border-radius: 2vmax; 
+  background: #888;
+  border-radius: 2vmax;
 }
 
 .crearcliente::-webkit-scrollbar-thumb:hover {
-  background: #555; 
+  background: #555;
 }
 
 /* -------------------------------------- */
@@ -1266,11 +1272,14 @@ align-items: center;
 
 #buttonf{
   padding: 0px;
-  width: 7vmin;
+  width: 8vmin;
   height: 2.5vmin;
   display: flex;
   text-align: center;
   padding: 0px;
+  font-size: small;
+  margin: 0px;
+  margin-bottom: 1px;
 }
 
 
@@ -1291,7 +1300,7 @@ align-items: center;
 }
 .textarea {
   width: 100%;
-  height: 200px; 
+  height: 200px;
   padding: 10px;
   font-size: 16px;
   border-radius: 4px;

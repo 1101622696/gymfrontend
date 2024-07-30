@@ -8,14 +8,17 @@ export const useStoreVentas = defineStore("Ventas", () => {
     let loading = ref(false)
     let ventas =ref([])
     const useUsuario=useStoreUsuarios()
-    
-    
-        const listarVenta= async() =>{
+
+
+        const listarVenta= async(payload) =>{
             try {
                 loading.value  = true;
                 console.log(`este es el usuariotoken ${useUsuario.token}`);
                 console.log(` este es el local ${localStorage.getItem('x-token')}`);
-                const response = await axios.get("api/ventas/listar",{
+                let ruta;
+                if (payload == null) ruta = "api/ventas/listar";
+                else ruta=`api/ventas/listar?busqueda=${payload}`;
+                const response = await axios.get(ruta,{
                     headers:{
                                 "x-token": localStorage.getItem('x-token'),
 
@@ -32,8 +35,55 @@ export const useStoreVentas = defineStore("Ventas", () => {
             finally {
                 loading.value=false
         }}
-    
-    
+
+        const listarporproducto= async(id) =>{
+          try {
+              loading.value  = true;
+              console.log(`este es el usuariotoken ${useUsuario.token}`);
+              console.log(` este es el local ${localStorage.getItem('x-token')}`);
+              const response = await axios.get(`api/ventas/listarporproducto/${id}`,{
+                  headers:{
+                              "x-token": localStorage.getItem('x-token'),
+
+                  }
+          });
+          //    ventas.value = response.data;
+             return response;
+          } catch (error) {
+              console.error("NO se pudo obtener la lista de ventas",error);
+              console.log(`${useUsuario.token} es el token`);
+
+              throw error;
+          }
+          finally {
+              loading.value=false
+      }}
+
+      const listarporfecha= async(fecha) =>{
+        try {
+            loading.value  = true;
+            console.log(`este es el usuariotoken ${useUsuario.token}`);
+            console.log(` este es el local ${localStorage.getItem('x-token')}`);
+            const response = await axios.get(`api/ventas/listarporfecha/`,{
+              params: {fecha},
+                headers:{
+                            "x-token": localStorage.getItem('x-token'),
+
+                }
+        });
+        //    ventas.value = response.data;
+           return response;
+        } catch (error) {
+            console.error("NO se pudo obtener la lista de ventas",error);
+            console.log(`${useUsuario.token} es el token`);
+
+            throw error;
+        }
+        finally {
+            loading.value=false
+    }}
+
+
         const postVenta= async(data) =>{
             try {
                 loading.value =true
@@ -66,7 +116,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
                 loading.value = false
             }
         }
-    
+
         const putVenta = async (id, data) => {
   try {
     loading.value = true;
@@ -86,7 +136,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
               color: "positive",
               position: "top",
             });
-        
+
             console.log(r);
             return r;
           } catch (error) {
@@ -97,7 +147,7 @@ export const useStoreVentas = defineStore("Ventas", () => {
             } else if (error.response && error.response.data && error.response.data.error) {
               errorMessage = error.response.data.error;
             }
-        
+
             Notify.create({
               type: 'negative',
               message: errorMessage,
@@ -110,11 +160,11 @@ export const useStoreVentas = defineStore("Ventas", () => {
   }
 }
 
-    
-        return{ listarVenta, postVenta, putVenta, loading, ventas, useUsuario}
-    
+
+        return{ listarVenta,listarporproducto,listarporfecha,postVenta, putVenta, loading, ventas, useUsuario}
+
     },
-    
+
     {persist: true}
-    
+
     )
