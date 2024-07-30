@@ -13,8 +13,8 @@ import Swal from 'sweetalert2';
 
 import { useIntervalStore } from './store/interval.js';
 
-axios.defaults.baseURL = "http://localhost:4000/";
-// axios.defaults.baseURL = "https://backend-gym-p.onrender.com";
+// axios.defaults.baseURL = "http://localhost:4000/";
+axios.defaults.baseURL = "https://backend-gym-proy.onrender.com";
 
 // sin interval
 // let requestsPending = 0;
