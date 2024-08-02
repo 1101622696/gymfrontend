@@ -284,10 +284,10 @@ function getSedeNombre(id) {
   const sede = sedesTodo.value.find(sede => sede._id === id);
   return sede ? sede.nombre : '';
 }
-   const formatDate = (dateStr) => {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      return new Date(dateStr).toLocaleDateString(undefined, options);
-    };
+const formatDate = (dateStr) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateStr).toLocaleDateString(undefined, options);
+};
 
 
 
@@ -416,9 +416,9 @@ async function ListarPorNombre() {
         <template v-slot:body-cell-estado="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn v-if="props.row.estado == 1"
-             style="color:green">Activo</q-btn>
+             style="color:green" disable>Activo</q-btn>
             <q-btn v-else
-               style="color:red">Inactivo</q-btn>
+               style="color:red" disable>Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>

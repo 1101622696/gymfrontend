@@ -290,10 +290,10 @@ function getMaquinaCodigo(id) {
   return mantenimiento ? `${mantenimiento.codigo} - ${mantenimiento.descripcion}` : "mantenimiento no encontrado";
 }
 
-   const formatDate = (dateStr) => {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      return new Date(dateStr).toLocaleDateString(undefined, options);
-    };
+const formatDate = (dateStr) => {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateStr).toLocaleDateString(undefined, options);
+};
     function formatCurrency(value) {
   return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }

@@ -379,9 +379,9 @@ async function ListarPorNombre() {
         <template v-slot:body-cell-estado="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
             <q-btn v-if="props.row.estado == 1"
-             style="color:green">Activo</q-btn>
+             style="color:green" disable>Activo</q-btn>
             <q-btn v-else
-               style="color:red">Inactivo</q-btn>
+               style="color:red" disable>Inactivo</q-btn>
           </q-td>
         </template>
     </q-table>
@@ -416,7 +416,6 @@ async function ListarPorNombre() {
   width: 96vmax;
   margin: 0 auto;
   min-height:auto;
-background-color: rgb(185, 185, 185);
 overflow:hidden !important;
 }
 

@@ -810,8 +810,8 @@ const getIMCStyle = (imc) => {
     </template>
       <template v-slot:body-cell-estado="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
-          <q-btn v-if="props.row.estado == 1"  style="color:green">Activo</q-btn>
-          <q-btn v-else  style="color:red">Inactivo</q-btn>
+          <q-btn v-if="props.row.estado == 1"  style="color: green;"  disabled>Activo</q-btn>
+          <q-btn v-else  style="color:red" disable>Inactivo</q-btn>
         </q-td>
       </template>
     </q-table>
@@ -937,9 +937,14 @@ const getIMCStyle = (imc) => {
   width: 97vmax;
   margin: 0 auto;
   min-height:auto;
-background-color: rgb(185, 185, 185);
+
 overflow:hidden !important;
 }
+
+body{
+  background-color: red;
+}
+
 
 .container::-webkit-scrollbar {
   display: none !important; /* Oculta el scrollbar */
@@ -1380,4 +1385,10 @@ text-align: center;
 .tablalineas{
   border:2px solid black
 }
+
+.btndesac {
+  box-shadow: none !important;
+  border: none !important;
+}
+
 </style>

@@ -401,9 +401,9 @@ async function ListarPorNombre() {
         <template v-slot:body-cell-estado="props">
           <q-td :props="props">
             <q-btn v-if="props.row.estado == 1"
-             style="color:green">Activo</q-btn>
+             style="color:green" disable>Activo</q-btn>
             <q-btn v-else
-               style="color:red">Inactivo</q-btn>
+               style="color:red" disable>Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>

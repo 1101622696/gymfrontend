@@ -465,8 +465,8 @@ async function buscarIngresosporfecha() {
         <template v-slot:body-cell-estado="props">
           <q-td :props="props"
             style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
-            <q-btn v-if="props.row.estado == 1" style="color:green">Activo</q-btn>
-            <q-btn v-else style="color:red">Inactivo</q-btn>
+            <q-btn v-if="props.row.estado == 1" style="color:green" disable>Activo</q-btn>
+            <q-btn v-else style="color:red" disable>Inactivo</q-btn>
           </q-td>
         </template>
       </q-table>
@@ -511,7 +511,6 @@ async function buscarIngresosporfecha() {
   width: 97vmax;
   margin: 0 auto;
   min-height: auto;
-  background-color: rgb(185, 185, 185);
   overflow: hidden !important;
 }
 

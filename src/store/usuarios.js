@@ -11,7 +11,14 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
   const loading = ref(false);
   const usuarios = ref([]);
   const user = ref({});
-  const role = ref("");  // Añadir el rol del usuario
+  const role = ref("");  
+
+
+  const eliminarToken= () => {
+    token.value = ""; 
+    localStorage.removeItem('x-token'); 
+    console.clear();
+  }
 
   const listarUsuario = async (payload) => {
     try {
@@ -252,7 +259,8 @@ export const useStoreUsuarios = defineStore("Usuarios", () => {
     loading,
     usuarios,
     user,
-    role  // Añadir el rol del usuario en el return
+    role,
+    eliminarToken
   };
 }, { persist: true });
 

@@ -267,10 +267,35 @@ function getInventarioDescripcion(id) {
   return inventario ? `${inventario.descripcion} - ${inventario.codigo}`: "";
 }
 
-function formatDate(dateStr) {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(dateStr).toLocaleDateString(undefined, options);
-    }
+
+// function formatDate(dateString) {
+//   const options = { year: 'numeric', month: 'long', day: 'numeric' };
+//   return new Date(dateString).toLocaleDateString('es-ES', options);
+// }
+// function formatDate(dateString) {
+//   const options = { 
+//     year: 'numeric', 
+//     month: 'long', 
+//     day: 'numeric',
+//     hour: '2-digit',
+//     minute: '2-digit',
+//     timeZone: 'UTC'  
+//   };
+//   return new Date(dateString).toLocaleString('es-ES', options);
+// }
+
+function formatDate(dateString) {
+  const options = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Bogota'  // Ajusta esto a tu zona horaria local
+  };
+  return new Date(dateString).toLocaleString('es-ES', options);
+}
+
 function formatCurrency(value) {
   return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }

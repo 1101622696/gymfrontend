@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header class="bg-grey-8 text-white">
+    <q-header class="bg-teal-8 text-white">
       <q-toolbar>
         <q-btn icon="menu" round flat dense @click="toggleLeftDrawer" />
         <q-toolbar-title>
@@ -9,10 +9,18 @@
           </q-avatar>
           GIMNASIO
         </q-toolbar-title>
+        <q-btn icon="logout" round flat dense @click="logout" />
       </q-toolbar>
+      
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered class="bg-grey-8">
+    <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered class="bg-teal-8" id="contedrawer">
+<div class="usuario">
+<div class="usuarion">{{ usuario }}</div>
+ <div class="usuarior"> {{ role }}</div></div>
+
+ <div class="separation"></div>
+
       <q-list>
         <q-item v-for="link in filteredLinks" :key="link.to" :to="link.to" clickable>
           <q-item-section avatar>
@@ -62,10 +70,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useStoreUsuarios } from '../store/usuarios';
+import { useRouter } from 'vue-router';
 
 const leftDrawerOpen = ref(false);
 const { role } = useStoreUsuarios()
-
+const router = useRouter();
+const storeUsuarios = useStoreUsuarios();
+const  usuario  =storeUsuarios.user.nombre
 
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -73,7 +84,6 @@ const toggleLeftDrawer = () => {
 
 
 const links = [
-  { to: '/', label: 'Cerrar sesión', icon: 'login', roles: ['Administrador', 'Recepcionista', 'Entrenador'] },
   { to: '/Home/clientes', label: 'Clientes', icon: 'people', roles: ['Administrador', 'Recepcionista', 'Entrenador'] },
   { to: '/Home/ingresos', label: 'Ingresos', icon: 'attach_money', roles: ['Administrador'] },
   { to: '/Home/inventario', label: 'Inventario', icon: 'inventory', roles: ['Administrador'] },
@@ -85,6 +95,15 @@ const links = [
   { to: '/Home/usuarios', label: 'Usuarios', icon: 'group', roles: ['Administrador'] },
   { to: '/Home/ventas', label: 'Ventas', icon: 'shopping_cart', roles: ['Administrador', 'Recepcionista'] }
 ];
+
+
+const logout = () => {
+
+      router.push('/');
+   
+      storeUsuarios.eliminarToken(); 
+      console.log('Token eliminado y consola limpiada');
+    };
 
 
 const filteredLinks = computed(() => {
@@ -149,4 +168,25 @@ const closeDrawer = () => {
   display: flex;
   justify-content: space-around;
 }
+
+.usuario{
+  display: flex;
+  flex-direction: column;
+  margin-left: 1vmin;
+  gap: 1vmin;
+  color: aliceblue;
+  margin-top: 1vmin;
+  border-radius: 1vmin;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+width:15vmax;
+height: 6vmax;
+}
+.usuarion{
+  font-size: xx-large;
+}
+
+.separation {
+  margin-bottom: 4vmin; 
+}
+
 </style>

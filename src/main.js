@@ -16,6 +16,7 @@ import { useIntervalStore } from './store/interval.js';
 // axios.defaults.baseURL = "http://localhost:4000/";
 axios.defaults.baseURL = "https://backend-gym-ikf1.onrender.com";
 
+
 // sin interval
 // let requestsPending = 0;
 
