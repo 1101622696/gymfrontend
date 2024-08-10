@@ -274,7 +274,7 @@ let busqueda= ref("");
       listN.value=false
 
       } else if (ordenar.value == 'Activos') {
-        listaractivados();
+        listaractivadas();
         busqueda.value=""
       listN.value=false
 
@@ -317,11 +317,13 @@ async function ListarPorNombre() {
 </script>
 
 <template>
-    <div>
-<div style="margin-left: 5%; text-align: end; margin-right: 5%">
+    <div class="container">
+<!-- <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Proveedor</q-btn>
-        </div>
+        </div> -->
       <div class="tablaselect">
+
+        <button class="button" @click="abrir()">Registrar Proveedor</button>
 
         <div class="inputlistarn" v-if="listN">
           <input class="inputn" type="text" placeholder="Digite nombre o nit" v-model.trim="busqueda" />
@@ -334,8 +336,13 @@ async function ListarPorNombre() {
           <option value="Inactivos">Inactivos</option>
           <option value="Nombre">Por Nombre/nit</option>
         </select>
+      </div>
 
-            <q-table class="table" flat bordered title="Proveedores" :rows="rows" :columns="columns" row-key="id">
+      <div class="tituloTabla">
+  Proveedores
+ </div>
+
+            <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
            <template v-slot:body-cell-opciones="props">
           <q-td :props="props" style="text-align: center;">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -364,16 +371,16 @@ async function ListarPorNombre() {
           </q-td>
         </template>
       </q-table>
-    </div>
+
 
 
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
           <q-card-section
-            style="background-color: #a1312d; margin-bottom: 20px"
+            style="background-color: #ffffff; margin-bottom: 20px"
           >
-            <div class="text-h6 text-white">
+            <div class="text-h6 text-black">
               {{ accion == 1 ? "Agregar Proveedor" : "Editar Proveedor" }}
             </div>
           </q-card-section>
@@ -424,16 +431,32 @@ async function ListarPorNombre() {
 </template>
 
 <style scoped>
-.custom-select {
- position:absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 1%;
-  margin-top:1.5vmin;
-  z-index: 1;
+.container {
+  width: 97vmax;
+  margin: 0 auto;
+  min-height:auto;
+
+overflow:hidden !important;
 }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
+}
+.custom-select {
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 1%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 
 .inputlistarn{
   position:absolute;
@@ -460,20 +483,20 @@ align-items: center;
 }
 
 .button {
-  background-color: #45a049;
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-  margin-bottom: 10px;
-  box-shadow: 5px 4px 8px black;
-  border-radius: 8px;
+ 
+ border: none;
+ color: black;
+ padding: 10px 20px;
+ text-align: center;
+ text-decoration: none;
+ display: inline-block;
+ font-size: 16px;
+ margin: 4px 2px;
+ transition-duration: 0.4s;
+ cursor: pointer;
+ margin-bottom: 10px;
+ box-shadow: 5px 4px 8px black;
+ border-radius: 8px;
 }
 
 .button:hover {
@@ -492,6 +515,23 @@ align-items: center;
   margin: 0px;
   margin-bottom: 1px;
 }
+
+.tituloTabla{
+  margin-top: 1vmax;
+    font-size: xx-large;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  
+  }
+
+  .tablaselect{
+    display: flex;
+    position: absolute;
+    width: 95%;
+    margin-top: 6vmax;
+  }
+
 
 
 </style>

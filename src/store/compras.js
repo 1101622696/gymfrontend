@@ -87,7 +87,7 @@ export const useStoreCompras = defineStore("Compras", () => {
           });
       
           console.log('Respuesta del servidor:', response.data);
-          return response.data.compras;
+          return response;
         } catch (error) {
           console.error("No se pudo obtener la lista de compras", error);
           throw error;

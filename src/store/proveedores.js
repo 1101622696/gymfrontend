@@ -45,6 +45,7 @@ export const useStoreProveedores = defineStore("Proveedores", () => {
 
                 },
               });
+              console.log(response,"este es el puto response");
               return response;
             } catch (error) {
               console.error("NO se pudo obtener la lista de proveedores", error);

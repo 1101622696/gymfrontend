@@ -344,9 +344,8 @@ async function listarporproducto() {
   try {
     console.log(productobuscado.value,"id del rpoducto es estee")
     const res = await useCompras.listarporproducto(productobuscado.value);
-    const ultimaCompraId = obtenerUltimaCompra();
-
-    if (res && res.data && res.data.compra) {
+  
+    if (res && res.data && res.data.venta) {
       rows.value = res.data.venta;
 
       rows.value.sort((a, b) => {
@@ -370,7 +369,8 @@ async function buscarporfecha(){
     } else {
     try {
       const res = await useCompras.listarporfecha(fechaBuscada.value);
-rows.value=res.data.venta
+      console.log(res,"esta es la puta respuesta");
+rows.value=res.data.compra
     } catch (error) {
         console.error("Error al listar fecahs:", error);
     }}}
@@ -378,7 +378,7 @@ rows.value=res.data.venta
 
     async function ejecutarlistnombre() {
   try {
-    const res = await useCompras.listarCompras(busqueda.value);
+    const res = await useCompras.listarCompra(busqueda.value);
     const ultimaCompraId = obtenerUltimaCompra();
 
     if (res && res.data && res.data.compra) {
@@ -404,9 +404,11 @@ rows.value=res.data.venta
 
 <template>
     <div class="container">
-      <button class="button" @click="agregarcompra()">Agregar Compra</button>
+     
 
       <div class="tablaselect">
+
+        <button class="button" @click="agregarcompra()">Agregar Compra</button>
 
         <div class="inputlistar" v-if="listP">
           <select v-model="productobuscado" @change="listarporproducto" class="custom-select2">
@@ -435,7 +437,11 @@ rows.value=res.data.venta
       </select>
     </div>
 
-      <q-table class="table" flat bordered title="Compras" :rows="rows" :columns="columns" row-key="id">
+    <div class="tituloTabla">
+      Compras
+     </div>
+
+      <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idInventario="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getInventarioDescripcion(props.row.idInventario) }}</p>
@@ -515,21 +521,21 @@ rows.value=res.data.venta
   }
 
   .button {
-    background-color: #45a049;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    margin-bottom: 10px;
-    box-shadow: 5px 4px 8px black;
-    border-radius: 8px;
-  }
+ 
+ border: none;
+ color: black;
+ padding: 10px 20px;
+ text-align: center;
+ text-decoration: none;
+ display: inline-block;
+ font-size: 16px;
+ margin: 4px 2px;
+ transition-duration: 0.4s;
+ cursor: pointer;
+ margin-bottom: 10px;
+ box-shadow: 5px 4px 8px black;
+ border-radius: 8px;
+}
 
   .button:hover {
     background-color: #77c57b;
@@ -562,6 +568,8 @@ rows.value=res.data.venta
   .table {
     width: 100%;
     border-collapse: collapse;
+    border: 1px solid #f8141400;
+    margin-top: 7vmax;
   }
 
   .table th, .table td {
@@ -576,7 +584,6 @@ rows.value=res.data.venta
 
   /* Estilos para las opciones de la tabla */
   .option-button {
-    background-color: #008CBA;
     border: none;
     color: white;
     padding: 5px 10px;
@@ -587,9 +594,9 @@ rows.value=res.data.venta
     margin: 2px;
     border-radius: 4px;
   }
-
+  
   .option-button:hover {
-    background-color: #005f6b;
+    background-color: #dadada;
   }
 
 
@@ -664,28 +671,33 @@ rows.value=res.data.venta
     position:absolute;
      width: 10vmax;
      height: 4vmin;
-     background-color: rgb(170, 170, 170);
-     border-radius: 1vmin;
+     border-radius: 4vmin;
      right: 1%;
      margin-top:0.8vmin;
      z-index: 1;
+     box-shadow: 0px 2px 5px black; 
+     border: none;
+     outline: none;
    }
-   .tablaselect{
-     display: flex;
-     position: absolute;
-     width: 97vmax;
-   }
+  .tablaselect{
+    display: flex;
+    position: absolute;
+    width: 95%;
+    margin-top: 6vmax;
+  }
 
 
   .custom-select2 {
     position:absolute;
-     width: 10vmax;
+     width: 13vmax;
      height: 4vmin;
-     background-color: rgb(170, 170, 170);
-     border-radius: 1vmin;
+     border-radius: 4vmin;
      right: 15%;
      margin-top:0.8vmin;
      z-index: 1;
+     box-shadow: 0px 2px 5px black; 
+     border: none;
+     outline: none;
    }
 
    .inputlistarcumple{
@@ -729,7 +741,7 @@ rows.value=res.data.venta
      border: solid 1.5px black;
    }
    .inputc{
-     width: 8vmax;
+     width: 10vmax;
      margin: 8px 0;
      height: 2.5vmin;
      box-sizing: border-box;
@@ -739,16 +751,24 @@ rows.value=res.data.venta
    }
 
    #buttonf{
-     padding: 0px;
-     width: 8vmin;
-     height: 2.5vmin;
-     display: flex;
-     text-align: center;
-     padding: 0px;
-     font-size: small;
-     margin: 0px;
-     margin-bottom: 1px;
-   }
+    padding: 0px;
+    width: 8vmin;
+    height: 2.5vmin;
+    display: flex;
+    text-align: center;
+    padding: 0px;
+    font-size: small;
+    margin: 0px;
+    margin-bottom: 1px;
+  }
+
+  .tituloTabla{
+    margin-top: 1vmax;
+      font-size: xx-large;
+      display: flex;
+      text-align: center;
+      justify-content: center;
+    }
 
   </style>
 
