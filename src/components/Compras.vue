@@ -37,22 +37,17 @@ function obtenerUltimaCompra() {
   return localStorage.getItem('ultimaCompra');
 }
 async function guardar() {
-
   if (await validar()) {
     const todo = {
-      idInventario: idInventario.value,
-      idProveedor: idProveedor.value,
+      idInventario: idInventario.value.value, // Usa solo el ID
+      idProveedor: idProveedor.value.value,   // Usa solo el ID
       valorUnitario: valorUnitario.value,
       cantidad: cantidad.value
     };
 
     try {
       let nombrez = await useCompras.postCompra(todo);
-
-      if (nombrez.status !== 200) {
-
-
-      } else {
+      if (nombrez.status === 200) {
         const nuevaCompra = {
           _id: nombrez.data.compra._id,
           idInventario: nombrez.data.compra.idInventario,
@@ -60,18 +55,13 @@ async function guardar() {
           valorUnitario: nombrez.data.compra.valorUnitario,
           cantidad: nombrez.data.compra.cantidad,
         };
-
         guardarUltimaCompra(nuevaCompra._id);
-
         rows.value.unshift(nuevaCompra);
-
-
         listarCompras();
         listarInventarios();
         listarProveedores();
-  agregar.value = false;
-      window.location.reload();
-
+        agregar.value = false;
+        window.location.reload();
       }
     } catch (error) {
       mostrarMensajeError("Error al enviar la solicitud: " + error.message);
@@ -83,33 +73,36 @@ async function guardar() {
 function editar(info) {
   agregar.value = true;
   botoneditar.value = false;
-
   informacion.value = info;
 
   const selectedInventario = inventarioTodo.value.find(inventario => inventario._id === info.idInventario);
   if (selectedInventario) {
-
-    idInventario.value = selectedInventario._id; 
-  } else {
-    console.error("Inventario no encontrado para ID:", info.idInventario);
-    idInventario.value = null; 
+    idInventario.value = {
+      label: `${selectedInventario.codigo}-${selectedInventario.descripcion}`,
+      value: selectedInventario._id
+    };
   }
+
   const selectedProveedor = proveedorTodo.value.find(proveedor => proveedor._id === info.idProveedor);
-    if (selectedProveedor) {
-        idProveedor.value = {
-            label: `${selectedProveedor.nombre} - ${selectedProveedor.nit}`,
-            valor: selectedProveedor._id,
-            nombre: selectedProveedor.nombre
-        };
-    }
+  if (selectedProveedor) {
+    idProveedor.value = {
+      label: `${selectedProveedor.nombre} - ${selectedProveedor.nit}`,
+      value: selectedProveedor._id
+    };
+  }
+
   cantidad.value = info.cantidad;
+  valorUnitario.value = info.valorUnitario;
 }
+
 
 async function editarcompra() {
   if (await validar()) {
+        console.log("idInventario:", idInventario.value.value);
+    console.log("idProveedor:", idProveedor.value.value);
     const todo = {
-      idInventario: idInventario.value,
-      idProveedor: idProveedor.value,
+      idInventario: idInventario.value.value,
+      idProveedor: idProveedor.value.value,
       valorUnitario: valorUnitario.value,
       cantidad: cantidad.value
     };
@@ -148,6 +141,7 @@ onMounted(()=>{
 
 let informacion=ref("")
 let idInventario = ref("");
+let idProveedor = ref("");
 let valorUnitario = ref("");
 let cantidad = ref("");
 let total = ref("");
@@ -270,14 +264,14 @@ function getInventarioDescripcion(id) {
 async function listarProveedores() {
   try {
     const res = await useProveedores.listaractivados();
-    console.log("Proveedor cargado:", res.data);
+    console.log("Proveedor cargado:", res.data.activados);
     proveedorTodo.value = res.data.activados;
   } catch (error) {
     console.error("Error al listar proveedor:", error);
   }
 }
 const organizarProveedor = computed(() => {
-  return inventarioTodo.value.map((element) => ({
+  return proveedorTodo.value.map((element) => ({
     label: `${element.nombre} - ${element.nit}`,
     value: element._id,  
     valor: element.valor 

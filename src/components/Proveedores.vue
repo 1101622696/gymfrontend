@@ -44,31 +44,28 @@ async function guardar() {
 
     try {
       loading.value = true;
-      const response = await useSedes.postSede(todo);
+      const response = await useProveedores.postProveedor(todo);
 
       if (response.status === 200) {
-        const nuevaSede = {
-          _id: response.data.sede._id, // Asumiendo que el backend devuelve un _id
-          nombre: response.data.sede.nombre,
-          direccion: response.data.sede.direccion,
-          telefono: response.data.sede.telefono,
-          nit: response.data.sede.nit,
-          email: response.data.sede.email,
-          // ... otros campos que puedas necesitar
+        const nuevoProveedor = {
+          _id: response.data.proveedor._id,
+          nombre: response.data.proveedor.nombre,
+          direccion: response.data.proveedor.direccion,
+          telefono: response.data.proveedor.telefono,
+          nit: response.data.proveedor.nit,
+          email: response.data.proveedor.email,
         };
 
-        // Guardar el ID de la nueva sede en localStorage
-        guardarUltimoProveedor(nuevaSede._id);
+        guardarUltimoProveedor(nuevoProveedor._id);
 
-        // Añadir la nueva sede al principio del array
-        rows.value.unshift(nuevaSede);
+        rows.value.unshift(nuevoProveedor);
 
-        mostrarMensajeExito("Sede agregada exitosamente");
-        listarSedes(); // Actualizar la lista de sedes
+        mostrarMensajeExito("Proveedor agregada exitosamente");
+        listarProveedores(); 
   alert.value = false;
 
       } else {
-        mostrarMensajeError("No se pudo agregar la Sede");
+        mostrarMensajeError("No se pudo agregar el proveedor");
       }
     } catch (error) {
       mostrarMensajeError("Error al enviar la solicitud: " + error.message);
@@ -93,7 +90,7 @@ function editar(info) {
 }
 
 
-async function editarsede() {
+async function editarProveedor() {
   if (await validar()) {
     const todo = {
       nombre: nombre.value,
@@ -110,17 +107,17 @@ async function editarsede() {
     }
 
     try {
-      const response = await useSedes.putSedes(informacion.value._id, todo);
+      const response = await useProveedores.putProveedor(informacion.value._id, todo);
       if (response.status !== 200) {
         mostrarMensajeError("No se pudo enviar");
       } else {
-        mostrarMensajeExito("Sede actualizada exitosamente");
-        listarSedes();
+        mostrarMensajeExito("Proveedor actualizado exitosamente");
+        listarProveedores();
   alert.value = false;
 
       }
     } catch (error) {
-      console.error("Error al actualizar la sede:", error);
+      console.error("Error al actualizar el proveedor:", error);
       mostrarMensajeError("No se pudo enviar");
     }
   }
@@ -128,11 +125,14 @@ async function editarsede() {
 
 async function editarestado(info){
 if(info.estado == 1){
-let desactivado= await useSedes.putDesactivarSede(info._id)
+let desactivado= await useProveedores.putDesactivarProveedor(info._id)
+console.log(desactivado);
+
 }else if(info.estado == 0){
-let activado= await useSedes.putActivarSede(info._id)
+let activado= await useProveedores.putActivarProveedor(info._id)
+console.log(activado);
 }
-  listarSedes();
+  listarProveedores();
 }
 
 
@@ -141,22 +141,23 @@ let nombre = ref("");
 let direccion = ref("");
 let telefono = ref("");
 let nit = ref("");
-// let codigo = ref("");
 let email = ref("");
 
 let rows=ref([])
 let columns =ref([
-    {name:"nombre", label:"Nombre de Sede", field:"nombre", align:"center"},
+    {name:"nombre", label:"Nombre", field:"nombre", align:"center"},
     {name:"direccion", label:"Dirección", field:"direccion", align:"center"},
-    {name:"telefono", label:"Telefono de sede", field:"telefono", align:"center"},
+    {name:"telefono", label:"Telefono", field:"telefono", align:"center"},
     {name:"nit", label:"nit", field:"nit", align:"center"},
-    // {name:"codigo", sortable:true, label:"Código", field:"codigo", align:"center",},
-    {name:"email", label:"email de la Sede", field:"email", align:"center"},
-    {name:"estado", label:"Estado de Sede", field:"estado", align:"center"},
+    {name:"email", label:"Email", field:"email", align:"center"},
+    {name:"estado", label:"Estado", field:"estado", align:"center"},
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
 ])
-
+function validarEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
 async function validar() {
     let verificado = true;
 
@@ -172,12 +173,8 @@ async function validar() {
         mostrarMensajeError("La dirección está vacía");
         verificado = false;
     }
-    // if (codigo.value === "") {
-    //     mostrarMensajeError("Ingrese un código");
-    //     verificado = false;
-    // }
-    if (email.value === "") {
-        mostrarMensajeError("escriba el email de la sede");
+    if (email.value === "" || !validarEmail(email.value)) {
+        mostrarMensajeError("El email no es válido");
         verificado = false;
     }
         if (telefono.value === "" || isNaN(telefono.value) || telefono.value.length < 10) {
@@ -209,33 +206,32 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
-// async function listarSedes(){
-//     const res = await useSedes.listarSede()
+// async function listarProveedores(){
+//     const res = await useProveedores.listarSede()
 //     console.log(res.data);
 //     rows.value=res.data.sede
 // }
 
-      async function listarSedes() {
+      async function listarProveedores() {
   try {
-    const res = await useSedes.listarSede();
+    const res = await useProveedores.listarProveedor();
     console.log("Respuesta del servidor:", res);
 
-    if (res && res.data && res.data.sede) {
-      const ultimaSedeId = obtenerUltimoProveedor();
+    if (res && res.data && res.data.proveedor) {
+      const ultimoProveedorId = obtenerUltimoProveedor();
 
-      // Ordenar las sedes poniendo la última sede agregada primero
-      rows.value = res.data.sede.sort((a, b) => {
-        if (a._id === ultimaSedeId) return -1;
-        if (b._id === ultimaSedeId) return 1;
-        return 0; // Mantener el orden por defecto si no se encuentra la última sede
+      rows.value = res.data.proveedor.sort((a, b) => {
+        if (a._id === ultimoProveedorId) return -1;
+        if (b._id === ultimoProveedorId) return 1;
+        return 0; 
       });
 
-      console.log("Sedes ordenadas:", rows.value);
+      console.log("Proveedores ordenados:", rows.value);
     } else {
       console.error("Datos inesperados del servidor:", res);
     }
   } catch (error) {
-    console.error("Error al listar sedes:", error);
+    console.error("Error al listar Proveedores:", error);
   }
 }
 
@@ -245,25 +241,25 @@ function cerrar() {
 }
 
 onMounted(()=>{
-  listarSedes();
+  listarProveedores();
 })
 
 async function listaractivadas() {
   try {
-    const res = await useSedes.listaractivadas();
-    console.log(res.data,"resactivsdas");
-    rows.value=res.data.activadas
+    const res = await useProveedores.listaractivados();
+    console.log(res.data,"resactivados");
+    rows.value=res.data.activados
   } catch (error) {
-    console.error("Error al listar maquinas:", error);
+    console.error("Error al listar proveedores:", error);
   }
 }
 
-async function listardesactivadas() {
+async function listardesactivados() {
   try {
-    const res = await useSedes.listardesactivadas();
-    rows.value=res.data.desactivadas
+    const res = await useProveedores.listardesactivados();
+    rows.value=res.data.desactivados
   } catch (error) {
-    console.error("Error al listar maquinas:", error);
+    console.error("Error al listar proveedores:", error);
   }
 }
 
@@ -273,17 +269,17 @@ let busqueda= ref("");
    function ejecutarFiltro() {
 
       if (ordenar.value == 'Todos') {
-        listarSedes();
+        listarProveedores();
         busqueda.value=""
       listN.value=false
 
       } else if (ordenar.value == 'Activos') {
-        listaractivadas();
+        listaractivados();
         busqueda.value=""
       listN.value=false
 
       } else if (ordenar.value == 'Inactivos') {
-        listardesactivadas();
+        listardesactivados();
         busqueda.value=""
       listN.value=false
 
@@ -297,25 +293,24 @@ ListarPorNombre()
 
 async function ListarPorNombre() {
   try {
-    const res = await useSedes.listarSede(busqueda.value);
+    const res = await useProveedores.listarProveedor(busqueda.value);
     console.log("Respuesta del servidor:", res);
 
-    if (res && res.data && res.data.sede) {
-      const ultimaSedeId = obtenerUltimoProveedor();
+    if (res && res.data && res.data.proveedor) {
+      const ultimoProveedorId = obtenerUltimoProveedor();
 
-      // Ordenar las sedes poniendo la última sede agregada primero
-      rows.value = res.data.sede.sort((a, b) => {
-        if (a._id === ultimaSedeId) return -1;
-        if (b._id === ultimaSedeId) return 1;
-        return 0; // Mantener el orden por defecto si no se encuentra la última sede
+      rows.value = res.data.proveedor.sort((a, b) => {
+        if (a._id === ultimoProveedorId) return -1;
+        if (b._id === ultimoProveedorId) return 1;
+        return 0; 
       });
 
-      console.log("Sedes ordenadas:", rows.value);
+      console.log("Proveedores ordenadas:", rows.value);
     } else {
       console.error("Datos inesperados del servidor:", res);
     }
   } catch (error) {
-    console.error("Error al listar sedes:", error);
+    console.error("Error al listar Proveedores:", error);
   }
 }
 
@@ -324,7 +319,7 @@ async function ListarPorNombre() {
 <template>
     <div>
 <div style="margin-left: 5%; text-align: end; margin-right: 5%">
-            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
+            <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Proveedor</q-btn>
         </div>
       <div class="tablaselect">
 
@@ -340,7 +335,7 @@ async function ListarPorNombre() {
           <option value="Nombre">Por Nombre/nit</option>
         </select>
 
-            <q-table class="table" flat bordered title="Sedes" :rows="rows" :columns="columns" row-key="id">
+            <q-table class="table" flat bordered title="Proveedores" :rows="rows" :columns="columns" row-key="id">
            <template v-slot:body-cell-opciones="props">
           <q-td :props="props" style="text-align: center;">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -379,7 +374,7 @@ async function ListarPorNombre() {
             style="background-color: #a1312d; margin-bottom: 20px"
           >
             <div class="text-h6 text-white">
-              {{ accion == 1 ? "Agregar Sede" : "Editar Sede" }}
+              {{ accion == 1 ? "Agregar Proveedor" : "Editar Proveedor" }}
             </div>
           </q-card-section>
 <q-input outlined v-model="nombre" use-input hide-selected fill-input input-debounce="0"
@@ -390,8 +385,6 @@ async function ListarPorNombre() {
                         class="q-my-md q-mx-md" label="Teléfono" type="text" />
   <q-input outlined v-model="nit" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="nit" type="text" />
-      <!-- <q-input outlined v-model="codigo" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Codigo" type="text" />                      -->
   <q-input outlined v-model="email" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="email" type="text" />
 
@@ -402,18 +395,18 @@ async function ListarPorNombre() {
               v-if="accion === 1"
               color="blue"
               class="text-white"
-              :loading="useSedes.loading"
+              :loading="useProveedores.loading"
               >Agregar
               <template v-slot:loading>
                 <q-spinner color="secundary" size="1em" />
               </template>
             </q-btn>
             <q-btn
-            @click="editarsede()"
+            @click="editarProveedor()"
               v-if="accion !== 1"
               color="blue"
               class="text-white"
-              :loading="useSedes.loading"
+              :loading="useProveedores.loading"
             >
               Editar
               <template v-slot:loading>

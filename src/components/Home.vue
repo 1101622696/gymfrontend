@@ -85,14 +85,14 @@ const toggleLeftDrawer = () => {
 
 const links = [
   { to: '/Home/clientes', label: 'Clientes', icon: 'people', roles: ['Administrador', 'Recepcionista', 'Entrenador'] },
-  { to: '/Home/compras', label: 'Compras', icon: 'people', roles: ['Administrador'] },
+  { to: '/Home/compras', label: 'Compras', icon: 'shopping_bag', roles: ['Administrador'] },
   { to: '/Home/ingresos', label: 'Ingresos', icon: 'attach_money', roles: ['Administrador'] },
   { to: '/Home/inventario', label: 'Inventario', icon: 'inventory', roles: ['Administrador'] },
   { to: '/Home/mantenimiento', label: 'Mantenimiento', icon: 'build', roles: ['Administrador', 'Recepcionista'] },
   { to: '/Home/maquinas', label: 'Máquinas', icon: 'fitness_center', roles: ['Administrador'] },
   { to: '/Home/pagos', label: 'Pagos', icon: 'credit_card', roles: ['Administrador', 'Recepcionista'] },
   { to: '/Home/planes', label: 'Planes', icon: 'event_note', roles: ['Administrador'] },
-  { to: '/Home/proveedores', label: 'Proveedores', icon: 'event_note', roles: ['Administrador'] },
+  { to: '/Home/proveedores', label: 'Proveedores', icon: 'person', roles: ['Administrador'] },
   { to: '/Home/sedes', label: 'Sedes', icon: 'location_on', roles: ['Administrador'] },
   { to: '/Home/usuarios', label: 'Usuarios', icon: 'group', roles: ['Administrador'] },
   { to: '/Home/ventas', label: 'Ventas', icon: 'shopping_cart', roles: ['Administrador', 'Recepcionista'] }

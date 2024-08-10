@@ -22,43 +22,6 @@ horario.value=""
 
     const loading = ref(false);
 
-//    async function  guardar () {
-// alert.value = false;
-
-//       informacion.value = '';
-//       if (await validar()) {
-//         const todo = {
-//           nombre: nombre.value,
-//           direccion: direccion.value,
-//           telefono: telefono.value,
-//           ciudad: ciudad.value,
-//           horario: horario.value
-//         };
-
-//         console.log(nombre.value);
-//         console.log(direccion.value);
-//         console.log(telefono.value);
-//         console.log(ciudad.value);
-//         console.log(horario.value);
-
-//         try {
-//           loading.value = true;
-//           const response = await useSedes.postSede(todo);
-//           if (response.status === 200) {
-//             mostrarMensajeExito("Sede agregada exitosamente");
-//             listarSedes();
-//           } else {
-//             mostrarMensajeError("No se pudo agregar la Sede");
-//           }
-//         } catch (error) {
-//           mostrarMensajeError("Error al enviar la solicitud: " + error.message);
-//         }
-//         finally {
-//           loading.value = false;
-//         }
-//       }
-//     };
-
 function guardarUltimaSede(id) {
   localStorage.setItem('ultimaSede', id);
 }
