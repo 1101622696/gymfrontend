@@ -1,70 +1,32 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useStoreSedes } from "../store/sedes.js";
+import { useStoreProveedores } from "../store/proveedores.js";
 import { useQuasar } from 'quasar'
 
-const useSedes = useStoreSedes();
+const useProveedores = useStoreProveedores();
 let alert = ref(false)
 let accion = ref(1)
 const $q = useQuasar();
 
 function abrir(){
   accion.value=1
-    alert.value = true;
+  alert.value = true;
 
 nombre.value=""
 direccion.value=""
 telefono.value=""
-ciudad.value=""
-// codigo.value=""
-horario.value=""
+nit.value=""
+email.value=""
 }
 
     const loading = ref(false);
 
-//    async function  guardar () {
-// alert.value = false;
-
-//       informacion.value = '';
-//       if (await validar()) {
-//         const todo = {
-//           nombre: nombre.value,
-//           direccion: direccion.value,
-//           telefono: telefono.value,
-//           ciudad: ciudad.value,
-//           horario: horario.value
-//         };
-
-//         console.log(nombre.value);
-//         console.log(direccion.value);
-//         console.log(telefono.value);
-//         console.log(ciudad.value);
-//         console.log(horario.value);
-
-//         try {
-//           loading.value = true;
-//           const response = await useSedes.postSede(todo);
-//           if (response.status === 200) {
-//             mostrarMensajeExito("Sede agregada exitosamente");
-//             listarSedes();
-//           } else {
-//             mostrarMensajeError("No se pudo agregar la Sede");
-//           }
-//         } catch (error) {
-//           mostrarMensajeError("Error al enviar la solicitud: " + error.message);
-//         }
-//         finally {
-//           loading.value = false;
-//         }
-//       }
-//     };
-
-function guardarUltimaSede(id) {
-  localStorage.setItem('ultimaSede', id);
+function guardarUltimoProveedor(id) {
+  localStorage.setItem('ultimoProveedor', id);
 }
 
-function obtenerUltimaSede() {
-  return localStorage.getItem('ultimaSede');
+function obtenerUltimoProveedor() {
+  return localStorage.getItem('ultimoProveedor');
 }
 async function guardar() {
   // alert.value = false;
@@ -76,8 +38,8 @@ async function guardar() {
       nombre: nombre.value,
       direccion: direccion.value,
       telefono: telefono.value,
-      ciudad: ciudad.value,
-      horario: horario.value
+      nit: nit.value,
+      email: email.value
     };
 
     try {
@@ -90,13 +52,13 @@ async function guardar() {
           nombre: response.data.sede.nombre,
           direccion: response.data.sede.direccion,
           telefono: response.data.sede.telefono,
-          ciudad: response.data.sede.ciudad,
-          horario: response.data.sede.horario,
+          nit: response.data.sede.nit,
+          email: response.data.sede.email,
           // ... otros campos que puedas necesitar
         };
 
         // Guardar el ID de la nueva sede en localStorage
-        guardarUltimaSede(nuevaSede._id);
+        guardarUltimoProveedor(nuevaSede._id);
 
         // Añadir la nueva sede al principio del array
         rows.value.unshift(nuevaSede);
@@ -126,8 +88,8 @@ function editar(info) {
   nombre.value = info.nombre;
   direccion.value = info.direccion;
   telefono.value = info.telefono;
-  ciudad.value = info.ciudad;
-  horario.value = info.horario;
+  nit.value = info.nit;
+  email.value = info.email;
 }
 
 
@@ -137,8 +99,8 @@ async function editarsede() {
       nombre: nombre.value,
       direccion: direccion.value,
       telefono: telefono.value,
-      ciudad: ciudad.value,
-      horario: horario.value
+      nit: nit.value,
+      email: email.value
     };
 
     if (!informacion.value || !informacion.value._id) {
@@ -178,18 +140,18 @@ let informacion=ref("")
 let nombre = ref("");
 let direccion = ref("");
 let telefono = ref("");
-let ciudad = ref("");
+let nit = ref("");
 // let codigo = ref("");
-let horario = ref("");
+let email = ref("");
 
 let rows=ref([])
 let columns =ref([
     {name:"nombre", label:"Nombre de Sede", field:"nombre", align:"center"},
     {name:"direccion", label:"Dirección", field:"direccion", align:"center"},
     {name:"telefono", label:"Telefono de sede", field:"telefono", align:"center"},
-    {name:"ciudad", label:"Ciudad", field:"ciudad", align:"center"},
+    {name:"nit", label:"nit", field:"nit", align:"center"},
     // {name:"codigo", sortable:true, label:"Código", field:"codigo", align:"center",},
-    {name:"horario", label:"Horario de la Sede", field:"horario", align:"center"},
+    {name:"email", label:"email de la Sede", field:"email", align:"center"},
     {name:"estado", label:"Estado de Sede", field:"estado", align:"center"},
     { name: "opciones", label: "Opciones", field: "opciones", align: "center" },
 
@@ -202,8 +164,8 @@ async function validar() {
         mostrarMensajeError("El nombre está vacío");
         verificado = false;
     }
-    if (ciudad.value === "") {
-        mostrarMensajeError("Ingrese una ciudad");
+    if (nit.value === "") {
+        mostrarMensajeError("Ingrese una nit");
         verificado = false;
     }
     if (direccion.value === "") {
@@ -214,8 +176,8 @@ async function validar() {
     //     mostrarMensajeError("Ingrese un código");
     //     verificado = false;
     // }
-    if (horario.value === "") {
-        mostrarMensajeError("escriba el horario de la sede");
+    if (email.value === "") {
+        mostrarMensajeError("escriba el email de la sede");
         verificado = false;
     }
         if (telefono.value === "" || isNaN(telefono.value) || telefono.value.length < 10) {
@@ -259,7 +221,7 @@ function mostrarMensajeExito(mensaje) {
     console.log("Respuesta del servidor:", res);
 
     if (res && res.data && res.data.sede) {
-      const ultimaSedeId = obtenerUltimaSede();
+      const ultimaSedeId = obtenerUltimoProveedor();
 
       // Ordenar las sedes poniendo la última sede agregada primero
       rows.value = res.data.sede.sort((a, b) => {
@@ -339,7 +301,7 @@ async function ListarPorNombre() {
     console.log("Respuesta del servidor:", res);
 
     if (res && res.data && res.data.sede) {
-      const ultimaSedeId = obtenerUltimaSede();
+      const ultimaSedeId = obtenerUltimoProveedor();
 
       // Ordenar las sedes poniendo la última sede agregada primero
       rows.value = res.data.sede.sort((a, b) => {
@@ -360,16 +322,14 @@ async function ListarPorNombre() {
 </script>
 
 <template>
-    <div class="container">
-<!-- <div style="margin-left: 5%; text-align: end; margin-right: 5%">
+    <div>
+<div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Sede</q-btn>
-        </div> -->
+        </div>
       <div class="tablaselect">
 
-        <button class="button" @click="abrir()">Registrar Sede</button>
-
         <div class="inputlistarn" v-if="listN">
-          <input class="inputn" type="text" placeholder="Digite nombre o ciudad" v-model.trim="busqueda" />
+          <input class="inputn" type="text" placeholder="Digite nombre o nit" v-model.trim="busqueda" />
           <button class="button"  id="buttonf" @click="ejecutarlistnombre()" style="margin-left: auto; margin-right: auto; display: block;">Buscar</button>
         </div>
 
@@ -377,16 +337,10 @@ async function ListarPorNombre() {
           <option value="Todos">Todos</option>
           <option value="Activos">Activos</option>
           <option value="Inactivos">Inactivos</option>
-          <option value="Nombre">Por Nombre/Ciudad</option>
+          <option value="Nombre">Por Nombre/nit</option>
         </select>
 
-      </div>
-
-      <div class="tituloTabla">
-        Sedes
-       </div>
-
-            <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
+            <q-table class="table" flat bordered title="Sedes" :rows="rows" :columns="columns" row-key="id">
            <template v-slot:body-cell-opciones="props">
           <q-td :props="props" style="text-align: center;">
             <q-btn class="option-button" @click="editar(props.row)">
@@ -415,16 +369,16 @@ async function ListarPorNombre() {
           </q-td>
         </template>
       </q-table>
-    
+    </div>
 
 
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
           <q-card-section
-            style="background-color: #ffffff; margin-bottom: 20px"
+            style="background-color: #a1312d; margin-bottom: 20px"
           >
-            <div class="text-h6 text-black">
+            <div class="text-h6 text-white">
               {{ accion == 1 ? "Agregar Sede" : "Editar Sede" }}
             </div>
           </q-card-section>
@@ -434,12 +388,12 @@ async function ListarPorNombre() {
                         class="q-my-md q-mx-md" label="Direccion" type="text" />
   <q-input outlined v-model="telefono" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Teléfono" type="text" />
-  <q-input outlined v-model="ciudad" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Ciudad" type="text" />
+  <q-input outlined v-model="nit" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="nit" type="text" />
       <!-- <q-input outlined v-model="codigo" use-input hide-selected fill-input input-debounce="0"
                         class="q-my-md q-mx-md" label="Codigo" type="text" />                      -->
-  <q-input outlined v-model="horario" use-input hide-selected fill-input input-debounce="0"
-                        class="q-my-md q-mx-md" label="Horario" type="text" />
+  <q-input outlined v-model="email" use-input hide-selected fill-input input-debounce="0"
+                        class="q-my-md q-mx-md" label="email" type="text" />
 
 
           <q-card-actions align="right">
@@ -477,34 +431,16 @@ async function ListarPorNombre() {
 </template>
 
 <style scoped>
-
-.container {
-  width: 97vmax;
-  margin: 0 auto;
-  min-height:auto;
-
-overflow:hidden !important;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #f8141400;
-  margin-top: 7vmax;
-}
 .custom-select {
-  position:absolute;
-   width: 10vmax;
-   height: 4vmin;
-   border-radius: 4vmin;
-   right: 1%;
-   margin-top:0.8vmin;
-   z-index: 1;
-   box-shadow: 0px 2px 5px black; 
-   border: none;
-   outline: none;
- }
-
+ position:absolute;
+  width: 10vmax;
+  height: 4vmin;
+  background-color: rgb(170, 170, 170);
+  border-radius: 1vmin;
+  right: 1%;
+  margin-top:1.5vmin;
+  z-index: 1;
+}
 
 .inputlistarn{
   position:absolute;
@@ -531,9 +467,9 @@ align-items: center;
 }
 
 .button {
- 
+  background-color: #45a049;
   border: none;
-  color: black;
+  color: white;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -564,19 +500,5 @@ align-items: center;
   margin-bottom: 1px;
 }
 
-.tituloTabla{
-  margin-top: 1vmax;
-    font-size: xx-large;
-    display: flex;
-    text-align: center;
-    justify-content: center;
-  
-  }
 
-  .tablaselect{
-    display: flex;
-    position: absolute;
-    width: 95%;
-    margin-top: 6vmax;
-  }
 </style>

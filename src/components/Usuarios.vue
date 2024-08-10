@@ -406,11 +406,13 @@ ListarPorNombre()
 
 
 <template>
-<div>
-<div style="margin-left: 5%; text-align: end; margin-right: 5%">
+<div class="container">
+<!-- <div style="margin-left: 5%; text-align: end; margin-right: 5%">
             <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Usuario</q-btn>
-        </div>
+        </div> -->
+
 <div class="tablaselect">
+  <button class="button" @click="abrir()">Registrar Usuario</button>
 
   <div class="inputlistarn" v-if="listN">
     <input class="inputn" type="text" placeholder="Digite nombre o correo" v-model.trim="busqueda" />
@@ -423,8 +425,12 @@ ListarPorNombre()
     <option value="Inactivos">Inactivos</option>
     <option value="Nombre">Por Nombre/Correo</option>
   </select>
+</div>
+<div class="tituloTabla">
+  Usuarios
+ </div>
 
-      <q-table class="table" flat bordered title="Usuarios" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idSede="props">
         <q-td :props="props">
           <p>{{ getSedeNombre(props.row.idSede) }}</p>
@@ -458,7 +464,7 @@ ListarPorNombre()
           </q-td>
         </template>
     </q-table>
-    </div>
+  
 
 
         <div style="margin-left: 5%; text-align: end; margin-right: 5%">
@@ -468,9 +474,9 @@ ListarPorNombre()
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
           <q-card-section
-            style="background-color: #a1312d; margin-bottom: 20px"
+            style="background-color: #ffffff; margin-bottom: 20px"
           >
-            <div class="text-h6 text-white">
+            <div class="text-h6 text-black">
               {{ accion == 1 ? "Agregar Usuario" : "Editar Usuario" }}
             </div>
           </q-card-section>
@@ -525,16 +531,32 @@ ListarPorNombre()
 
 <style scoped>
 
-.custom-select {
- position:absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 1%;
-  margin-top:1.5vmin;
-  z-index: 1;
+.container {
+  width: 97vmax;
+  margin: 0 auto;
+  min-height:auto;
+
+overflow:hidden !important;
 }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
+}
+.custom-select {
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 1%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 
 
 .inputlistarn{
@@ -562,9 +584,9 @@ align-items: center;
 }
 
 .button {
-  background-color: #45a049;
+ 
   border: none;
-  color: white;
+  color: black;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -577,6 +599,7 @@ align-items: center;
   box-shadow: 5px 4px 8px black;
   border-radius: 8px;
 }
+
 
 .button:hover {
   background-color: #69bb6d;
@@ -595,5 +618,20 @@ align-items: center;
   margin-bottom: 1px;
 }
 
+.tituloTabla{
+  margin-top: 1vmax;
+    font-size: xx-large;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  
+  }
+
+  .tablaselect{
+    display: flex;
+    position: absolute;
+    width: 95%;
+    margin-top: 6vmax;
+  }
 
 </style>

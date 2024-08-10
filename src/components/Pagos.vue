@@ -395,9 +395,11 @@ async function buscarIngresosporfecha() {
 
 <template>
   <div class="container">
-    <button class="button" @click="agregarpago()">Agregar Pago</button>
+   
 
     <div class="tablaselect">
+
+      <button class="button" @click="agregarpago()">Agregar Pago</button>
 
       <div class="inputlistarn" v-if="listN">
         <input class="inputn" type="text" placeholder="Digite nombre o documento" v-model.trim="busqueda" />
@@ -420,10 +422,13 @@ async function buscarIngresosporfecha() {
         <option value="Fecha">Por Fecha</option>
         <option value="Nombre">Nombre/DNI</option>
       </select>
+    </div>
 
+    <div class="tituloTabla">
+      Pagos
+     </div>
 
-
-      <q-table class="table" flat bordered title="Pagos" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-idPlan="props">
           <q-td :props="props"
             style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
@@ -470,7 +475,7 @@ async function buscarIngresosporfecha() {
           </q-td>
         </template>
       </q-table>
-    </div>
+    
 
     <div class="filtro" v-if="agregar">
       <div class="crearcliente" v-if="agregar">
@@ -522,9 +527,9 @@ async function buscarIngresosporfecha() {
 }
 
 .button {
-  background-color: #45a049;
+ 
   border: none;
-  color: white;
+  color: black;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -574,6 +579,8 @@ async function buscarIngresosporfecha() {
 .table {
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
 }
 
 .table th,
@@ -589,8 +596,6 @@ async function buscarIngresosporfecha() {
 
 /* Estilos para las opciones de la tabla */
 .option-button {
-  background-color: #008CBA;
-  /* Color azul */
   border: none;
   color: white;
   padding: 5px 10px;
@@ -603,7 +608,7 @@ async function buscarIngresosporfecha() {
 }
 
 .option-button:hover {
-  background-color: #005f6b;
+  background-color: #dadada;
 }
 
 
@@ -674,22 +679,25 @@ async function buscarIngresosporfecha() {
   transform: translate(-50%, -50%);
 }
 
-.tablaselect {
+.tablaselect{
   display: flex;
   position: absolute;
-  width: 97%;
+  width: 95%;
+  margin-top: 6vmax;
 }
 
 .custom-select2 {
-  position: absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 15%;
-  margin-top: 0.8vmin;
-  z-index: 1;
-}
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 15%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 
 .inputlistarcumple {
   position: absolute;
@@ -732,7 +740,7 @@ async function buscarIngresosporfecha() {
 }
 
 .inputc {
-  width: 8vmax;
+  width: 10vmax;
   margin: 8px 0;
   height: 2.5vmin;
   box-sizing: border-box;
@@ -749,17 +757,19 @@ async function buscarIngresosporfecha() {
 }
 
 .custom-select {
-  position: absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 1%;
-  margin-top: 0.8vmin;
-  z-index: 1;
-}
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 1%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 
-#buttonf {
+ #buttonf{
   padding: 0px;
   width: 8vmin;
   height: 2.5vmin;
@@ -770,4 +780,13 @@ async function buscarIngresosporfecha() {
   margin: 0px;
   margin-bottom: 1px;
 }
+
+.tituloTabla{
+  margin-top: 1vmax;
+    font-size: xx-large;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  
+  }
 </style>

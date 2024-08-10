@@ -362,9 +362,11 @@ async function ListarPorNombre() {
 
 <template>
     <div class="container">
-      <button class="button" @click="agregarmaquina()">Agregar Maquina</button>
+      
 
       <div class="tablaselect">
+
+        <button class="button" @click="agregarmaquina()">Agregar Maquina</button>
 
 <div class="inputlistarn" v-if="listN">
           <input class="inputn" type="text" placeholder="Digite nombre o codigo" v-model.trim="busqueda" />
@@ -377,9 +379,13 @@ async function ListarPorNombre() {
         <option value="Inactivos">Inactivos</option>
         <option value="Nombre">Descripcion / Codigo</option>
       </select>
+    </div>
 
+    <div class="tituloTabla">
+      Maquinas
+     </div>
 
-      <q-table class="table" flat bordered title="Maquinas" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idSede="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getSedeNombre(props.row.idSede) }}</p>
@@ -422,7 +428,7 @@ async function ListarPorNombre() {
           </q-td>
         </template>
       </q-table>
-    </div>
+ 
       <!-- <button class="button" @click="listarMaquina()">Traer Datos</button> -->
 
   <div  class="filtro" v-if="agregar">
@@ -456,8 +462,11 @@ async function ListarPorNombre() {
 
 /* Estilos para el contenedor principal */
 .container {
-  width: 90vmax;
+  width: 97vmax;
   margin: 0 auto;
+  min-height:auto;
+
+overflow:hidden !important;
 }
 
 /* Estilos para el título */
@@ -468,9 +477,9 @@ async function ListarPorNombre() {
 }
 
 .button {
-  background-color: #45a049;
+ 
   border: none;
-  color: white;
+  color: black;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -520,6 +529,8 @@ async function ListarPorNombre() {
 .table {
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
 }
 
 .table th, .table td {
@@ -534,7 +545,6 @@ async function ListarPorNombre() {
 
 /* Estilos para las opciones de la tabla */
 .option-button {
-  background-color: #008CBA; /* Color azul */
   border: none;
   color: white;
   padding: 5px 10px;
@@ -546,8 +556,9 @@ async function ListarPorNombre() {
   border-radius: 4px;
 }
 
+
 .option-button:hover {
-  background-color: #005f6b;
+  background-color: #dadada;
 }
 
 
@@ -609,19 +620,22 @@ margin-left: auto;
 }
 
 .custom-select {
- position:absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 1%;
-  top:3%;
-  z-index: 1;
-}
-.tablaselect{
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 1%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
+ .tablaselect{
   display: flex;
-  position: relative;
-  width: 90vmax;
+  position: absolute;
+  width: 95%;
+  margin-top: 6vmax;
 }
 
 .filtro{
@@ -669,5 +683,14 @@ align-items: center;
   margin: 0px;
   margin-bottom: 1px;
 }
+
+.tituloTabla{
+  margin-top: 1vmax;
+    font-size: xx-large;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  
+  }
 
 </style>

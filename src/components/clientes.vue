@@ -702,11 +702,12 @@ const getIMCStyle = (imc) => {
 
   <div class="container">
 
-<div>
-    <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
-  </div>
 
     <div class="tablaselect">
+
+      <div>
+    <button class="button" @click="llamaragregarCliente()">Agregar Cliente</button>
+  </div>
 
       <div class="inputlistarn" v-if="listN">
       <input class="inputn" type="text" placeholder="Digite nombre o documento" v-model.trim="listNombre" />
@@ -738,9 +739,15 @@ const getIMCStyle = (imc) => {
         <option value="Fecha">Por Cumpleaños</option>
         <option value="Nombre">Por Nombre/DNI</option>
       </select>
+
     </div>
 
-    <q-table class="table" flat bordered title="Clientes" :rows="rows" :columns="columns" row-key="id">
+<div class="tituloTabla">
+          Clientes
+        </div>
+
+   
+    <q-table class="table" flat bordered :rows="rows" :columns="columns" row-key="id">
       <template v-slot:body-cell-idPlan="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getPlanCodigo(props.row.idPlan) }}</p>
@@ -761,9 +768,9 @@ const getIMCStyle = (imc) => {
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
         <span class="truncated-text">
           {{ props.row.observaciones }}
-          <q-tooltip anchor="bottom middle" self="top middle" :content="props.row.observaciones" transition-show="scale" transition-hide="scale">
-            <span class="truncated-text">{{ props.row.observaciones }}</span>
-          </q-tooltip>
+          <!-- <q-tooltip anchor="bottom middle" self="top middle" :content="props.row.observaciones" transition-show="scale" transition-hide="scale"> -->
+            <!-- <span class="truncated-text">{{ props.row.observaciones }}</span>
+          </q-tooltip> -->
         </span>
       </q-td>
     </template>
@@ -771,9 +778,9 @@ const getIMCStyle = (imc) => {
       <template v-slot:body-cell-foto="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <div class="photo-container">
-            <q-btn class="fotico" @click="verFoto(props.row)">
-              Ver foto
-            </q-btn>
+ 
+            <q-btn class="fotico" @click="verFoto(props.row)" icon="camera_alt" />
+ <q-tooltip >Ver foto del cliente</q-tooltip>
           </div>
           <div v-if="clienteSeleccionado !== null" class="foto-modal">
             <div class="foto-modal-contenedor">
@@ -802,10 +809,12 @@ const getIMCStyle = (imc) => {
 
 <template v-slot:body-cell-seguimiento="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
-        <q-btn class="segui" @click="openSeguimientoModal(props.row)">
-          Seguimiento
-            <!-- <q-tooltip v-model="showing">mira el seguimiento</q-tooltip> -->
-        </q-btn>
+ 
+          <q-btn class="segui" @click="openSeguimientoModal(props.row)" icon="show_chart">
+  <q-tooltip >Mirar seguimiento de IMC</q-tooltip>
+</q-btn>
+
+
       </q-td>
     </template>
       <template v-slot:body-cell-estado="props">
@@ -1029,9 +1038,9 @@ body{
 
 
 .button {
-  background-color: #45a049;
+ 
   border: none;
-  color: white;
+  color: black;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -1063,10 +1072,12 @@ body{
 .table {
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
 }
 
 .table th, .table td {
-  border: 1px solid #ddd;
+
   padding: 8px;
   text-align: left;
 }
@@ -1074,10 +1085,19 @@ body{
 .table th {
   background-color: #f2f2f2;
 }
+.tituloTabla{
+margin-top: 1vmax;
+  font-size: xx-large;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+
+}
+
+
 
 /* Estilos para las opciones de la tabla */
 .option-button {
-  background-color: #008CBA; /* Color azul */
   border: none;
   color: white;
   padding: 5px 10px;
@@ -1090,7 +1110,7 @@ body{
 }
 
 .option-button:hover {
-  background-color: #005f6b;
+  background-color: #dadada;
 }
 
 
@@ -1196,33 +1216,39 @@ transform: translate(-50%,-50%);
  position:absolute;
   width: 10vmax;
   height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
+  border-radius: 4vmin;
   right: 1%;
   margin-top:0.8vmin;
   z-index: 1;
+  box-shadow: 0px 2px 5px black; 
+  border: none;
+  outline: none;
 }
 .tablaselect{
   display: flex;
   position: absolute;
   width: 95%;
+  margin-top: 6vmax;
 }
 
 .contenedorFiltro{
   display: flex;
   justify-content: flex-end;
   width: 100%;
+  
 }
 
 .custom-select2 {
  position:absolute;
   width: 10vmax;
   height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
+  border-radius: 4vmin;
   right: 15%;
   margin-top:0.8vmin;
   z-index: 1;
+  box-shadow: 0px 2px 5px black; 
+  border: none;
+  outline: none;
 }
 
 .inputlistarcumple{
@@ -1243,7 +1269,7 @@ align-items: center;
 
 .inputlistarn{
   position:absolute;
-  width: auto;
+  width:auto;
   height: 4.5vmin;
   gap: 1vmin;
   background-color: rgba(16, 16, 16, 0);
@@ -1266,7 +1292,7 @@ align-items: center;
   border: solid 1.5px black;
 }
 .inputc{
-  width: 8vmax;
+  width: 10vmax;
   margin: 8px 0;
   height: 2.5vmin;
   box-sizing: border-box;

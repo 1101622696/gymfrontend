@@ -335,9 +335,12 @@ async function ListarPorNombre() {
 
 <template>
     <div class="container">
-      <button class="button" @click="agregarInventario()">Agregar Inventario</button>
+
+      
 
       <div class="tablaselect">
+
+        <button class="button" @click="agregarInventario()">Agregar Inventario</button>
 
         <div class="inputlistarn" v-if="listN">
           <input class="inputn" type="text" placeholder="Digite nombre o codigo" v-model.trim="busqueda" />
@@ -350,8 +353,12 @@ async function ListarPorNombre() {
           <option value="Inactivos">Inactivos</option>
           <option value="Nombre">Descripcion / Codigo</option>
         </select>
+      </div>
+        <div class="tituloTabla">
+         Inventario
+        </div>
 
-      <q-table class="table" flat bordered title="Inventario" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
                  <template v-slot:body-cell-valor="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ formatCurrency(props.row.valor) }}</p>
@@ -385,7 +392,7 @@ async function ListarPorNombre() {
           </q-td>
         </template>
     </q-table>
-  </div>
+  
 
   <div  class="filtro" v-if="agregar">
       <div class="crearcliente" v-if="agregar">
@@ -413,9 +420,10 @@ async function ListarPorNombre() {
 
 /* Estilos para el contenedor principal */
 .container {
-  width: 96vmax;
+  width: 97vmax;
   margin: 0 auto;
   min-height:auto;
+
 overflow:hidden !important;
 }
 
@@ -447,9 +455,9 @@ overflow:hidden !important;
 }
 
 .button {
-  background-color: #45a049;
+ 
   border: none;
-  color: white;
+  color: black;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -480,6 +488,8 @@ overflow:hidden !important;
 .table {
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
 }
 
 .table th, .table td {
@@ -494,7 +504,6 @@ overflow:hidden !important;
 
 /* Estilos para las opciones de la tabla */
 .option-button {
-  background-color: #008CBA; /* Color azul */
   border: none;
   color: white;
   padding: 5px 10px;
@@ -507,7 +516,7 @@ overflow:hidden !important;
 }
 
 .option-button:hover {
-  background-color: #005f6b;
+  background-color: #dadada;
 }
 
 
@@ -582,19 +591,22 @@ margin-left: auto;
 }
 
 .custom-select {
- position:absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 1%;
-  margin-top:0.8vmin;
-  z-index: 1;
-}
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 1%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 .tablaselect{
   display: flex;
   position: absolute;
-  width: 97%;
+  width: 95%;
+  margin-top: 6vmax;
 }
 
 .contenedorFiltro{
@@ -604,15 +616,17 @@ margin-left: auto;
 }
 
 .custom-select2 {
- position:absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 15%;
-  margin-top:0.8vmin;
-  z-index: 1;
-}
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 15%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 
 
 .inputlistarn{
@@ -651,7 +665,7 @@ align-items: center;
   border: solid 1.5px black;
 }
 .inputc{
-  width: 8vmax;
+  width: 10vmax;
   margin: 8px 0;
   height: 2.5vmin;
   box-sizing: border-box;
@@ -709,4 +723,12 @@ left: 50%;
 transform: translate(-50%,-50%);
 }
 
+.tituloTabla{
+  margin-top: 1vmax;
+    font-size: xx-large;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  
+  }
 </style>

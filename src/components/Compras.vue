@@ -1,12 +1,14 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
-import { useStoreVentas } from "../store/ventas.js";
+import { useStoreCompras } from "../store/compras.js";
 import { useStoreInventario } from "../store/inventario.js";
+import { useStoreProveedores } from "../store/proveedores.js";
 import { useQuasar } from 'quasar'
 
 
-const useSales = useStoreVentas();
+const useCompras = useStoreCompras();
 const useInventario = useStoreInventario();
+const useProveedores = useStoreProveedores();
 
 
 let agregar=ref(false)
@@ -14,55 +16,59 @@ const $q = useQuasar();
 
 let botoneditar=ref(false)
 
-function agregarventa(){
+function agregarcompra(){
   botoneditar.value=true
     agregar.value = true;
 
 idInventario.value=""
+idProveedor.value=""
 valorUnitario.value=""
 cantidad.value=""
 
 }
-const idInventarioSeleccionado = ref(null);
+// const idInventario = ref(null);
 
 
-function guardarUltimaVenta(id) {
-  localStorage.setItem('ultimaVenta', id);
+function guardarUltimaCompra(id) {
+  localStorage.setItem('ultimaCompra', id);
 }
 
-function obtenerUltimaVenta() {
-  return localStorage.getItem('ultimaVenta');
+function obtenerUltimaCompra() {
+  return localStorage.getItem('ultimaCompra');
 }
 async function guardar() {
 
   if (await validar()) {
     const todo = {
-      idInventario: idInventarioSeleccionado.value,
+      idInventario: idInventario.value,
+      idProveedor: idProveedor.value,
       valorUnitario: valorUnitario.value,
       cantidad: cantidad.value
     };
 
     try {
-      let nombrez = await useSales.postVenta(todo);
+      let nombrez = await useCompras.postCompra(todo);
 
       if (nombrez.status !== 200) {
 
 
       } else {
-        const nuevaVenta = {
-          _id: nombrez.data.venta._id,
-          idInventario: nombrez.data.venta.idInventario,
-          valorUnitario: nombrez.data.venta.valorUnitario,
-          cantidad: nombrez.data.venta.cantidad,
+        const nuevaCompra = {
+          _id: nombrez.data.compra._id,
+          idInventario: nombrez.data.compra.idInventario,
+          idProveedor: nombrez.data.compra.idProveedor,
+          valorUnitario: nombrez.data.compra.valorUnitario,
+          cantidad: nombrez.data.compra.cantidad,
         };
 
-        guardarUltimaVenta(nuevaVenta._id);
+        guardarUltimaCompra(nuevaCompra._id);
 
-        rows.value.unshift(nuevaVenta);
+        rows.value.unshift(nuevaCompra);
 
 
-        listarVentas();
+        listarCompras();
         listarInventarios();
+        listarProveedores();
   agregar.value = false;
       window.location.reload();
 
@@ -80,23 +86,30 @@ function editar(info) {
 
   informacion.value = info;
 
-  // Usar info.idInventario para encontrar el producto
   const selectedInventario = inventarioTodo.value.find(inventario => inventario._id === info.idInventario);
   if (selectedInventario) {
-    // Asignar solo el ID del inventario seleccionado al modelo del select
-    idInventarioSeleccionado.value = selectedInventario._id; // Asegúrate de que esto esté vinculado al select
-    valorUnitario.value = selectedInventario.valor; // Usar el valor unitario del inventario
+
+    idInventario.value = selectedInventario._id; 
   } else {
-    console.error("Inventario no encontrado para ID:", info.idInventarioSeleccionado);
-    idInventarioSeleccionado.value = null; // Manejar el caso si no se encuentra
+    console.error("Inventario no encontrado para ID:", info.idInventario);
+    idInventario.value = null; 
   }
+  const selectedProveedor = proveedorTodo.value.find(proveedor => proveedor._id === info.idProveedor);
+    if (selectedProveedor) {
+        idProveedor.value = {
+            label: `${selectedProveedor.nombre} - ${selectedProveedor.nit}`,
+            valor: selectedProveedor._id,
+            nombre: selectedProveedor.nombre
+        };
+    }
   cantidad.value = info.cantidad;
 }
 
-async function editarventa() {
+async function editarcompra() {
   if (await validar()) {
     const todo = {
-      idInventario: idInventarioSeleccionado.value, // Asegúrate de que esto esté usando el ID correcto
+      idInventario: idInventario.value,
+      idProveedor: idProveedor.value,
       valorUnitario: valorUnitario.value,
       cantidad: cantidad.value
     };
@@ -108,17 +121,18 @@ async function editarventa() {
     }
 
     try {
-      const response = await useSales.putVenta(informacion.value._id, todo);
+      const response = await useCompras.putCompra(informacion.value._id, todo);
       if (response.status !== 200) {
 
       } else {
-        listarVentas();
+        listarCompras();
         listarInventarios();
+        listarProveedores();
   agregar.value = false;
 
       }
     } catch (error) {
-      console.error("Error al actualizar la venta:", error);
+      console.error("Error al actualizar la compra:", error);
     }
   }
 }
@@ -129,7 +143,7 @@ function cerrar(){
 }
 
 onMounted(()=>{
-  listarVentas(), listarInventarios();
+  listarCompras(), listarInventarios(); listarProveedores()
 })
 
 let informacion=ref("")
@@ -140,9 +154,13 @@ let total = ref("");
 let inventarioTodo = ref([]);
 let nombreCodigo = ref([]);
 
+let proveedorTodo = ref([]);
+let nombreCodigoP = ref([]);
+
 let rows=ref([])
 let columns =ref([
     {name:"idInventario", label:"Inventario", field:"idInventario", align:"center"},
+    {name:"idProveedor", label:"Proveedor", field:"idProveedor", align:"center"},
     {name:"fecha", label:"fecha de venta", field:"fecha", align:"center"},
     {name:"codigo", label:"Código", field:"codigo", align:"center"},
     {name:"valorUnitario", label:"Valor por unidad", field:"valorUnitario", align:"center"},
@@ -154,17 +172,21 @@ let columns =ref([
 async function validar() {
     let verificado = true;
 
-    if (idInventarioSeleccionado.value === "") {
+    if (idInventario.value === "") {
         mostrarMensajeError("seleccione un inventario");
         verificado = false;
     }
-//  if (valorUnitario.value === "") {
-//     mostrarMensajeError("El valor está vacío");
-//     verificado = false;
-// } else if (!/^\d+$/.test(valorUnitario.value)) {
-//     mostrarMensajeError("El valor debe ser un número");
-//     verificado = false;
-// }
+        if (idProveedor.value === "") {
+        mostrarMensajeError("seleccione un proveedor");
+        verificado = false;
+    }
+ if (valorUnitario.value === "") {
+    mostrarMensajeError("El valor está vacío");
+    verificado = false;
+} else if (!/^\d+$/.test(valorUnitario.value)) {
+    mostrarMensajeError("El valor debe ser un número");
+    verificado = false;
+}
     if (cantidad.value === "") {
         mostrarMensajeError("Ingrese la cantidad");
         verificado = false;
@@ -194,33 +216,32 @@ function mostrarMensajeExito(mensaje) {
 }
 
 
-// async function listarVentas(){
-//     const res = await useSales.listarVenta()
+// async function listarCompras(){
+//     const res = await useCompras.listarVenta()
 //     console.log(res.data);
 //     rows.value=res.data.venta
 // }
 
-async function listarVentas() {
+async function listarCompras() {
   try {
-    const res = await useSales.listarVenta();
-    const ultimaVentaId = obtenerUltimaVenta();
+    const res = await useCompras.listarCompra();
+    const ultimaCompraId = obtenerUltimaCompra();
 
-    if (res && res.data && res.data.venta) {
-      rows.value = res.data.venta;
+    if (res && res.data && res.data. compra) {
+      rows.value = res.data. compra;
 
-      // Ordenar las ventas poniendo la última venta agregada primero
       rows.value.sort((a, b) => {
-        if (a._id === ultimaVentaId) return -1;
-        if (b._id === ultimaVentaId) return 1;
-        return 0; // Mantener el orden por defecto si no se encuentra la última venta
+        if (a._id === ultimaCompraId) return -1;
+        if (b._id === ultimaCompraId) return 1;
+        return 0; 
       });
 
-      console.log("Ventas ordenadas:", rows.value);
+      console.log("Proveedores ordenadas:", rows.value);
     } else {
       console.error("Datos inesperados del servidor:", res);
     }
   } catch (error) {
-    console.error("Error al listar ventas:", error);
+    console.error("Error al listar proveedores:", error);
   }
 }
 
@@ -236,53 +257,39 @@ async function listarInventarios() {
 const organizarInventario = computed(() => {
   return inventarioTodo.value.map((element) => ({
     label: `${element.descripcion} - ${element.codigo}`,
-    value: element._id,  // Esto es el ID de MongoDB
-    valor: element.valor // Este es el precio unitario
+    value: element._id,  
+    valor: element.valor 
   }));
 });
-function actualizarValorUnitario(seleccionado) {
-  console.log("Producto seleccionado:", seleccionado);
-  if (seleccionado && seleccionado.valor) {
-    console.log("Valor unitario encontrado:", seleccionado.valor);
-    valorUnitario.value = seleccionado.valor;
-    idInventarioSeleccionado.value = seleccionado.value; // Guardamos el ID de MongoDB
-  } else {
-    console.log("Producto no encontrado o sin valor unitario");
-    valorUnitario.value = '';
-    idInventarioSeleccionado.value = null;
-  }
-}
-watch(idInventario, (newValue) => {
-  console.log("idInventario cambiado a:", newValue);
-  actualizarValorUnitario(newValue);
-});
-
-// Para depuración
-watch(inventarioTodo, (newValue) => {
-  console.log("inventarioTodo actualizado:", newValue);
-}, { deep: true });
 
 function getInventarioDescripcion(id) {
   const inventario = inventarioTodo.value.find(inventario => inventario._id === id);
   return inventario ? `${inventario.descripcion} - ${inventario.codigo}`: "";
 }
 
+async function listarProveedores() {
+  try {
+    const res = await useProveedores.listaractivados();
+    console.log("Proveedor cargado:", res.data);
+    proveedorTodo.value = res.data.activados;
+  } catch (error) {
+    console.error("Error al listar proveedor:", error);
+  }
+}
+const organizarProveedor = computed(() => {
+  return inventarioTodo.value.map((element) => ({
+    label: `${element.nombre} - ${element.nit}`,
+    value: element._id,  
+    valor: element.valor 
+  }));
+});
 
-// function formatDate(dateString) {
-//   const options = { year: 'numeric', month: 'long', day: 'numeric' };
-//   return new Date(dateString).toLocaleDateString('es-ES', options);
-// }
-// function formatDate(dateString) {
-//   const options = { 
-//     year: 'numeric', 
-//     month: 'long', 
-//     day: 'numeric',
-//     hour: '2-digit',
-//     minute: '2-digit',
-//     timeZone: 'UTC'  
-//   };
-//   return new Date(dateString).toLocaleString('es-ES', options);
-// }
+
+function getProveedorNombre(id) {
+  const proveedor = proveedorTodo.value.find(proveedor => proveedor._id === id);
+  return proveedor ? `${proveedor.nombre} - ${proveedor.nit}`: "";
+}
+
 
 function formatDate(dateString) {
   const options = { 
@@ -317,7 +324,7 @@ const ordenar= ref("Todos")
 function ejecutarFiltro() {
 
 if (ordenar.value == 'Todos') {
-  listarVentas();
+  listarCompras();
   listP.value=false
   listF.value=false
   listN.value=false
@@ -341,26 +348,25 @@ else if (ordenar.value == 'Fecha') {
 
 async function listarporproducto() {
   try {
-    console.log(productobuscado.value,"id del rpoducto es esteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-    const res = await useSales.listarporproducto(productobuscado.value);
-    const ultimaVentaId = obtenerUltimaVenta();
+    console.log(productobuscado.value,"id del rpoducto es estee")
+    const res = await useCompras.listarporproducto(productobuscado.value);
+    const ultimaCompraId = obtenerUltimaCompra();
 
-    if (res && res.data && res.data.venta) {
+    if (res && res.data && res.data.compra) {
       rows.value = res.data.venta;
 
-      // Ordenar las ventas poniendo la última venta agregada primero
       rows.value.sort((a, b) => {
-        if (a._id === ultimaVentaId) return -1;
-        if (b._id === ultimaVentaId) return 1;
-        return 0; // Mantener el orden por defecto si no se encuentra la última venta
+        if (a._id === ultimaCompraId) return -1;
+        if (b._id === ultimaCompraId) return 1;
+        return 0; 
       });
 
-      console.log("Ventas ordenadas:", rows.value);
+      console.log("compras ordenadas:", rows.value);
     } else {
       console.error("Datos inesperados del servidor:", res);
     }
   } catch (error) {
-    console.error("Error al listar ventas:", error);
+    console.error("Error al listar compras:", error);
   }
 }
 
@@ -369,34 +375,33 @@ async function buscarporfecha(){
       mostrarMensajeError("debe ingresar un fecha");
     } else {
     try {
-      const res = await useSales.listarporfecha(fechaBuscada.value);
+      const res = await useCompras.listarporfecha(fechaBuscada.value);
 rows.value=res.data.venta
     } catch (error) {
-        console.error("Error al listar maquinas:", error);
+        console.error("Error al listar fecahs:", error);
     }}}
 
 
     async function ejecutarlistnombre() {
   try {
-    const res = await useSales.listarVenta(busqueda.value);
-    const ultimaVentaId = obtenerUltimaVenta();
+    const res = await useCompras.listarCompras(busqueda.value);
+    const ultimaCompraId = obtenerUltimaCompra();
 
-    if (res && res.data && res.data.venta) {
-      rows.value = res.data.venta;
+    if (res && res.data && res.data.compra) {
+      rows.value = res.data.compra;
 
-      // Ordenar las ventas poniendo la última venta agregada primero
       rows.value.sort((a, b) => {
-        if (a._id === ultimaVentaId) return -1;
-        if (b._id === ultimaVentaId) return 1;
-        return 0; // Mantener el orden por defecto si no se encuentra la última venta
+        if (a._id === ultimaCompraId) return -1;
+        if (b._id === ultimaCompraId) return 1;
+        return 0; 
       });
 
-      console.log("Ventas ordenadas:", rows.value);
+      console.log("compras ordenadas:", rows.value);
     } else {
       console.error("Datos inesperados del servidor:", res);
     }
   } catch (error) {
-    console.error("Error al listar ventas:", error);
+    console.error("Error al listar compras:", error);
   }
 }
 
@@ -405,10 +410,9 @@ rows.value=res.data.venta
 
 <template>
     <div class="container">
-    
+      <button class="button" @click="agregarcompra()">Agregar Compra</button>
 
       <div class="tablaselect">
-        <button class="button" @click="agregarventa()">Agregar Venta</button>
 
         <div class="inputlistar" v-if="listP">
           <select v-model="productobuscado" @change="listarporproducto" class="custom-select2">
@@ -437,13 +441,15 @@ rows.value=res.data.venta
       </select>
     </div>
 
-    <div class="tituloTabla">
-      Ventas
-     </div>
-      <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered title="Compras" :rows="rows" :columns="columns" row-key="id">
             <template v-slot:body-cell-idInventario="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
           <p>{{ getInventarioDescripcion(props.row.idInventario) }}</p>
+        </q-td>
+      </template>
+                  <template v-slot:body-cell-idProveedor="props">
+        <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
+          <p>{{ getProveedorNombre(props.row.idProveedor) }}</p>
         </q-td>
       </template>
 <template v-slot:body-cell-fecha="props">
@@ -475,42 +481,20 @@ rows.value=res.data.venta
   <div  class="filtro" v-if="agregar">
       <div class="crearcliente" v-if="agregar">
         <div class="encabezadoCrear">
-        <h3>Ingresar Venta</h3>
+        <h3>Ingresar Compra</h3>
         <button class="buttonX" @click="cerrar()">X</button>
     </div>
     <div class="inputs">
- <!-- <q-select standout v-model="idInventario" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
-      /> -->
-    <!-- <q-select
-      v-model="idInventario"
-      :options="organizarInventario"
-      option-label="label"
-      label="Inventario"
-      @update:model-value="actualizarValorUnitario"
-      map-options
-    >
-      <template v-slot:selected-item="scope">
-        <div>{{ scope.opt.label }}</div>
-      </template>
-    </q-select> -->
-    <q-select
-  v-model="idInventarioSeleccionado"
-  :options="organizarInventario"
-  option-label="label"
-  label="Inventario"
-  @update:model-value="actualizarValorUnitario"
-  map-options
->
-  <template v-slot:selected-item="scope">
-    <div>{{ scope.opt.label }}</div>
-  </template>
-</q-select>
+ <q-select standout v-model="idInventario" :options="organizarInventario" option-value="valor" option-label="label" label="Inventario" style="background-color: #grey; margin-bottom: 20px"
+      />
+       <q-select standout v-model="idProveedor" :options="organizarProveedor" option-value="valor" option-label="label" label="Proveedor" style="background-color: #grey; margin-bottom: 20px"
+      />
       <q-input class="input" filled v-model.trim="valorUnitario" label="Valor Unitario" :dense="dense" />
       <q-input class="input" filled v-model.trim="cantidad" label="Cantidad" :dense="dense" />
     </div>
 
-    <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
-    <button v-else class="button" @click="editarventa()" :loading="useSales.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
+    <button v-if="botoneditar ==true" class="button" @click="guardar()" :loading="useCompras.loading" style="margin-left: auto; margin-right: auto; display: block;">Guardar</button>
+    <button v-else class="button" @click="editarcompra()" :loading="useCompras.loading" style="margin-left: auto; margin-right: auto; display: block;">Actualizar</button>
 
 
       </div>
@@ -537,9 +521,9 @@ rows.value=res.data.venta
   }
 
   .button {
- 
+    background-color: #45a049;
     border: none;
-    color: black;
+    color: white;
     padding: 10px 20px;
     text-align: center;
     text-decoration: none;
@@ -584,8 +568,6 @@ rows.value=res.data.venta
   .table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid #f8141400;
-    margin-top: 7vmax;
   }
 
   .table th, .table td {
@@ -600,6 +582,7 @@ rows.value=res.data.venta
 
   /* Estilos para las opciones de la tabla */
   .option-button {
+    background-color: #008CBA;
     border: none;
     color: white;
     padding: 5px 10px;
@@ -610,11 +593,10 @@ rows.value=res.data.venta
     margin: 2px;
     border-radius: 4px;
   }
-  
+
   .option-button:hover {
-    background-color: #dadada;
+    background-color: #005f6b;
   }
-  
 
 
   .crearcliente {
@@ -688,33 +670,28 @@ rows.value=res.data.venta
     position:absolute;
      width: 10vmax;
      height: 4vmin;
-     border-radius: 4vmin;
+     background-color: rgb(170, 170, 170);
+     border-radius: 1vmin;
      right: 1%;
      margin-top:0.8vmin;
      z-index: 1;
-     box-shadow: 0px 2px 5px black; 
-     border: none;
-     outline: none;
    }
-  .tablaselect{
-    display: flex;
-    position: absolute;
-    width: 95%;
-    margin-top: 6vmax;
-  }
+   .tablaselect{
+     display: flex;
+     position: absolute;
+     width: 97vmax;
+   }
 
 
   .custom-select2 {
     position:absolute;
-     width: 13vmax;
+     width: 10vmax;
      height: 4vmin;
-     border-radius: 4vmin;
+     background-color: rgb(170, 170, 170);
+     border-radius: 1vmin;
      right: 15%;
      margin-top:0.8vmin;
      z-index: 1;
-     box-shadow: 0px 2px 5px black; 
-     border: none;
-     outline: none;
    }
 
    .inputlistarcumple{
@@ -758,7 +735,7 @@ rows.value=res.data.venta
      border: solid 1.5px black;
    }
    .inputc{
-     width: 10vmax;
+     width: 8vmax;
      margin: 8px 0;
      height: 2.5vmin;
      box-sizing: border-box;
@@ -768,25 +745,16 @@ rows.value=res.data.venta
    }
 
    #buttonf{
-    padding: 0px;
-    width: 8vmin;
-    height: 2.5vmin;
-    display: flex;
-    text-align: center;
-    padding: 0px;
-    font-size: small;
-    margin: 0px;
-    margin-bottom: 1px;
-  }
-
-  .tituloTabla{
-    margin-top: 1vmax;
-      font-size: xx-large;
-      display: flex;
-      text-align: center;
-      justify-content: center;
-    
-    }
+     padding: 0px;
+     width: 8vmin;
+     height: 2.5vmin;
+     display: flex;
+     text-align: center;
+     padding: 0px;
+     font-size: small;
+     margin: 0px;
+     margin-bottom: 1px;
+   }
 
   </style>
 

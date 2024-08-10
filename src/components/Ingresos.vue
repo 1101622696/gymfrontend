@@ -350,12 +350,16 @@ async function buscarIngresosporfecha() {
 </script>
 
 <template>
-  <div>
-        <div style="margin-left: 5%; text-align: end; margin-right: 5%">
-      <q-btn color="green" class="q-my-md q-ml-md" @click="abrir()">Registrar Ingreso</q-btn>
-    </div>
+  <div class="container">
+        <!-- <div style="margin-left: 5%; text-align: end; margin-right: 5%">
+      <q-btn  class="button" @click="abrir()">Registrar Ingreso</q-btn>
+    </div> -->
 
     <div class="tablaselect">
+
+      <div>
+        <button class="button" @click="abrir()">Registrar Ingreso</button>
+      </div>
 
       <div class="inputlistarn" v-if="listN">
       <input class="inputn" type="text" placeholder="Digite nombre o documento" v-model.trim="busqueda" />
@@ -376,7 +380,12 @@ async function buscarIngresosporfecha() {
       </select>
     </div>
 
-    <q-table class="table" flat bordered title="Ingresos" :rows="rows" :columns="columns" row-key="_id">
+    <div class="tituloTabla">
+      Ingresos
+    </div>
+
+
+    <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="_id">
 
       <template v-slot:body-cell-idSede="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
@@ -407,8 +416,8 @@ async function buscarIngresosporfecha() {
     <div>
       <q-dialog v-model="alert" persistent>
         <q-card class="" style="width: 700px">
-          <q-card-section style="background-color: #a1312d; margin-bottom: 20px">
-            <div class="text-h6 text-white">
+          <q-card-section style="background-color: #ffffff; margin-bottom: 20px">
+            <div class="text-h6 text-black">
               {{ accion == 1 ? "Agregar Ingreso" : "Editar Ingreso" }}
             </div>
           </q-card-section>
@@ -440,22 +449,56 @@ async function buscarIngresosporfecha() {
 
 <style scoped>
 
+
+
+/* ------sigientes 4------------------------------- */
+
+.container {
+  width: 97vmax;
+  margin: 0 auto;
+  min-height:auto;
+
+overflow:hidden !important;
+}
+
 .tablaselect{
   display: flex;
   position: absolute;
   width: 95%;
+  margin-top: 6vmax;
 }
 
-.custom-select2 {
- position:absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 15%;
-  margin-top:0.8vmin;
-  z-index: 1;
+.tituloTabla{
+  margin-top: 1vmax;
+    font-size: xx-large;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  
+  }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
 }
+
+
+
+/* -------cutommm------------------------------- */
+.custom-select2 {
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 15%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 
 .inputlistarcumple{
   position:absolute;
@@ -472,7 +515,7 @@ gap:1vmin;
 border-radius: 1vmin;
 align-items: center;
 }
-
+/*---los input-------- */
 .inputlistarn{
   position:absolute;
   width: auto;
@@ -498,7 +541,7 @@ align-items: center;
 }
 
 .inputc{
-  width: 8vmax;
+  width: 10vmax;
   margin: 8px 0;
   height: 2.5vmin;
   box-sizing: border-box;
@@ -513,31 +556,36 @@ align-items: center;
   justify-content: flex-end;
   width: 100%;
 }
-
+/*---custn-------- */
 .custom-select {
- position:absolute;
-  width: 10vmax;
-  height: 4vmin;
-  background-color: rgb(170, 170, 170);
-  border-radius: 1vmin;
-  right: 1%;
-  margin-top:0.8vmin;
-  z-index: 1;
-}
+  position:absolute;
+   width: 10vmax;
+   height: 4vmin;
+   border-radius: 4vmin;
+   right: 1%;
+   margin-top:0.8vmin;
+   z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
+ }
 
+/*---button-------- */
 .button {
-  background-color: #45a049;
+ 
   border: none;
-  color: white;
+  color: black;
+  padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 13px;
+  font-size: 16px;
+  margin: 4px 2px;
   transition-duration: 0.4s;
   cursor: pointer;
-  margin-bottom: 1px;
+  margin-bottom: 10px;
   box-shadow: 5px 4px 8px black;
-  border-radius: 1vmin;
+  border-radius: 8px;
 }
 
 .button:hover {
@@ -552,5 +600,8 @@ align-items: center;
   display: flex;
   text-align: center;
   padding: 0px;
+  font-size: small;
+  margin: 0px;
+  margin-bottom: 1px;
 }
 </style>

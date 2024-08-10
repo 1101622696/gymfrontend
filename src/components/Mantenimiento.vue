@@ -356,10 +356,10 @@ rows.value=res.data.mantenimiento
 <template>
     <div class="container">
 
-      <button class="button" @click="agregarmantenimiento()">Agregar Mantenimiento</button>
+      
 
         <div class="tablaselect">
-
+<button class="button" @click="agregarmantenimiento()">Agregar Mantenimiento</button>
 
       <div class="inputlistar" v-if="listP">
       <select v-model="maquinaSeleccionada" @change="buscarpormaquina" class="custom-select2">
@@ -381,9 +381,13 @@ rows.value=res.data.mantenimiento
         <option value="Maquina">Por Maquina</option>
         <option value="Fecha">Por Fecha</option>
       </select>
+</div>
 
+<div class="tituloTabla">
+      Mantenimiento
+    </div>
 
-      <q-table class="table" flat bordered title="mantenimiento" :rows="rows" :columns="columns" row-key="id">
+      <q-table class="table" flat bordered  :rows="rows" :columns="columns" row-key="id">
         <template v-slot:body-cell-idMantenimiento="props">
         <q-td :props="props" style="text-align: center; border-left:none; border-left:none; border-right:none; border-top:none">
       <p>{{ getMaquinaCodigo(props.row.idMantenimiento) }}</p>
@@ -408,7 +412,7 @@ rows.value=res.data.mantenimiento
           </q-td>
         </template>
       </q-table>
-    </div>
+    
 
   <div  class="filtro" v-if="agregar">
       <div class="crearcliente" v-if="agregar">
@@ -443,6 +447,7 @@ rows.value=res.data.mantenimiento
   width: 97vmax;
   margin: 0 auto;
   min-height:auto;
+
 overflow:hidden !important;
 }
 
@@ -454,9 +459,9 @@ overflow:hidden !important;
 }
 
 .button {
-  background-color: #45a049;
+ 
   border: none;
-  color: white;
+  color: black;
   padding: 10px 20px;
   text-align: center;
   text-decoration: none;
@@ -469,6 +474,7 @@ overflow:hidden !important;
   box-shadow: 5px 4px 8px black;
   border-radius: 8px;
 }
+
 
 .button:hover {
   background-color: #69bb6d;
@@ -505,6 +511,8 @@ overflow:hidden !important;
 .table {
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid #f8141400;
+  margin-top: 7vmax;
 }
 
 .table th, .table td {
@@ -519,7 +527,6 @@ overflow:hidden !important;
 
 /* Estilos para las opciones de la tabla */
 .option-button {
-  background-color: #008CBA; /* Color azul */
   border: none;
   color: white;
   padding: 5px 10px;
@@ -532,7 +539,7 @@ overflow:hidden !important;
 }
 
 .option-button:hover {
-  background-color: #005f6b;
+  background-color: #dadada;
 }
 
 
@@ -607,17 +614,20 @@ transform: translate(-50%,-50%);
   position:absolute;
    width: 10vmax;
    height: 4vmin;
-   background-color: rgb(170, 170, 170);
-   border-radius: 1vmin;
+   border-radius: 4vmin;
    right: 1%;
    margin-top:0.8vmin;
    z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
  }
- .tablaselect{
-   display: flex;
-   position: absolute;
-   width: 97vmax;
- }
+.tablaselect{
+  display: flex;
+  position: absolute;
+  width: 95%;
+  margin-top: 6vmax;
+}
 
  .contenedorFiltro{
    display: flex;
@@ -627,13 +637,15 @@ transform: translate(-50%,-50%);
 
  .custom-select2 {
   position:absolute;
-   width: 10vmax;
+   width: 13vmax;
    height: 4vmin;
-   background-color: rgb(170, 170, 170);
-   border-radius: 1vmin;
+   border-radius: 4vmin;
    right: 15%;
    margin-top:0.8vmin;
    z-index: 1;
+   box-shadow: 0px 2px 5px black; 
+   border: none;
+   outline: none;
  }
 
  .inputlistarcumple{
@@ -677,7 +689,7 @@ transform: translate(-50%,-50%);
    border: solid 1.5px black;
  }
  .inputc{
-   width: 8vmax;
+   width: 13vmax;
    margin: 8px 0;
    height: 2.5vmin;
    box-sizing: border-box;
@@ -686,18 +698,25 @@ transform: translate(-50%,-50%);
    border: solid 1.5px black;
  }
 
- #buttonf{
-   padding: 0px;
-   width: 8vmin;
-   height: 2.5vmin;
-   display: flex;
-   text-align: center;
-   padding: 0px;
-   font-size: small;
-   margin: 0px;
-   margin-bottom: 1px;
- }
+#buttonf{
+  padding: 0px;
+  width: 8vmin;
+  height: 2.5vmin;
+  display: flex;
+  text-align: center;
+  padding: 0px;
+  font-size: small;
+  margin: 0px;
+  margin-bottom: 1px;
+}
 
-
+.tituloTabla{
+  margin-top: 1vmax;
+    font-size: xx-large;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  
+  }
 
 </style>

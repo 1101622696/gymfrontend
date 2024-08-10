@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header class="bg-teal-8 text-white">
+    <q-header class="custom-header text-black">
       <q-toolbar>
         <q-btn icon="menu" round flat dense @click="toggleLeftDrawer" />
         <q-toolbar-title>
@@ -14,7 +14,7 @@
       
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered class="bg-teal-8" id="contedrawer">
+    <q-drawer v-model="leftDrawerOpen" side="left" overlay bordered class="bg-white-8" id="contedrawer">
 <div class="usuario">
 <div class="usuarion">{{ usuario }}</div>
  <div class="usuarior"> {{ role }}</div></div>
@@ -24,9 +24,9 @@
       <q-list>
         <q-item v-for="link in filteredLinks" :key="link.to" :to="link.to" clickable>
           <q-item-section avatar>
-            <q-icon :name="link.icon" class="text-white" />
+            <q-icon :name="link.icon" class="text-black" />
           </q-item-section>
-          <q-item-section class="text-white text-body1">{{ link.label }}</q-item-section>
+          <q-item-section class="text-black text-body1">{{ link.label }}</q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
@@ -85,12 +85,14 @@ const toggleLeftDrawer = () => {
 
 const links = [
   { to: '/Home/clientes', label: 'Clientes', icon: 'people', roles: ['Administrador', 'Recepcionista', 'Entrenador'] },
+  { to: '/Home/compras', label: 'Compras', icon: 'people', roles: ['Administrador'] },
   { to: '/Home/ingresos', label: 'Ingresos', icon: 'attach_money', roles: ['Administrador'] },
   { to: '/Home/inventario', label: 'Inventario', icon: 'inventory', roles: ['Administrador'] },
   { to: '/Home/mantenimiento', label: 'Mantenimiento', icon: 'build', roles: ['Administrador', 'Recepcionista'] },
   { to: '/Home/maquinas', label: 'Máquinas', icon: 'fitness_center', roles: ['Administrador'] },
   { to: '/Home/pagos', label: 'Pagos', icon: 'credit_card', roles: ['Administrador', 'Recepcionista'] },
   { to: '/Home/planes', label: 'Planes', icon: 'event_note', roles: ['Administrador'] },
+  { to: '/Home/proveedores', label: 'Proveedores', icon: 'event_note', roles: ['Administrador'] },
   { to: '/Home/sedes', label: 'Sedes', icon: 'location_on', roles: ['Administrador'] },
   { to: '/Home/usuarios', label: 'Usuarios', icon: 'group', roles: ['Administrador'] },
   { to: '/Home/ventas', label: 'Ventas', icon: 'shopping_cart', roles: ['Administrador', 'Recepcionista'] }
@@ -174,19 +176,28 @@ const closeDrawer = () => {
   flex-direction: column;
   margin-left: 1vmin;
   gap: 1vmin;
-  color: aliceblue;
-  margin-top: 1vmin;
+  color: black;
+  margin-top: 2vmin;
+  /* margin-left: 3vmin; */
+  margin-right: 3vmin;
   border-radius: 1vmin;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-width:15vmax;
-height: 6vmax;
+width:auto;
+height: auto;
+padding: 1vmin;
+padding-left: 2vmin;
 }
 .usuarion{
-  font-size: xx-large;
+  font-size: x-large;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
 }
 
 .separation {
-  margin-bottom: 4vmin; 
+  margin-bottom: 3vmin; 
 }
 
+
+.custom-header {
+    background-color: white !important; /* Cambia el fondo a blanco */
+  }
 </style>
